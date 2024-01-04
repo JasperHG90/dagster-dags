@@ -1,41 +1,40 @@
 {
-    "build": {
-      "context": "..",
-      "dockerfile": "Dockerfile"
-    },
-    "containerUser": "vscode",
-    "forwardPorts": [
-      3000
-    ],
-    "containerEnv": {
-        "HOME": "/home/vscode"
-      },
-    "customizations": {
+  "build": {
+    "context": "..",
+    "dockerfile": "Dockerfile"
+  },
+  "containerEnv": {
+    "HOME": "/home/vscode"
+  },
+  "containerUser": "vscode",
+  "customizations": {
     "vscode": {
-        "extensions": [
-            "ms-python.python",
-            "ms-toolsai.jupyter",
-            "ms-python.vscode-pylance",
-            "marp-team.marp-vscode",
-            "redhat.vscode-yaml",
-            "mhutchie.git-graph",
-            "tamasfe.even-better-toml"
-        ],
-        "settings": {}
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-python.vscode-pylance",
+        "marp-team.marp-vscode",
+        "redhat.vscode-yaml",
+        "mhutchie.git-graph",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {}
     }
-    },
-    "mounts": [
-      "source=${localEnv:HOME}/.ssh/github,target=/home/vscode/.ssh/id_rsa,type=bind,consistency=cached",
-      "source=${localEnv:HOME}/.ssh/github.pub,target=/home/vscode/.ssh/id_rsa.pub,type=bind,consistency=cached"
-    ],
-    "portsAttributes": {
-      "3000": {
-        "label": "Dagster"
-      }
-    },
-    "postAttachCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
-    "postStartCommand": "cp /home/vscode/workspace/.gitconfig /home/vscode/.gitconfig",
-    "workspaceFolder": "/home/vscode/workspace",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/home/vscode/workspace,type=bind"
-  }
-  
+  },
+  "forwardPorts": [
+    3000
+  ],
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh/github,target=/home/vscode/.ssh/id_rsa,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh/github.pub,target=/home/vscode/.ssh/id_rsa.pub,type=bind,consistency=cached"
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Dagster"
+    }
+  },
+  "postAttachCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+  "postStartCommand": "cp /home/vscode/workspace/.gitconfig /home/vscode/.gitconfig",
+  "workspaceFolder": "/home/vscode/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/vscode/workspace,type=bind"
+}
