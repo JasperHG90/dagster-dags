@@ -1,0 +1,5 @@
+*.code-workspace
+
+# Pants
+.pants.d
+.pids

@@ -1,0 +1,48 @@
+# Copyright 2020 Pants project contributors.
+# Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+[GLOBAL]
+pants_version = "2.18.0"
+backend_packages.add = [
+  "pants.backend.python",
+  "pants.backend.docker",
+  "pants.backend.experimental.python",
+  "pants.backend.build_files.fmt.black",
+  "pants.backend.python.lint.black",
+  "pants.backend.python.lint.isort",
+  "pants.backend.python.typecheck.mypy",
+  "pants.backend.experimental.python.lint.ruff",
+]
+
+[source]
+root_patterns = [
+  "/shared/delt",
+  "/dags/dag_capstone",
+  "/dags/dag_basic",
+  "/dags/dag_simple",
+  "src",
+  "tests"
+]
+
+[python]
+interpreter_constraints = [">=3.9,<3.12"]
+enable_resolves = true
+
+resolves = { python-default = "python-default.lock"}
+
+[python-bootstrap]
+search_path = ["<PYENV_LOCAL>"]
+
+[python-infer]
+use_rust_parser = true
+
+[pytest]
+install_from_resolve = "python-default"
+
+[test]
+use_coverage = true
+
+[docker]
+env_vars = [
+    "DOCKER_BUILDKIT=0",
+]
