@@ -3,3 +3,5 @@
 # Pants
 .pants.d
 .pids
+
+.venv

@@ -1,0 +1,37 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: check-yaml
+      - id: check-ast
+      - id: check-json
+      - id: pretty-format-json
+        args: [--autofix]
+  - repo: local
+    hooks:
+      - id: pants-fmt
+        name: pants-fmt
+        entry: "pants fmt --changed-since=HEAD"
+        language: system
+        types: [python]
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: pants-lint
+        name: pants-lint
+        entry: "pants lint --changed-since=HEAD"
+        language: system
+        types: [python]
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: pants-check
+        name: pants-check
+        entry: "pants check --changed-since=HEAD"
+        language: system
+        types: [python]
+        pass_filenames: false
