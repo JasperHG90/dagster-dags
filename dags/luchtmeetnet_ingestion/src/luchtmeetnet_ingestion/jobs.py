@@ -1,5 +1,4 @@
 from dagster import define_asset_job
-
 from luchtmeetnet_ingestion.assets import air_quality_data
 from luchtmeetnet_ingestion.partitions import daily_partition
 

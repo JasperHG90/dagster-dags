@@ -26,7 +26,10 @@ pex_binary(
     layout="packed",
     include_requirements=False,
     include_tools=True,
-    dependencies=[":pyproject", "dags/luchtmeetnet_ingestion/src/luchtmeetnet_ingestion:luchtmeetnet_ingestion"],
+    dependencies=[
+        ":pyproject",
+        "dags/luchtmeetnet_ingestion/src/luchtmeetnet_ingestion:luchtmeetnet_ingestion",
+    ],
     environment="py39_slim",
 )
 
@@ -70,5 +73,5 @@ docker_image(
         "COPY dags.luchtmeetnet_ingestion/binary-srcs.pex/pyproject.toml /pyproject.toml",
         'ENTRYPOINT ["/bin/app/pex"]',
     ],
-    image_tags=["latest"]
+    image_tags=["latest"],
 )

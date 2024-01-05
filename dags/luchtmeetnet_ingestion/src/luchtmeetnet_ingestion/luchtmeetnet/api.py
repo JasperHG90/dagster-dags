@@ -3,7 +3,6 @@ import os
 from typing import Any, Dict, List, Optional
 
 import requests  # type: ignore
-
 from luchtmeetnet_ingestion.luchtmeetnet.const import LUCHTMEETNET_BASE_URL
 
 logger = logging.getLogger("dagster_orchestrators.IO.api")

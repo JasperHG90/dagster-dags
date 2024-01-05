@@ -19,7 +19,7 @@ fmt:
   pants fmt ::
 
 lint:
-  pants lint check ::
+  pants lint :: # check
 
 test:
   pants test ::

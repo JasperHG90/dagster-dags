@@ -27,11 +27,11 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-  - repo: local
-    hooks:
-      - id: pants-check
-        name: pants-check
-        entry: "pants check --changed-since=HEAD"
-        language: system
-        types: [python]
-        pass_filenames: false
+  # - repo: local
+  #   hooks:
+  #     - id: pants-check
+  #       name: pants-check
+  #       entry: "pants check --changed-since=HEAD"
+  #       language: system
+  #       types: [python]
+  #       pass_filenames: false

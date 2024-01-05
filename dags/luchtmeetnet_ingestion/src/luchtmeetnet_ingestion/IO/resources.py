@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional
 
 from dagster import ConfigurableResource
-
 from luchtmeetnet_ingestion.luchtmeetnet.api import get_results_luchtmeetnet_endpoint
 
 
