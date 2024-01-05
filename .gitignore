@@ -5,3 +5,9 @@
 .pids
 
 .venv
+
+# Dagster
+.dagster
+
+# Python
+__pycache__

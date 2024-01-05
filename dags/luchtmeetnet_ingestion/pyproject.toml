@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "luchtmeetnet_ingestion"
+version = "0.0.0"
+description = "Basic dagster project"
+authors = ["Jasper Ginn"]
+readme = "README.md"
+packages = [{include = "luchtmeetnet_ingestion", from="src"}]
+
+[tool.poetry.dependencies]
+python = "^3.9,<3.12"
+requests = "^2.31.0"
+appengine-python-standard = "^1.1.5"
+#delt = {path = "../../shared/delt", develop = true}
+pandas = "^2.1.3"
+duckdb = "^0.9.2"
+dagster = "^1.5.13"
+dagit = "^1.5.13"
+pyarrow = "^14.0.2"
+
+[tool.dagster]
+module_name = "luchtmeetnet_ingestion"
+
+[tool.poetry-git-version-plugin]
+alpha_version_format = '{version}a{distance}+{commit_hash}'
+version_format = '{version}'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
