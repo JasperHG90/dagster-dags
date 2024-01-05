@@ -19,4 +19,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: 'checks'
-        uses: ./.github/workflows/templates/checks
+        uses: .github/workflows/templates/checks
