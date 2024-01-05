@@ -12,30 +12,9 @@ permissions:
 
 jobs:
   checks:
-    name: 'Checks'
+    name: 'checks'
     #if: ${{ github.event_name == 'pull_request'}}
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-        cache: 'pip'
-    - uses: extractions/setup-just@v1
-      name: Setup just
-    - name: Initialize Pants
-      uses: pantsbuild/actions/init-pants@main
-      with:
-        # cache0 makes it easy to bust the cache if needed
-        gha-cache-key: cache0-py310
-        named-caches-hash: ${{ hashFiles('lockfiles/*.json', '**/something-else.lock') }}
-    - name: format
-      run: just fmt
-    - name: lint
-      run: just lint
-    - name: test
-      run: just test
-    - name: package
-      run: just package
+      - name: 'checks'
+        uses: ./.github/workflows/templates/checks
