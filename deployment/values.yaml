@@ -22,11 +22,11 @@ celeryConfigSecretName: "dagster-celery-config-secret"
 # All user code will be invoked within the images.
 ####################################################################################################
 deployments:
-  - name: "k8s-example-user-code-1"
+  - name: "luchtmeetnet-ingestion"
     image:
       # When a tag is not supplied, it will default as the Helm chart version.
-      repository: "docker.io/dagster/user-code-example"
-      tag: ~
+      repository: "europe-west4-docker.pkg.dev/jasperg-dagster/regi-areg-euw4-dagi-prd/luchtmeetnet_ingestion"
+      tag: 4642dc8
       # Change with caution! If you're using a fixed tag for pipeline run images, changing the
       # image pull policy to anything other than "Always" will use a cached/stale image, which is
       # almost certainly not what you want.
@@ -44,9 +44,11 @@ deployments:
     # identical arguments but can reload its definitions from within the Dagster UI without
     # needing to restart the user code deployment pod.
     dagsterApiGrpcArgs:
-      - "-f"
-      - "/example_project/example_repo/repo.py"
-    port: 3030
+    - "--module-name"
+    - "luchtmeetnet_ingestion"
+    - "--host"
+    - "0.0.0.0"
+    port: 4265
 
     # Whether or not to include configuration specified for this user code deployment in the pods
     # launched for runs from that deployment
