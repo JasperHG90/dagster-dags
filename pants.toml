@@ -16,10 +16,7 @@ backend_packages.add = [
 
 [source]
 root_patterns = [
-  "/shared/delt",
-  "/dags/dag_capstone",
-  "/dags/dag_basic",
-  "/dags/dag_simple",
+  "/dags/luchtmeetnet_ingestion",
   "src",
   "tests"
 ]
@@ -46,3 +43,6 @@ use_coverage = true
 env_vars = [
     "DOCKER_BUILDKIT=0",
 ]
+
+[environments-preview.names]
+py39_slim = "//:py39-slim"

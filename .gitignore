@@ -3,7 +3,9 @@
 # Pants
 .pants.d
 .pids
+dist
 
+# Virtualenv
 .venv
 
 # Dagster
@@ -14,3 +16,6 @@ __pycache__
 
 # Secrets
 .secrets
+
+# Tempdir
+.tmp
