@@ -15,6 +15,18 @@ setup: venv pip pre_commit_setup
 pre_commit: venv_activate
   pre-commit run -a
 
+fmt:
+  pants fmt ::
+
+lint:
+  pants lint check ::
+
+test:
+  pants test ::
+
+package:
+  pants package ::
+
 webserver:
   #!/usr/bin/env bash
   set -eo pipefail
