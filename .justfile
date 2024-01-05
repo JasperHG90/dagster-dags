@@ -20,3 +20,11 @@ webserver:
   set -eo pipefail
   DAGSTER_WEBSERVER_POD_NAME=$(kubectl get pods --namespace dagster-prd -l "app.kubernetes.io/name=dagster,app.kubernetes.io/instance=dagster,component=dagster-webserver" | cut -d' ' -f 1 | sed -n '2p')
   kubectl --namespace dagster-prd port-forward $DAGSTER_WEBSERVER_POD_NAME 8080:80
+
+docker_login:
+  #!/usr/bin/env bash
+  set -e
+  ARTIFACT_SA=$(gcloud secrets versions access latest \
+    --secret=ARTIFACT_WRITER_SA_JSON_KEY_B64 \
+    | python -m base64 -d)
+  docker login -u _json_key -p "$ARTIFACT_SA" europe-west4-docker.pkg.dev
