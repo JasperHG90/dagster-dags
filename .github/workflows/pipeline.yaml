@@ -25,8 +25,6 @@ jobs:
         cache: 'pip'
     - uses: extractions/setup-just@v1
       name: Setup just
-    - name: Install dependencies
-      run: just setup
     - name: Initialize Pants
       uses: pantsbuild/actions/init-pants@main
       with:
