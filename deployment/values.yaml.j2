@@ -25,8 +25,8 @@ deployments:
   - name: "luchtmeetnet-ingestion"
     image:
       # When a tag is not supplied, it will default as the Helm chart version.
-      repository: "europe-west4-docker.pkg.dev/jasperg-dagster/regi-areg-euw4-dagi-prd/luchtmeetnet_ingestion"
-      tag: 4642dc8
+      repository: "europe-west4-docker.pkg.dev/jasperg-dagster/dags-areg-euw4-dagi-prd/luchtmeetnet_ingestion"
+      tag: {{ version|default("latest", true) }}
       # Change with caution! If you're using a fixed tag for pipeline run images, changing the
       # image pull policy to anything other than "Always" will use a cached/stale image, which is
       # almost certainly not what you want.

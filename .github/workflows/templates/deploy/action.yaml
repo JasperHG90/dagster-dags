@@ -1,0 +1,62 @@
+name: checks
+
+# Were we can define the inputs that our action will accept
+inputs:
+    values:
+        description: "Location of the values file to use for the helm chart."
+        required: true
+    google_credentials:
+        description: "GCP Service Account JSON credentials with permissions to access and deploy to GKE."
+        required: true
+    cluster_name:
+        description: "Name of the GKE cluster to deploy to."
+        required: true
+    region:
+        description: "GCP region where the cluster is located."
+        required: true
+    project_name:
+        description: "GCP project name in which the cluster is located."
+        required: true
+    namespace:
+        description: "Namespace to deploy to."
+        required: true
+        default: "default"
+
+runs:
+  using: "composite"
+  steps:
+  - uses: actions/setup-python@v5
+    with:
+      python-version: '3.10'
+  - id: 'authenticate_gcp'
+    uses: 'google-github-actions/auth@v2'
+    with:
+        credentials_json: '${{ inputs.google_credentials }}'
+  - name: 'Set up Cloud SDK'
+    uses: 'google-github-actions/setup-gcloud@v2'
+  - name: 'Install GKE auth plugin'
+    run: gcloud components install gke-gcloud-auth-plugin
+  - uses: azure/setup-kubectl@v3
+    with:
+    version: 'v1.24.0'
+    id: 'install_kubectl'
+  - uses: azure/setup-helm@v3
+    with:
+    version: 'v3.9.0'
+    id: 'install_helm'
+  - name: 'Configure GCP project'
+    run: gcloud config set project jasperg-dagster
+  - name: 'Add Dagster Helm repo'
+    run: helm repo add dagster https://dagster-io.github.io/helm
+  - name: 'Configure kubectl'
+    run: |
+        USE_GKE_GCLOUD_AUTH_PLUGIN=true gcloud container clusters get-credentials \
+            ${{ inputs.cluster_name }} \
+            --region ${{ inputs.region }} \
+            --project ${{ inputs.project_name }}
+  - name: 'Deploy helm chart'
+    run: |
+        helm upgrade \
+        --namespace ${{ inputs.namespace }} \
+        --install user-code dagster/dagster-user-deployments \
+        -f deployment/values.yaml
