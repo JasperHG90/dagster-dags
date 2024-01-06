@@ -25,23 +25,16 @@ jobs:
   build:
     name: 'build'
     #if: ${{ github.event_name == 'pull_request'}}
+    needs: checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Initialize Pants
-        uses: pantsbuild/actions/init-pants@main
-        with:
-          # cache0 makes it easy to bust the cache if needed
-          gha-cache-key: cache0-py310
-          named-caches-hash: ${{ hashFiles('python-default.lock') }}
-          cache-lmdb-store: 'true'
       - name: 'docker login'
         run: docker login -u _json_key -p "$ARTIFACT_SA" europe-west4-docker.pkg.dev
         env:
           ARTIFACT_SA: ${{ secrets.GOOGLE_CREDENTIALS }}
-      - name: 'publish to gcr'
-        run: VERSION=$(git rev-parse --short HEAD) pants --filter-target-type=docker_image publish dags/luchtmeetnet_ingestion:img
+      - name: 'publish'
+        uses: ./.github/workflows/templates/publish
+        with:
+          version: $(git rev-parse --short HEAD)
