@@ -64,7 +64,7 @@ jobs:
       #   run: |
       #     VERSION=$(echo $GITHUB_REF | sed -e 's/refs\/tags\///g')
       #     echo "VERSION=$VERSION" >> $GITHUB_ENV
-      - name: Setup nginx
+      - name: Parse values
         uses: cuchi/jinja2-action@v1.2.2
         with:
           template: deployment/values.yaml.j2
