@@ -63,7 +63,7 @@ docker_image(
     name="img",
     dependencies=[":img-srcs", ":img-deps"],
     repository="luchtmeetnet_ingestion",
-    registries=["europe-west4-docker.pkg.dev/jasperg-dagster/regi-areg-euw4-dagi-prd"],
+    registries=["europe-west4-docker.pkg.dev/jasperg-dagster/dags-areg-euw4-dagi-prd"],
     instructions=[
         "FROM python:3.9-slim",
         "COPY --from=luchtmeetnet_ingestion:deps /bin/app /bin/app",

@@ -1,5 +1,5 @@
 PROJECT := "jasperg-dagster"
-ARTIFACT_STORE := "regi-areg-euw4-dagi-prd"
+ARTIFACT_STORE := "dags-areg-euw4-dagi-prd"
 DOCKER_BASE := "europe-west4-docker.pkg.dev/" + PROJECT + "/" + ARTIFACT_STORE
 IMAGE_NAME := "luchtmeetnet_ingestion"
 IMAGE_URI := DOCKER_BASE + "/" + IMAGE_NAME
