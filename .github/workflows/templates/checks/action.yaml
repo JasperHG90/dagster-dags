@@ -16,14 +16,42 @@ runs:
         gha-cache-key: cache0-py310
         named-caches-hash: ${{ hashFiles('lockfiles/*.json', '**/something-else.lock') }}
     - name: format
-      run: just fmt
+      run: |
+        pants \
+          --changed-since=origin/main \
+          tailor --check \
+          update-build-files --check \
+          fmt
       shell: bash
     - name: lint
-      run: just lint
+      run: |
+        pants \
+          --changed-since=origin/main \
+          lint
       shell: bash
+    # - name: type checks
+    #   run: |
+    #     pants \
+    #       --changed-since=origin/main \
+    #       --changed-dependents=transitive \
+    #       check
+    #   shell: bash
     - name: test
-      run: just test
+      run: |
+        pants \
+          --changed-since=origin/main \
+          --changed-dependents=transitive \
+          test
       shell: bash
     - name: package
-      run: just package
+      run: |
+        pants \
+          --changed-since=origin/main \
+          package
       shell: bash
+    - name: Upload pants log
+      uses: actions/upload-artifact@v3
+      with:
+        name: pants-log
+        path: .pants.d/pants.log
+      if: always()

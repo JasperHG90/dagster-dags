@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: "100"
       - name: 'checks'
         uses: ./.github/workflows/templates/checks
   build:
@@ -36,19 +38,11 @@ jobs:
         with:
           # cache0 makes it easy to bust the cache if needed
           gha-cache-key: cache0-py310
-          named-caches-hash: ${{ hashFiles('lockfiles/*.json', '**/something-else.lock') }}
+          named-caches-hash: ${{ hashFiles('python-default.lock') }}
+          cache-lmdb-store: 'true'
       - name: 'docker login'
         run: docker login -u _json_key -p "$ARTIFACT_SA" europe-west4-docker.pkg.dev
         env:
           ARTIFACT_SA: ${{ secrets.GOOGLE_CREDENTIALS }}
-      - name: 'build'
-        run: pants package dags/luchtmeetnet_ingestion
-      - name: 'add tags'
-        run: |
-          docker tag \
-            europe-west4-docker.pkg.dev/jasperg-dagster/regi-areg-euw4-dagi-prd/luchtmeetnet_ingestion:latest \
-            europe-west4-docker.pkg.dev/jasperg-dagster/regi-areg-euw4-dagi-prd/luchtmeetnet_ingestion:$(git rev-parse --short HEAD)
-      - name: 'push to gcr'
-        run: |
-          docker push europe-west4-docker.pkg.dev/jasperg-dagster/regi-areg-euw4-dagi-prd/luchtmeetnet_ingestion:latest
-          docker push europe-west4-docker.pkg.dev/jasperg-dagster/regi-areg-euw4-dagi-prd/luchtmeetnet_ingestion:$(git rev-parse --short HEAD)
+      - name: 'publish to gcr'
+        run: VERSION=$(git rev-parse --short HEAD) pants --filter-target-type=docker_image publish dags/luchtmeetnet_ingestion:img

@@ -43,6 +43,7 @@ use_coverage = true
 env_vars = [
     "DOCKER_BUILDKIT=0",
 ]
+build_args = ["VERSION"]
 
 [environments-preview.names]
 py39_slim = "//:py39-slim"

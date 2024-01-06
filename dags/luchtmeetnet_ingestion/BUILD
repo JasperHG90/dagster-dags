@@ -73,5 +73,5 @@ docker_image(
         "COPY dags.luchtmeetnet_ingestion/binary-srcs.pex/pyproject.toml /pyproject.toml",
         'ENTRYPOINT ["/bin/app/pex"]',
     ],
-    image_tags=["latest"],
+    image_tags=["latest", "{build_args.VERSION}"],
 )
