@@ -36,27 +36,32 @@ runs:
     uses: 'google-github-actions/setup-gcloud@v2'
   - name: 'Install GKE auth plugin'
     run: gcloud components install gke-gcloud-auth-plugin
+    shell: bash
   - uses: azure/setup-kubectl@v3
     with:
-    version: 'v1.24.0'
+      version: 'v1.24.0'
     id: 'install_kubectl'
   - uses: azure/setup-helm@v3
     with:
-    version: 'v3.9.0'
+      version: 'v3.9.0'
     id: 'install_helm'
   - name: 'Configure GCP project'
     run: gcloud config set project jasperg-dagster
+    shell: bash
   - name: 'Add Dagster Helm repo'
     run: helm repo add dagster https://dagster-io.github.io/helm
+    shell: bash
   - name: 'Configure kubectl'
     run: |
         USE_GKE_GCLOUD_AUTH_PLUGIN=true gcloud container clusters get-credentials \
             ${{ inputs.cluster_name }} \
             --region ${{ inputs.region }} \
             --project ${{ inputs.project_name }}
+    shell: bash
   - name: 'Deploy helm chart'
     run: |
         helm upgrade \
         --namespace ${{ inputs.namespace }} \
         --install user-code dagster/dagster-user-deployments \
         -f deployment/values.yaml
+    shell: bash
