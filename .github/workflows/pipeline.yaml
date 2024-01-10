@@ -55,17 +55,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: build
-    if: always() && (needs.build.result == 'success') && (github.event_name == 'push')
+    if: always() && (needs.build.result == 'success') && (github.event_name == 'release')
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: 'set version (push)'
+      - name: 'set version (release)'
         run: |
-          echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-      # - name: 'set version (release)'
-      #   run: |
-      #     VERSION=$(echo $GITHUB_REF | sed -e 's/refs\/tags\///g')
-      #     echo "VERSION=$VERSION" >> $GITHUB_ENV
+          VERSION=$(echo $GITHUB_REF | sed -e 's/refs\/tags\///g')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Parse values
         uses: cuchi/jinja2-action@v1.2.2
         with:
