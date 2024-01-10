@@ -63,5 +63,5 @@ runs:
         helm upgrade \
         --namespace ${{ inputs.namespace }} \
         --install user-code dagster/dagster-user-deployments \
-        -f deployment/values.yaml
+        -f ${{ inputs.values }}
     shell: bash
