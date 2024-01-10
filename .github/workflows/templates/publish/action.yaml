@@ -19,9 +19,11 @@ runs:
       gha-cache-key: cache0-py310
       named-caches-hash: ${{ hashFiles('python-default.lock') }}
       cache-lmdb-store: 'true'
-  - name: 'Luchtmeetnet ingestion'
+  - name: 'Publish docker images'
     run: |
       VERSION=${{ inputs.version }} pants \
         --filter-target-type=docker_image \
-        publish dags/luchtmeetnet_ingestion:img
+        --changed-since=origin/main \
+        --changed-dependents=transitive \
+        publish
     shell: bash

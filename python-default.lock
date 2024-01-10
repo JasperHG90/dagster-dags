@@ -17,7 +17,6 @@
 //     "pandas<3.0.0,>=2.1.3",
 //     "pre-commit==3.4.0",
 //     "pyarrow<15.0.0,>=14.0.2",
-//     "pyinvoke",
 //     "requests<3.0.0,>=2.31.0"
 //   ],
 //   "manylinux": "manylinux2014",
@@ -2767,34 +2766,34 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "a19731d5e83ae4737bb2a089605e636077ac001d18781b3cf489b9546c7c80d6",
-              "url": "https://files.pythonhosted.org/packages/57/6b/cb08c28a90375e18aa80913253135b5fb6e6b1ff5c1472ba833836540f16/protobuf-4.25.1-py3-none-any.whl"
+              "hash": "a8b7a98d4ce823303145bf3c1a8bdb0f2f4642a414b196f04ad9853ed0c8f830",
+              "url": "https://files.pythonhosted.org/packages/ff/52/5d23df1fe3b368133ec3e2436fb3dd4ccedf44c8d5ac7f4a88087c75180b/protobuf-4.25.2-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "57d65074b4f5baa4ab5da1605c02be90ac20c8b40fb137d6a8df9f416b0d0ce2",
-              "url": "https://files.pythonhosted.org/packages/59/5f/b2d00e6a08d97656a27832d4d146e03ffc46ae74b4699740674bea13a905/protobuf-4.25.1.tar.gz"
+              "hash": "10894a2885b7175d3984f2be8d9850712c57d5e7587a2410720af8be56cdaf62",
+              "url": "https://files.pythonhosted.org/packages/23/17/405ba44f60a693dfe96c7a18e843707cffa0fcfad80bd8fc4f227f499ea5/protobuf-4.25.2-cp37-abi3-manylinux2014_aarch64.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "ca37bf6a6d0046272c152eea90d2e4ef34593aaa32e8873fc14c16440f22d4b7",
-              "url": "https://files.pythonhosted.org/packages/ae/5b/7ed02a9b8e752c8f7bca8661779c0275b9e3e6a903a3045e6da51f796dda/protobuf-4.25.1-cp37-abi3-manylinux2014_x86_64.whl"
+              "hash": "fc381d1dd0516343f1440019cedf08a7405f791cd49eef4ae1ea06520bc1c020",
+              "url": "https://files.pythonhosted.org/packages/81/9e/63501b8d5b4e40c7260049836bd15ec3270c936e83bc57b85e4603cc212c/protobuf-4.25.2-cp37-abi3-manylinux2014_x86_64.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "0bf384e75b92c42830c0a679b0cd4d6e2b36ae0cf3dbb1e1dfdda48a244f4bcd",
-              "url": "https://files.pythonhosted.org/packages/e6/db/7b2edc72807d45d72f9db42f3eb86ddaf37f9e55d923159b1dbfc9d835bc/protobuf-4.25.1-cp37-abi3-macosx_10_9_universal2.whl"
+              "hash": "2db9f8fa64fbdcdc93767d3cf81e0f2aef176284071507e3ede160811502fd3d",
+              "url": "https://files.pythonhosted.org/packages/b3/81/0017aefacf23273d4efd1154ef958a27eed9c177c4cc09d2d4ba398fb47f/protobuf-4.25.2-cp37-abi3-macosx_10_9_universal2.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "0f881b589ff449bf0b931a711926e9ddaad3b35089cc039ce1af50b21a4ae8cb",
-              "url": "https://files.pythonhosted.org/packages/f2/74/41037079732f1976616356acc13bddceacd5d0c60d77ce3b4c79ba230d27/protobuf-4.25.1-cp37-abi3-manylinux2014_aarch64.whl"
+              "hash": "fe599e175cb347efc8ee524bcd4b902d11f7262c0e569ececcb89995c15f0a5e",
+              "url": "https://files.pythonhosted.org/packages/db/a5/05ea470f4e793c9408bc975ce1c6957447e3134ce7f7a58c13be8b2c216f/protobuf-4.25.2.tar.gz"
             }
           ],
           "project_name": "protobuf",
           "requires_dists": [],
           "requires_python": ">=3.8",
-          "version": "4.25.1"
+          "version": "4.25.2"
         },
         {
           "artifacts": [
@@ -3360,19 +3359,6 @@
           ],
           "requires_python": ">=3.7",
           "version": "2.14.6"
-        },
-        {
-          "artifacts": [
-            {
-              "algorithm": "sha256",
-              "hash": "0b96de9e8ed5b6d681bc761ed6758087998b1a84f84b09811f7d5401d64dea7e",
-              "url": "https://files.pythonhosted.org/packages/eb/d3/da06f4cfa461c18c4fa8f5621b9c408c3d16829b450998684f332753978a/pyinvoke-1.0.4.tar.gz"
-            }
-          ],
-          "project_name": "pyinvoke",
-          "requires_dists": [],
-          "requires_python": null,
-          "version": "1.0.4"
         },
         {
           "artifacts": [
@@ -5125,7 +5111,6 @@
     "pandas<3.0.0,>=2.1.3",
     "pre-commit==3.4.0",
     "pyarrow<15.0.0,>=14.0.2",
-    "pyinvoke",
     "requests<3.0.0,>=2.31.0"
   ],
   "requires_python": [

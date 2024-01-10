@@ -46,7 +46,7 @@ runs:
       version: 'v3.9.0'
     id: 'install_helm'
   - name: 'Configure GCP project'
-    run: gcloud config set project jasperg-dagster
+    run: gcloud config set project ${{ inputs.project_name }}
     shell: bash
   - name: 'Add Dagster Helm repo'
     run: helm repo add dagster https://dagster-io.github.io/helm
