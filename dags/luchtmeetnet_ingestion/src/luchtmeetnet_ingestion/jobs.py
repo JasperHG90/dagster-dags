@@ -2,7 +2,6 @@ from dagster import define_asset_job
 from luchtmeetnet_ingestion.assets import air_quality_data
 from luchtmeetnet_ingestion.partitions import daily_partition
 
-# Comment to trigger build
 ingestion_job = define_asset_job(
     name="ingestion_job",
     selection=[air_quality_data],
