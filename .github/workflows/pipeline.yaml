@@ -81,7 +81,7 @@ jobs:
         with:
           values: ./values_parsed.yaml
           google_credentials: ${{ secrets.GOOGLE_CREDENTIALS }}
-          cluster_name: clus-kube-euw4-dagi-prd
+          cluster_name: clus-kube-euw4-jgdag-prd
           region: europe-west4
           project_name: jasper-ginn-dagster
           namespace: dagster-prd
