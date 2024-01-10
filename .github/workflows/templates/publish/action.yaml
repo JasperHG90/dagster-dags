@@ -20,5 +20,8 @@ runs:
       named-caches-hash: ${{ hashFiles('python-default.lock') }}
       cache-lmdb-store: 'true'
   - name: 'Luchtmeetnet ingestion'
-    run: VERSION=${{ inputs.version }} pants --filter-target-type=docker_image publish dags/luchtmeetnet_ingestion:img
+    run: |
+      VERSION=${{ inputs.version }} pants \
+        --filter-target-type=docker_image \
+        publish dags/luchtmeetnet_ingestion:img
     shell: bash

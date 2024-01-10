@@ -37,6 +37,6 @@ docker_login:
   #!/usr/bin/env bash
   set -e
   ARTIFACT_SA=$(gcloud secrets versions access latest \
-    --secret=ARTIFACT_WRITER_SA_JSON_KEY_B64 \
+    --secret=CONTAINERADMIN_PRD_SA_JSON_KEY_B64 \
     | python -m base64 -d)
   docker login -u _json_key -p "$ARTIFACT_SA" europe-west4-docker.pkg.dev
