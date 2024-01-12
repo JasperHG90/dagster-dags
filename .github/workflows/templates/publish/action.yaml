@@ -28,7 +28,7 @@ runs:
     run: |
       VERSION=${{ inputs.version }} pants \
       --filter-target-type=docker_image \
-      publish
+      publish ::
     shell: bash
   - name: 'Publish docker images'
     if: ${{ inputs.changed_since != '' }}
