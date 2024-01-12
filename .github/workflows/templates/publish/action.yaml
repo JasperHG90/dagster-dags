@@ -35,7 +35,7 @@ runs:
     run: |
       VERSION=${{ inputs.version }} pants \
         --filter-target-type=docker_image \
-        --changed-since={{inputs.changed_since}} \
+        --changed-since=${{ inputs.changed_since }} \
         --changed-dependents=transitive \
         publish
     shell: bash
