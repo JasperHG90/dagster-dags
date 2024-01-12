@@ -37,19 +37,30 @@ jobs:
         run: docker login -u _json_key -p "$ARTIFACT_SA" europe-west4-docker.pkg.dev
         env:
           ARTIFACT_SA: ${{ secrets.GOOGLE_CREDENTIALS }}
-      - name: 'set version (release)'
+      - name: 'set variables (release)'
         if: ${{ github.event_name == 'release' }}
         run: |
           VERSION=$(echo $GITHUB_REF | sed -e 's/refs\/tags\///g')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # Don't compare against branch when doing a release, just publish everything
+          echo "CHANGED_SINCE=''" >> $GITHUB_ENV
       - name: 'set version (push)'
         if: ${{ github.event_name == 'push' }}
         run: |
           echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          # Compare against last release and publish only changed packages
+          N_RELEASES=$(git tag --sort=committerdate --list 'v*' | wc -l | xargs echo -n)
+          if [ "$N_RELEASES" -gt "0" ]; then
+            LAST_RELEASE=$(git tag --sort=committerdate --list 'v*' | tail -n 1)
+            echo "CHANGED_SINCE=$LAST_RELEASE" >> $GITHUB_ENV
+          else
+            echo "CHANGED_SINCE=''" >> $GITHUB_ENV
+          fi
       - name: 'publish'
         uses: ./.github/workflows/templates/publish
         with:
           version: ${{ env.VERSION }}
+          changed_since: ${{ env.CHANGED_SINCE }}
   helm_deployment:
     name: 'Deploy dagster helm chart'
     runs-on: ubuntu-latest

@@ -5,6 +5,10 @@ inputs:
     version:
         description: "Version of this build (e.g. v1.0.0 or git sha)"
         required: true
+    changed_since:
+        description: "The git ref to compare against"
+        required: false
+        default: ""
 
 runs:
   using: "composite"
@@ -19,11 +23,18 @@ runs:
       gha-cache-key: cache0-py310
       named-caches-hash: ${{ hashFiles('python-default.lock') }}
       cache-lmdb-store: 'true'
+  - name: 'Publish docker images (no changes)'
+    if: ${{ inputs.changed_since == '' }}
+    run: |
+      VERSION=${{ inputs.version }} pants \
+      --filter-target-type=docker_image \
+      publish
   - name: 'Publish docker images'
+    if: ${{ inputs.changed_since != '' }}
     run: |
       VERSION=${{ inputs.version }} pants \
         --filter-target-type=docker_image \
-        --changed-since=origin/main \
+        --changed-since={{inputs.changed_since}} \
         --changed-dependents=transitive \
         publish
     shell: bash
