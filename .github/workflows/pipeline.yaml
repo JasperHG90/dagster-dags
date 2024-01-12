@@ -22,7 +22,7 @@ jobs:
         with:
           # To work with pants --changed-since we need an adequate number
           #  of commits in the checkout
-          fetch-depth: 0
+          fetch-depth: 100
       - name: 'checks'
         uses: ./.github/workflows/templates/checks
   build:
@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Get tags
+        run: git fetch --tags origin
       - name: 'docker login'
         run: docker login -u _json_key -p "$ARTIFACT_SA" europe-west4-docker.pkg.dev
         env:
