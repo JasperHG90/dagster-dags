@@ -1,7 +1,9 @@
 name: 'Pipeline'
 
 on:
-  release:
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: read
