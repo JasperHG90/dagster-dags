@@ -53,14 +53,12 @@ jobs:
           if [ "$N_RELEASES" -gt "0" ]; then
             LAST_RELEASE=$(git tag --sort=committerdate --list 'v*' | tail -n 1)
             echo "CHANGED_SINCE=$LAST_RELEASE" >> $GITHUB_ENV
-          else
-            echo "CHANGED_SINCE=''" >> $GITHUB_ENV
           fi
       - name: 'publish'
         uses: ./.github/workflows/templates/publish
         with:
           version: ${{ env.VERSION }}
-          changed_since: ${{ env.CHANGED_SINCE }}
+          changed_since: ${{ env.CHANGED_SINCE || ''}}
   helm_deployment:
     name: 'Deploy dagster helm chart'
     runs-on: ubuntu-latest
