@@ -22,7 +22,7 @@ jobs:
         with:
           # To work with pants --changed-since we need an adequate number
           #  of commits in the checkout
-          fetch-depth: "100"
+          fetch-depth: 0
       - name: 'checks'
         uses: ./.github/workflows/templates/checks
   build:
@@ -52,7 +52,7 @@ jobs:
           N_RELEASES=$(git tag --sort=committerdate --list 'v*' | wc -l | xargs echo -n)
           if [ "$N_RELEASES" -gt "0" ]; then
             LAST_RELEASE=$(git tag --sort=committerdate --list 'v*' | tail -n 1)
-            echo "CHANGED_SINCE=$LAST_RELEASE" >> $GITHUB_ENV
+            echo "CHANGED_SINCE=tags/$LAST_RELEASE" >> $GITHUB_ENV
           fi
       - name: 'publish'
         uses: ./.github/workflows/templates/publish
