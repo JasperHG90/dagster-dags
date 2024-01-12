@@ -44,7 +44,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           # Don't compare against branch when doing a release, just publish everything
           echo "CHANGED_SINCE=''" >> $GITHUB_ENV
-      - name: 'set version (push)'
+      - name: 'set variables (push)'
         if: ${{ github.event_name == 'push' }}
         run: |
           echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
