@@ -46,7 +46,7 @@ jobs:
           echo "Found $N_RELEASES releases"
           if [ "$N_RELEASES" -gt "0" ]; then
             LAST_RELEASE=$(git tag --sort=committerdate --list 'v*' | tail -n 1)
-            echo "Last release: $LAST_RELEASE"
+            echo "Latest release: $LAST_RELEASE"
             echo "CHANGED_SINCE=tags/$LAST_RELEASE" >> $GITHUB_ENV
           fi
       - name: 'publish'
