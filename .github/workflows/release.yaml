@@ -1,0 +1,62 @@
+name: 'Pipeline'
+
+on:
+  release:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: 'build'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: 'docker login'
+        run: docker login -u _json_key -p "$ARTIFACT_SA" europe-west4-docker.pkg.dev
+        env:
+          ARTIFACT_SA: ${{ secrets.GOOGLE_CREDENTIALS }}
+      - name: 'set version'
+        run: |
+          VERSION=$(echo $GITHUB_REF | sed -e 's/refs\/tags\///g')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: 'publish'
+        uses: ./.github/workflows/templates/publish
+        with:
+          version: ${{ env.VERSION }}
+          changed_since: ${{ env.CHANGED_SINCE || ''}}
+  helm_deployment:
+    name: 'Deploy dagster helm chart'
+    runs-on: ubuntu-latest
+    environment: production
+    needs: build
+    if: always() && (needs.build.result == 'success')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: 'set version'
+        run: |
+          VERSION=$(echo $GITHUB_REF | sed -e 's/refs\/tags\///g')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Parse values
+        uses: cuchi/jinja2-action@v1.2.2
+        with:
+          template: deployment/values.yaml.j2
+          output_file: ./values_parsed.yaml
+          strict: true
+          variables: |
+            version=${{ env.VERSION }}
+            project_name=jasper-ginn-dagster
+            project_short_name=jgdag
+      - name: deploy
+        uses: ./.github/workflows/templates/deploy
+        with:
+          values: ./values_parsed.yaml
+          google_credentials: ${{ secrets.GOOGLE_CREDENTIALS }}
+          cluster_name: clus-kube-euw4-jgdag-prd
+          region: europe-west4
+          project_name: jasper-ginn-dagster
+          namespace: dagster-prd
