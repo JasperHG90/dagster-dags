@@ -44,8 +44,6 @@ jobs:
         run: |
           VERSION=$(echo $GITHUB_REF | sed -e 's/refs\/tags\///g')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          # Don't compare against branch when doing a release, just publish everything
-          echo "CHANGED_SINCE=''" >> $GITHUB_ENV
       - name: 'set variables (push)'
         if: ${{ github.event_name == 'push' }}
         run: |
