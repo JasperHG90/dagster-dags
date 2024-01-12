@@ -65,3 +65,8 @@ runs:
         --install user-code dagster/dagster-user-deployments \
         -f ${{ inputs.values }}
     shell: bash
+  - name: Upload parsed values
+    uses: actions/upload-artifact@v3
+    with:
+      name: dagster-user-code-values
+      path: ${{ inputs.values }}
