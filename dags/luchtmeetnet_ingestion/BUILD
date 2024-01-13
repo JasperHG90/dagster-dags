@@ -4,8 +4,6 @@ poetry_requirements(
 
 resources(name="pyproject", sources=["pyproject.toml", "README.md"])
 
-file(name="entrypoint", source="dagster")
-
 pex_binary(
     name="binary-deps",
     entry_point="dagster",
