@@ -25,7 +25,7 @@ test:
   pants test ::
 
 package:
-  pants package ::
+  VERSION=$(git rev-parse --short HEAD) pants package ::
 
 webserver:
   #!/usr/bin/env bash

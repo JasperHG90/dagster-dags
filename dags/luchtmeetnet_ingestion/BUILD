@@ -67,7 +67,7 @@ docker_image(
         # So that dagster knows which dag we want to run
         # because that info is given in '[tool.dagster]' in pyproject
         "COPY dags.luchtmeetnet_ingestion/binary-srcs.pex/pyproject.toml /pyproject.toml",
-        'ENTRYPOINT ["/bin/app/pex"]',
+        'ENTRYPOINT ["/bin/app/pex", "api", "grpc"]',
     ],
     image_tags=["latest", "{build_args.VERSION}"],
 )
