@@ -4,6 +4,8 @@ poetry_requirements(
 
 resources(name="pyproject", sources=["pyproject.toml", "README.md"])
 
+file(name="entrypoint", source="dagster")
+
 pex_binary(
     name="binary-deps",
     entry_point="dagster",
@@ -64,10 +66,11 @@ docker_image(
         "FROM python:3.9-slim",
         "COPY --from=luchtmeetnet_ingestion:deps /bin/app /bin/app",
         "COPY --from=luchtmeetnet_ingestion:srcs /bin/app /bin/app",
-        # So that dagster knows which dag we want to run
-        # because that info is given in '[tool.dagster]' in pyproject
-        "COPY dags.luchtmeetnet_ingestion/binary-srcs.pex/pyproject.toml /pyproject.toml",
-        'ENTRYPOINT ["/bin/app/pex", "api", "grpc"]',
+        #"COPY dags.luchtmeetnet_ingestion/binary-srcs.pex/pyproject.toml /pyproject.toml",
+        # Since dagster expects that we have a command-line argument called 'dagster'
+        #  available, but that command is not available since we are using a pex binary,
+        #  we use an entrypoint script to alias the dagster command to the pex binary.
+        "RUN ln -s /bin/app/pex /usr/bin/dagster"
     ],
     image_tags=["latest", "{build_args.VERSION}"],
 )
