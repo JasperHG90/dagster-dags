@@ -30,7 +30,7 @@ package:
 webserver:
   #!/usr/bin/env bash
   set -eo pipefail
-  DAGSTER_WEBSERVER_POD_NAME=$(kubectl get pods --namespace dagster-prd -l "app.kubernetes.io/name=dagster,app.kubernetes.io/instance=dagster,component=dagster-webserver" | cut -d' ' -f 1 | sed -n '2p')
+  DAGSTER_WEBSERVER_POD_NAME=$(kubectl get pods --namespace dagster-prd -l "app.kubernetes.io/name=dagster,component=dagster-webserver" | cut -d' ' -f 1 | sed -n '2p')
   kubectl --namespace dagster-prd port-forward $DAGSTER_WEBSERVER_POD_NAME 8080:80
 
 docker_login:
