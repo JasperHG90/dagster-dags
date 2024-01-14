@@ -87,7 +87,9 @@ deployments:
     #   value: "one"
     # - name: ENV_TWO
     #   value: "two"
-    env: []
+    env:
+      - name: ENVIRONMENT
+        value: "prd"
 
     # Additional environment variables can be retrieved and set from ConfigMaps. See:
     # https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables
@@ -105,7 +107,9 @@ deployments:
     #
     # envSecrets:
     #   - name: secret
-    envSecrets: []
+    envSecrets:
+      - gcs-access-key-id
+      - gcs-secret-access-key
 
     annotations: {}
     nodeSelector: {}

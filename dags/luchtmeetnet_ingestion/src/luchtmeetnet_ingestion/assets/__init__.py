@@ -20,7 +20,7 @@ def air_quality_data(context, luchtmeetnet_api: LuchtMeetNetResource):
         "station_number": "NL01494",
     }
     df = pd.DataFrame(luchtmeetnet_api.request("measurements", request_params=rp))
-    return df.to_json()
+    return df
 
 
 # @asset(
