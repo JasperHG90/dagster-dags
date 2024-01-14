@@ -1,7 +1,7 @@
 import os
 from importlib import metadata
 
-from dagster import Definitions, EnvVar
+from dagster import Definitions
 from luchtmeetnet_ingestion.assets import air_quality_data
 from luchtmeetnet_ingestion.IO.duckdb_io_manager import duckdb_parquet_io_manager
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
@@ -23,8 +23,8 @@ env_resources = {
         "landing_zone": duckdb_parquet_io_manager.configured(
             {
                 "path": "s3://inge-cst-euw4-jgdag-prd",
-                "aws_access_key": EnvVar("GCS_ACCESS_KEY_ID"),
-                "aws_secret_key": EnvVar("GCS_SECRET_ACCESS_KEY"),
+                "aws_access_key": {"env": "GCS_ACCESS_KEY_ID"},
+                "aws_secret_key": {"env": "GCS_SECRET_ACCESS_KEY"},
                 "aws_endpoint": "https://storage.googleapis.com",
             }
         )
