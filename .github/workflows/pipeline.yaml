@@ -49,7 +49,7 @@ jobs:
             echo "Latest release: $LAST_RELEASE"
             echo "CHANGED_SINCE=tags/$LAST_RELEASE" >> $GITHUB_ENV
           fi
-      - name: 'version'
+      - name: 'set version'
         uses: ./.github/workflows/templates/bump_version
       - name: 'publish'
         uses: ./.github/workflows/templates/publish

@@ -20,10 +20,12 @@ jobs:
         run: docker login -u _json_key -p "$ARTIFACT_SA" europe-west4-docker.pkg.dev
         env:
           ARTIFACT_SA: ${{ secrets.GOOGLE_CREDENTIALS }}
-      - name: 'set version'
+      - name: 'set variables'
         run: |
           VERSION=$(echo $GITHUB_REF | sed -e 's/refs\/tags\///g')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: 'set version'
+        uses: ./.github/workflows/templates/bump_version
       - name: 'publish'
         uses: ./.github/workflows/templates/publish
         with:
