@@ -25,7 +25,7 @@ env_resources = {
                 "path": "s3://inge-cst-euw4-jgdag-prd",
                 "aws_access_key": {"env": "GCS_ACCESS_KEY_ID"},
                 "aws_secret_key": {"env": "GCS_SECRET_ACCESS_KEY"},
-                "aws_endpoint": "https://storage.googleapis.com",
+                "aws_endpoint": "storage.googleapis.com",
             }
         )
     },
