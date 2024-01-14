@@ -1,0 +1,32 @@
+name: version
+
+# Were we can define the inputs that our action will accept
+inputs:
+    version:
+        description: "Version of this build (e.g. v1.0.0 or git sha)"
+        required: true
+
+runs:
+  using: "composite"
+  steps:
+  - name: Virtual environment
+    run: |
+      pip install --upgrade pip
+      python -m venv .gavenv
+    shell: bash
+  - name: Install Poetry
+    uses: snok/install-poetry@v1
+  - name: Install version plugin
+    run: |
+      poetry self add poetry-git-version-plugin
+    shell: bash
+  - name: Install dependencies
+    run: |
+      . .gavenv/bin/activate
+      pip3 install sh==2.0.6 typer==0.9.0
+    shell: bash
+  - name: Bump version
+    run: |
+      . .gavenv/bin/activate
+      python $GITHUB_ACTION_PATH/scripts/bump_version.py
+    shell: bash
