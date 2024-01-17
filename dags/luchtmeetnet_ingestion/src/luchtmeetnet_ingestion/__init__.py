@@ -1,11 +1,16 @@
 import os
 from importlib import metadata
 
-from dagster import Definitions
+from dagster import Definitions, EnvVar
+from dagster_slack import SlackResource
 from luchtmeetnet_ingestion.assets import air_quality_data
 from luchtmeetnet_ingestion.IO.duckdb_io_manager import duckdb_parquet_io_manager
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
 from luchtmeetnet_ingestion.jobs import ingestion_job
+from luchtmeetnet_ingestion.sensors import (
+    slack_message_on_failure,
+    slack_message_on_success,
+)
 
 try:
     __version__ = metadata.version("luchtmeetnet_ingestion")
@@ -17,7 +22,8 @@ shared_resources = {"luchtmeetnet_api": LuchtMeetNetResource()}
 
 env_resources = {
     "dev": shared_resources
-    | {"landing_zone": duckdb_parquet_io_manager.configured({"path": ".tmp/landing_zone"})},
+    | {"landing_zone": duckdb_parquet_io_manager.configured({"path": ".tmp/landing_zone"})}
+    | {"slack": SlackResource(token=EnvVar("DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN"))},
     "prd": shared_resources
     | {
         "landing_zone": duckdb_parquet_io_manager.configured(
@@ -28,7 +34,8 @@ env_resources = {
                 "aws_endpoint": "storage.googleapis.com",
             }
         )
-    },
+    }
+    | {"slack": SlackResource(token=EnvVar("DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN"))},
 }
 
 environment = os.getenv("ENVIRONMENT", "dev")
@@ -39,4 +46,5 @@ definition = Definitions(
     ],
     resources=env_resources[environment],
     jobs=[ingestion_job],
+    sensors=[slack_message_on_failure, slack_message_on_success],
 )

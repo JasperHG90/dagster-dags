@@ -1,3 +1,5 @@
+set dotenv-load
+
 PROJECT := "jasper-ginn-dagster"
 ARTIFACT_STORE := "dags-areg-euw4-jgdag-prd"
 DOCKER_BASE := "europe-west4-docker.pkg.dev/" + PROJECT + "/" + ARTIFACT_STORE
