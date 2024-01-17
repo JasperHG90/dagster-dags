@@ -19,7 +19,7 @@ def my_message_fn(slack: SlackResource, message: str) -> str:
     default_status=DefaultSensorStatus.RUNNING,
 )
 def slack_message_on_success(context: RunStatusSensorContext, slack: SlackResource):
-    message = f"Job **{context.dagster_run.job_name}** succeeded!"
+    message = f"Job {context.dagster_run.job_name} succeeded!"
     my_message_fn(slack, message)
 
 
@@ -30,6 +30,6 @@ def slack_message_on_success(context: RunStatusSensorContext, slack: SlackResour
 )
 def slack_message_on_failure(context: RunFailureSensorContext, slack: SlackResource):
     message = (
-        f"Job **{context.dagster_run.job_name}** failed!" f"Error: {context.failure_event.message}"
+        f"Job {context.dagster_run.job_name} failed!" f"Error: {context.failure_event.message}"
     )
     my_message_fn(slack, message)

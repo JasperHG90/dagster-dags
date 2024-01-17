@@ -66,8 +66,8 @@ docker_image(
         "COPY --from=luchtmeetnet_ingestion:srcs /bin/app /bin/app",
         # Since dagster expects that we have a command-line argument called 'dagster'
         #  available, but that command is not available since we are using a pex binary,
-        #  we use an entrypoint script to alias the dagster command to the pex binary.
-        "RUN ln -s /bin/app/pex /usr/bin/dagster"
+        #  we use a symbolic link to alias the dagster command to the pex binary.
+        "RUN ln -s /bin/app/pex /usr/bin/dagster",
     ],
     image_tags=["latest", "{build_args.VERSION}"],
 )
