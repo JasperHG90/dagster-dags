@@ -18,12 +18,16 @@ except metadata.PackageNotFoundError:
     __version__ = "0.0.0"
 
 
-shared_resources = {"luchtmeetnet_api": LuchtMeetNetResource()}
+shared_resources = {
+    "luchtmeetnet_api": LuchtMeetNetResource(),
+    # NB: on dev, this hook is not used. See 'sensors.py' for implementation
+    #  since the hooks depend on a SlackResource, we need to define it here
+    "slack": SlackResource(token=EnvVar("DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN")),
+}
 
 env_resources = {
     "dev": shared_resources
-    | {"landing_zone": duckdb_parquet_io_manager.configured({"path": ".tmp/landing_zone"})}
-    | {"slack": SlackResource(token=EnvVar("DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN"))},
+    | {"landing_zone": duckdb_parquet_io_manager.configured({"path": ".tmp/landing_zone"})},
     "prd": shared_resources
     | {
         "landing_zone": duckdb_parquet_io_manager.configured(
@@ -34,8 +38,7 @@ env_resources = {
                 "aws_endpoint": "storage.googleapis.com",
             }
         )
-    }
-    | {"slack": SlackResource(token=EnvVar("DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN"))},
+    },
 }
 
 environment = os.getenv("ENVIRONMENT", "dev")

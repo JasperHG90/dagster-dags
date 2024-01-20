@@ -1,3 +1,5 @@
+import os
+
 from dagster import (
     DagsterRunStatus,
     DefaultSensorStatus,
@@ -7,6 +9,8 @@ from dagster import (
 )
 from dagster_slack import SlackResource
 from luchtmeetnet_ingestion.jobs import ingestion_job
+
+environment = os.getenv("ENVIRONMENT", "dev")
 
 
 def my_message_fn(slack: SlackResource, message: str) -> str:
@@ -20,7 +24,10 @@ def my_message_fn(slack: SlackResource, message: str) -> str:
 )
 def slack_message_on_success(context: RunStatusSensorContext, slack: SlackResource):
     message = f"Job {context.dagster_run.job_name} succeeded!"
-    my_message_fn(slack, message)
+    if environment == "dev":
+        context.log.info(message)
+    else:
+        my_message_fn(slack, message)
 
 
 @run_status_sensor(
@@ -32,4 +39,7 @@ def slack_message_on_failure(context: RunFailureSensorContext, slack: SlackResou
     message = (
         f"Job {context.dagster_run.job_name} failed!" f"Error: {context.failure_event.message}"
     )
-    my_message_fn(slack, message)
+    if environment == "dev":
+        context.log.info(message)
+    else:
+        my_message_fn(slack, message)
