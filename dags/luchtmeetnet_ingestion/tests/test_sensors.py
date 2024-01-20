@@ -23,13 +23,19 @@ def luchtmeetnet_data() -> pd.DataFrame:
 
 @mock.patch("luchtmeetnet_ingestion.sensors.my_message_fn")
 @mock.patch("luchtmeetnet_ingestion.IO.resources.get_results_luchtmeetnet_endpoint")
-@mock.patch("luchtmeetnet_ingestion.IO.duckdb_io_manager.connect_to_duckdb")
-def test_slack_message_on_failure(
-    mock_duckdb_parquet_io_manager,
+@mock.patch("luchtmeetnet_ingestion.sensors.environment")
+# Something is going wrong in the interaction between pex, dagster and duckdb
+#  without doing this, we get a weird error about the HOME environment variable
+#  that duckdb uses.
+@mock.patch("dagster_utils.IO.utils.duckdb")
+def test_slack_message_on_success(
+    mock_duckdb,
+    mock_environment,
     mock_air_quality_data_endpoint_call,
     mock_message_fn,
     luchtmeetnet_data,
 ):
+    mock_environment.return_value = "prd"
     instance = DagsterInstance.ephemeral()
     mock_air_quality_data_endpoint_call.return_value = luchtmeetnet_data
     result = definition.get_job_def("ingestion_job").execute_in_process(
