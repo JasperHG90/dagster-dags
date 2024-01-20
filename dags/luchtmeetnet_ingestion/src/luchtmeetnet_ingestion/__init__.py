@@ -3,8 +3,8 @@ from importlib import metadata
 
 from dagster import Definitions, EnvVar
 from dagster_slack import SlackResource
+from dagster_utils.IO.duckdb_io_manager import duckdb_parquet_io_manager
 from luchtmeetnet_ingestion.assets import air_quality_data
-from luchtmeetnet_ingestion.IO.duckdb_io_manager import duckdb_parquet_io_manager
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
 from luchtmeetnet_ingestion.jobs import ingestion_job
 from luchtmeetnet_ingestion.sensors import (
