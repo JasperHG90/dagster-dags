@@ -43,7 +43,7 @@ jobs:
         run: docker login -u _json_key -p "$ARTIFACT_SA" europe-west4-docker.pkg.dev
         env:
           ARTIFACT_SA: ${{ secrets.GOOGLE_CREDENTIALS }}
-      - name: 'set variables (push)'
+      - name: 'set variables'
         run: |
           # shared/dagster is reference, but this should be the same for all packages
           #  so doesn't matter which one we use.
