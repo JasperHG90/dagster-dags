@@ -49,7 +49,8 @@ jobs:
           #  so doesn't matter which one we use.
           # We do need to replace '+' with '-' in the version, as docker doesn't allow '+' in tags
           #  but PEP 440 requires it in versions with a local tag.
-          echo "VERSION=$(poetry --directory shared/dagster_utils git-version --no-ansi | tr + -)" >> $GITHUB_ENV
+          echo "VERSION_PYTHON=$(poetry --directory shared/dagster_utils git-version --no-ansi)" >> $GITHUB_ENV
+          echo "VERSION_DOCKER=#(echo $VERSION_PYTHON  | tr + -)"
           # Compare against last release and publish only changed packages
           N_RELEASES=$(git tag --sort=committerdate --list 'v*' | wc -l | xargs echo -n)
           echo "Found $N_RELEASES releases"
@@ -61,9 +62,9 @@ jobs:
       - name: 'set version'
         uses: ./.github/workflows/templates/bump_version
         with:
-          version: ${{ env.VERSION }}
+          version: ${{ env.VERSION_PYTHON }}
       - name: 'publish'
         uses: ./.github/workflows/templates/publish
         with:
-          version: ${{ env.VERSION }}
+          version: ${{ env.VERSION_DOCKER }}
           changed_since: ${{ env.CHANGED_SINCE || ''}}
