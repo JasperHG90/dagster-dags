@@ -13,6 +13,7 @@ ingestion_job = define_asset_job(
                 "multiprocess": {
                     "max_concurrent": 1,
                 },
+                "k8s_job_executor": {"max_concurrent": 3},
             }
         }
     },

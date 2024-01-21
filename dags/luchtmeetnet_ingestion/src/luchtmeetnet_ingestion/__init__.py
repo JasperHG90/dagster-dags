@@ -7,6 +7,7 @@ from dagster_utils.IO.duckdb_io_manager import duckdb_parquet_io_manager
 from luchtmeetnet_ingestion.assets import air_quality_data
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
 from luchtmeetnet_ingestion.jobs import ingestion_job
+from luchtmeetnet_ingestion.schedules import daily_schedule
 from luchtmeetnet_ingestion.sensors import (
     slack_message_on_failure,
     slack_message_on_success,
@@ -50,4 +51,5 @@ definition = Definitions(
     resources=env_resources[environment],
     jobs=[ingestion_job],
     sensors=[slack_message_on_failure, slack_message_on_success],
+    schedules=[daily_schedule],
 )
