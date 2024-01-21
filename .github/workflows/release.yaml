@@ -26,6 +26,8 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: 'set version'
         uses: ./.github/workflows/templates/bump_version
+        with:
+          version: ${{ env.VERSION }}
       - name: 'publish'
         uses: ./.github/workflows/templates/publish
         with:
