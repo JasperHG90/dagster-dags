@@ -11,6 +11,7 @@
 //   "generated_with_requirements": [
 //     "appengine-python-standard<2.0.0,>=1.1.5",
 //     "dagit<1.7.0,>=1.6",
+//     "dagster-k8s<0.23.0,>=0.22.1",
 //     "dagster-postgres<1.0.0,>=0",
 //     "dagster-slack<1.0.0,>=0",
 //     "dagster<1.7.0,>=1.6",
@@ -1058,6 +1059,28 @@
           ],
           "requires_python": null,
           "version": "1.6.1"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
+              "hash": "445a4fefc3c34b1345df05c03609611b4f17c2db9cf197950bb8b9bd2dc486a1",
+              "url": "https://files.pythonhosted.org/packages/46/57/95113498bdda315a0acfe98b843f3b34823f7cc2ab5b14f0251251a89501/dagster_k8s-0.22.1-py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "fa47a48e920e8f433a3d5d943805161970bcfcb01cb96607cd9e0a946ae05456",
+              "url": "https://files.pythonhosted.org/packages/14/cd/94a6c1c6f52802f7bcfcd7e99e081c6722363764df53b6a15f86e9dacdd2/dagster-k8s-0.22.1.tar.gz"
+            }
+          ],
+          "project_name": "dagster-k8s",
+          "requires_dists": [
+            "dagster==1.6.1",
+            "google-auth!=2.23.1",
+            "kubernetes"
+          ],
+          "requires_python": null,
+          "version": "0.22.1"
         },
         {
           "artifacts": [
@@ -2583,6 +2606,37 @@
           "artifacts": [
             {
               "algorithm": "sha256",
+              "hash": "ab8cb0e0576ccdfb71886366efb102c6a20f268d817be065ce7f9909c631e43e",
+              "url": "https://files.pythonhosted.org/packages/6f/34/164e57fec8a9693d7e6ae2d1a345482020ea9e9b32eab95a90bb3eaea83d/kubernetes-29.0.0-py2.py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "c4812e227ae74d07d53c88293e564e54b850452715a59a927e7e1bc6b9a60459",
+              "url": "https://files.pythonhosted.org/packages/de/07/d01320a808abaab3426db63476adcb31f7e23fe8c08aef175d7883ea978a/kubernetes-29.0.0.tar.gz"
+            }
+          ],
+          "project_name": "kubernetes",
+          "requires_dists": [
+            "adal>=1.0.2; extra == \"adal\"",
+            "certifi>=14.05.14",
+            "google-auth>=1.0.1",
+            "ipaddress>=1.0.17; python_version == \"2.7\"",
+            "oauthlib>=3.2.2",
+            "python-dateutil>=2.5.3",
+            "pyyaml>=5.4.1",
+            "requests",
+            "requests-oauthlib",
+            "six>=1.9.0",
+            "urllib3>=1.24.2",
+            "websocket-client!=0.40.0,!=0.41.*,!=0.42.*,>=0.32.0"
+          ],
+          "requires_python": ">=3.6",
+          "version": "29.0.0"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
               "hash": "57d4e997349f1a92035aa25c17ace371a4213f2ca42f99bee9a602500cfd54d9",
               "url": "https://files.pythonhosted.org/packages/24/3b/11fe92d68c6a42468ddab0cf03f454419b0788fff4e91ba46b8bebafeffd/Mako-1.3.0-py3-none-any.whl"
             },
@@ -3054,19 +3108,19 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "61ec07ef052e72e3de22045b81b2cc7d71fceb04c568ba0b2e4b2f9f5231bec2",
-              "url": "https://files.pythonhosted.org/packages/0d/d0/ffa604feb4992d5ecb3a0581df1afa6f5a05027c29c49db867acd7e4e10e/nest_asyncio-1.5.9-py3-none-any.whl"
+              "hash": "87af6efd6b5e897c81050477ef65c62e2b2f35d51703cae01aff2905b1852e1c",
+              "url": "https://files.pythonhosted.org/packages/a0/c4/c2971a3ba4c6103a3d10c4b0f24f461ddc027f0f09763220cf35ca1401b3/nest_asyncio-1.6.0-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "d1e1144e9c6e3e6392e0fcf5211cb1c8374b5648a98f1ebe48e5336006b41907",
-              "url": "https://files.pythonhosted.org/packages/12/39/d97da0edd33ae223e5f7cfdc2dfae016a0b5c3e2762ded7dc008d5bb1643/nest_asyncio-1.5.9.tar.gz"
+              "hash": "6f172d5449aca15afd6c646851f4e31e02c598d553a667e38cafa997cfec55fe",
+              "url": "https://files.pythonhosted.org/packages/83/f8/51569ac65d696c8ecbee95938f89d4abf00f47d58d48f6fbabfe8f0baefe/nest_asyncio-1.6.0.tar.gz"
             }
           ],
           "project_name": "nest-asyncio",
           "requires_dists": [],
           "requires_python": ">=3.5",
-          "version": "1.5.9"
+          "version": "1.6.0"
         },
         {
           "artifacts": [
@@ -3200,6 +3254,29 @@
           "requires_dists": [],
           "requires_python": ">=3.9",
           "version": "1.26.3"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
+              "hash": "8139f29aac13e25d502680e9e19963e83f16838d48a0d71c287fe40e7067fbca",
+              "url": "https://files.pythonhosted.org/packages/7e/80/cab10959dc1faead58dc8384a781dfbf93cb4d33d50988f7a69f1b7c9bbe/oauthlib-3.2.2-py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "9859c40929662bec5d64f34d01c99e093149682a3f38915dc0655d5a633dd918",
+              "url": "https://files.pythonhosted.org/packages/6d/fa/fbf4001037904031639e6bfbfc02badfc7e12f137a8afa254df6c4c8a670/oauthlib-3.2.2.tar.gz"
+            }
+          ],
+          "project_name": "oauthlib",
+          "requires_dists": [
+            "blinker>=1.4.0; extra == \"signals\"",
+            "cryptography>=3.0.0; extra == \"rsa\"",
+            "cryptography>=3.0.0; extra == \"signedtoken\"",
+            "pyjwt<3,>=2.0.0; extra == \"signedtoken\""
+          ],
+          "requires_python": ">=3.6",
+          "version": "3.2.2"
         },
         {
           "artifacts": [
@@ -4951,6 +5028,28 @@
           "artifacts": [
             {
               "algorithm": "sha256",
+              "hash": "2577c501a2fb8d05a304c09d090d6e47c306fef15809d102b327cf8364bddab5",
+              "url": "https://files.pythonhosted.org/packages/6f/bb/5deac77a9af870143c684ab46a7934038a53eb4aa975bc0687ed6ca2c610/requests_oauthlib-1.3.1-py2.py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "75beac4a47881eeb94d5ea5d6ad31ef88856affe2332b9aafb52c6452ccf0d7a",
+              "url": "https://files.pythonhosted.org/packages/95/52/531ef197b426646f26b53815a7d2a67cb7a331ef098bb276db26a68ac49f/requests-oauthlib-1.3.1.tar.gz"
+            }
+          ],
+          "project_name": "requests-oauthlib",
+          "requires_dists": [
+            "oauthlib>=3.0.0",
+            "oauthlib[signedtoken]>=3.0.0; extra == \"rsa\"",
+            "requests>=2.0.0"
+          ],
+          "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7",
+          "version": "1.3.1"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
               "hash": "cccfdd665f0a24fcf4726e690f65639d272bb0637b9b92dfd91a5568ccf6bd06",
               "url": "https://files.pythonhosted.org/packages/3f/51/d4db610ef29373b879047326cbf6fa98b6c1969d6f6dc423279de2b1be2c/requests_toolbelt-1.0.0-py2.py3-none-any.whl"
             },
@@ -6275,6 +6374,30 @@
           "artifacts": [
             {
               "algorithm": "sha256",
+              "hash": "f4c3d22fec12a2461427a29957ff07d35098ee2d976d3ba244e688b8b4057588",
+              "url": "https://files.pythonhosted.org/packages/1e/70/1e88138a9afbed1d37093b85f0bebc3011623c4f47c166431599fe9d6c93/websocket_client-1.7.0-py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "10e511ea3a8c744631d3bd77e61eb17ed09304c413ad42cf6ddfa4c7787e8fe6",
+              "url": "https://files.pythonhosted.org/packages/20/07/2a94288afc0f6c9434d6709c5320ee21eaedb2f463ede25ed9cf6feff330/websocket-client-1.7.0.tar.gz"
+            }
+          ],
+          "project_name": "websocket-client",
+          "requires_dists": [
+            "Sphinx>=6.0; extra == \"docs\"",
+            "python-socks; extra == \"optional\"",
+            "sphinx-rtd-theme>=1.1.0; extra == \"docs\"",
+            "websockets; extra == \"test\"",
+            "wsaccel; extra == \"optional\""
+          ],
+          "requires_python": ">=3.8",
+          "version": "1.7.0"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
               "hash": "dc284bbc8d7c78a6c69e0c7325ab46ee5e40bb4d50e494d8131a07ef47500e9e",
               "url": "https://files.pythonhosted.org/packages/79/4d/9cc401e7b07e80532ebc8c8e993f42541534da9e9249c59ee0139dcb0352/websockets-12.0-py3-none-any.whl"
             },
@@ -6730,6 +6853,7 @@
   "requirements": [
     "appengine-python-standard<2.0.0,>=1.1.5",
     "dagit<1.7.0,>=1.6",
+    "dagster-k8s<0.23.0,>=0.22.1",
     "dagster-postgres<1.0.0,>=0",
     "dagster-slack<1.0.0,>=0",
     "dagster<1.7.0,>=1.6",

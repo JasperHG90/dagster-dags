@@ -3,6 +3,7 @@ from dagster import AssetCheckResult, asset_check
 from luchtmeetnet_ingestion.assets import air_quality_data
 
 
+# Currently, not supported for partitioned assets
 @asset_check(
     asset=air_quality_data,
 )
