@@ -14,12 +14,6 @@ runs:
       pip install --upgrade pip
       python -m venv .gavenv
     shell: bash
-  - name: Install Poetry
-    uses: snok/install-poetry@v1
-  - name: Install version plugin
-    run: |
-      poetry self add poetry-git-version-plugin
-    shell: bash
   - name: Install dependencies
     run: |
       . .gavenv/bin/activate
@@ -28,5 +22,5 @@ runs:
   - name: Bump version
     run: |
       . .gavenv/bin/activate
-      python $GITHUB_ACTION_PATH/scripts/bump_version.py
+      python $GITHUB_ACTION_PATH/scripts/bump_version.py --version ${{ inputs.version }}
     shell: bash
