@@ -4,6 +4,8 @@ from dagster import ConfigurableResource
 from luchtmeetnet_ingestion.luchtmeetnet.api import get_results_luchtmeetnet_endpoint
 
 
+# Todo: change resource type so can add description/docs
+#  https://docs.dagster.io/concepts/resources
 class LuchtMeetNetResource(ConfigurableResource):
     def request(
         self, endpoint: str, request_params: Optional[Dict[str, Any]] = None
