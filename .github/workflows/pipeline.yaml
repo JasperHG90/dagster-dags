@@ -47,7 +47,9 @@ jobs:
         run: |
           # shared/dagster is reference, but this should be the same for all packages
           #  so doesn't matter which one we use.
-          echo "VERSION=$(poetry --directory shared/dagster_utils git-version --no-ansi)" >> $GITHUB_ENV
+          # We do need to replace '+' with '-' in the version, as docker doesn't allow '+' in tags
+          #  but PEP 440 requires it in versions with a local tag.
+          echo "VERSION=$(poetry --directory shared/dagster_utils git-version --no-ansi | tr + -)" >> $GITHUB_ENV
           # Compare against last release and publish only changed packages
           N_RELEASES=$(git tag --sort=committerdate --list 'v*' | wc -l | xargs echo -n)
           echo "Found $N_RELEASES releases"
