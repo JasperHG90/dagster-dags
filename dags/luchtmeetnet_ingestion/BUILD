@@ -25,6 +25,7 @@ pex_binary(
     dependencies=[
         ":pyproject",
         "dags/luchtmeetnet_ingestion/src/luchtmeetnet_ingestion:luchtmeetnet_ingestion",
+        "dags/luchtmeetnet_ingestion:poetry#dagster"
     ],
     environment="py39_slim",
 )
