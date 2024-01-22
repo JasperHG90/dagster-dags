@@ -5,10 +5,14 @@ from dagster import (
     DefaultSensorStatus,
     RunFailureSensorContext,
     RunStatusSensorContext,
+    SensorResult,
     run_status_sensor,
+    sensor,
 )
 from dagster_slack import SlackResource
+from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
 from luchtmeetnet_ingestion.jobs import ingestion_job
+from luchtmeetnet_ingestion.partitions import stations_partition
 
 environment = os.getenv("ENVIRONMENT", "dev")
 
@@ -43,3 +47,20 @@ def slack_message_on_failure(context: RunFailureSensorContext, slack: SlackResou
         context.log.info(message)
     else:
         my_message_fn(slack, message)
+
+
+@sensor(job=ingestion_job)
+def stations_sensor(context, luchtmeetnet_api: LuchtMeetNetResource):
+    # Only take first three stations for demo purposes
+    stations_request = luchtmeetnet_api.request("stations")[:2]
+    context.log.debug(stations_request)
+    stations = [
+        f["number"]
+        for f in stations_request
+        if not context.instance.has_dynamic_partition(stations_partition.name, f["number"])
+    ]
+    context.log.debug(stations)
+    return SensorResult(
+        run_requests=None,
+        dynamic_partitions_requests=[stations_partition.build_add_request(stations)],
+    )

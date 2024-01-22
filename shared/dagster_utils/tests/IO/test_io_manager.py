@@ -9,7 +9,7 @@ from dagster import (
     build_output_context,
 )
 
-from dagster_utils.IO.io_manager import duckdb_parquet_io_manager
+from dagster_utils.IO.duckdb_io_manager import duckdb_parquet_io_manager
 
 AWS_ENDPOINT_URL = "storage.googleapis.com"
 
@@ -32,7 +32,7 @@ def init_context() -> InitResourceContext:
     )
 
 
-@mock.patch("delt.IO.io_manager.plb")
+@mock.patch("dagster_utils.IO.duckdb_io_manager.plb")
 @pytest.mark.parametrize(
     "use_local_path,use_partition_key",
     [
@@ -58,18 +58,18 @@ def test_duckdb_get_table_name(mock_pathlib, use_local_path, use_partition_key):
             config["path"], "test_asset.parquet"
         )
     else:
-        assert manager._get_table_name("test_asset", "2021-01-01") == os.path.join(
+        assert manager._get_table_name("test_asset", "2021-01-01|NL56564") == os.path.join(
             config["path"], "test_asset", "2021-01-01.parquet"
         )
 
 
-@mock.patch("delt.IO.io_manager.connect_to_duckdb")
+@mock.patch("dagster_utils.IO.duckdb_io_manager.connect_to_duckdb")
 def test_duckdb_parquet_io_manager(
     mock_connect_to_duckdb, df: pd.DataFrame, init_context: InitResourceContext
 ):
     manager = duckdb_parquet_io_manager(init_context)
     output_context = build_output_context(
-        asset_key="test_asset",
+        asset_key="test_asset"
     )
     manager.handle_output(output_context, df)
     mock_connect_to_duckdb.assert_called()

@@ -13,6 +13,7 @@ from luchtmeetnet_ingestion.schedules import daily_schedule
 from luchtmeetnet_ingestion.sensors import (
     slack_message_on_failure,
     slack_message_on_success,
+    stations_sensor,
 )
 
 try:
@@ -52,7 +53,7 @@ definition = Definitions(
     ],
     resources=env_resources[environment],
     jobs=[ingestion_job],
-    sensors=[slack_message_on_failure, slack_message_on_success],
+    sensors=[slack_message_on_failure, slack_message_on_success, stations_sensor],
     schedules=[daily_schedule],
     # asset_checks=[values_above_zero],
 )
