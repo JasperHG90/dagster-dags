@@ -1,5 +1,5 @@
 run_queue:
   max_concurrent_runs: 5
   tag_concurrency_limits:
-    - key: "dagster/backfill" # applies when the `dagster/backfill` tag is present, regardless of value
-      limit: 3
+    - key: "dagster/backfill" # When backfilling, we only want one run at a time
+      limit: 1
