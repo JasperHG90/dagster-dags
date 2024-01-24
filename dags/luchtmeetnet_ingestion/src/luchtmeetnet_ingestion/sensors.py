@@ -52,7 +52,7 @@ def slack_message_on_failure(context: RunFailureSensorContext, slack: SlackResou
 @sensor(job=ingestion_job)
 def stations_sensor(context, luchtmeetnet_api: LuchtMeetNetResource):
     # Only take first three stations for demo purposes
-    stations_request = luchtmeetnet_api.request("stations")[:2]
+    stations_request = luchtmeetnet_api.request("stations")
     context.log.debug(stations_request)
     stations = [
         f["number"]

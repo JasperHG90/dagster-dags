@@ -14,11 +14,4 @@ ingestion_job = define_asset_job(
     description="Ingestion job for air quality data",
     partitions_def=daily_station_partition,
     executor_def=multiprocess_executor if environment == "dev" else k8s_job_executor,
-    config={
-        "execution": {
-            "config": {
-                "max_concurrent": 3,
-            }
-        }
-    },
 )
