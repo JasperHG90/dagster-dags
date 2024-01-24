@@ -42,7 +42,7 @@ use_coverage = true
 
 [docker]
 env_vars = [
-    "DOCKER_BUILDKIT=1",
+    "DOCKER_BUILDKIT=0",
 ]
 build_args = ["VERSION"]
 

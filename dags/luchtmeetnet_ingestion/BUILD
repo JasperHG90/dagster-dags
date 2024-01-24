@@ -4,6 +4,8 @@ poetry_requirements(
 
 resources(name="pyproject", sources=["pyproject.toml", "README.md"])
 
+file(name="dagster", source="dagster.yaml")
+
 pex_binary(
     name="binary-deps",
     entry_point="dagster",
@@ -58,13 +60,16 @@ docker_image(
 
 docker_image(
     name="img",
-    dependencies=[":img-srcs", ":img-deps"],
+    dependencies=[":img-srcs", ":img-deps", ":dagster"],
     repository="luchtmeetnet_ingestion",
     registries=["europe-west4-docker.pkg.dev/jasper-ginn-dagster/dags-areg-euw4-jgdag-prd"],
     instructions=[
         "FROM python:3.9-slim",
+        "WORKDIR /app",
         "COPY --from=luchtmeetnet_ingestion:deps /bin/app /bin/app",
         "COPY --from=luchtmeetnet_ingestion:srcs /bin/app /bin/app",
+        "COPY dags/luchtmeetnet_ingestion/dagster.yaml /app/dagster.yaml",
+        "ENV DAGSTER_HOME=/app",
         # Since dagster expects that we have a command-line argument called 'dagster'
         #  available, but that command is not available since we are using a pex binary,
         #  we use a symbolic link to alias the dagster command to the pex binary.
