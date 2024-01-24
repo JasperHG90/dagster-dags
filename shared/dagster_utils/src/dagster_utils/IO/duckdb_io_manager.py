@@ -38,7 +38,7 @@ class DuckdbParquetIOManager(IOManager):
 
     def _get_table_name(self, asset_key: str, partition_key: typing.Optional[str] = None) -> str:
         if partition_key is not None:
-            path = os.path.join(self.path, asset_key, f"{partition_key.replace('|', '_')}.parquet")
+            path = os.path.join(self.path, asset_key, f"{partition_key}.parquet")
             if self.path_is_local:
                 _path = plb.Path(path)
                 if not _path.parent.exists():

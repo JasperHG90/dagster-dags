@@ -58,7 +58,7 @@ def test_duckdb_get_table_name(mock_pathlib, use_local_path, use_partition_key):
             config["path"], "test_asset.parquet"
         )
     else:
-        assert manager._get_table_name("test_asset", "2021-01-01|NL56564") == os.path.join(
+        assert manager._get_table_name("test_asset", "2021-01-01") == os.path.join(
             config["path"], "test_asset", "2021-01-01.parquet"
         )
 
