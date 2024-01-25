@@ -153,13 +153,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "36009fa2c1ddf3946a4a7abe04d80e168d58908ee27e53c6a148e5bbdd75c625",
-              "url": "https://files.pythonhosted.org/packages/81/cc/c1c5c03a1c4a65345512297090477e4ac5c162d5563230794f660a727fff/appengine_python_standard-1.1.5-py3-none-any.whl"
+              "hash": "0fca07b290282b9449590cbdb39b3461c45f2b6037523949f028ff2cba82c85e",
+              "url": "https://files.pythonhosted.org/packages/8c/ef/b4bf8faf37aa5f5b8f23483f0f72b1dde67a8ad6323a4ebd324830fdf096/appengine_python_standard-1.1.6-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "8351fd43c95f5862828b8be65c6e6f7bb4a0ac510c88c3cb17fc3c6ca66dba42",
-              "url": "https://files.pythonhosted.org/packages/90/d9/6789318586d551870e51cc3627f8167a6a2ae4e9f4aeb75fd766480013fb/appengine-python-standard-1.1.5.tar.gz"
+              "hash": "c2aec138a24f8462d6199c65666590dab14acb18af6c62950c82bc8d40862558",
+              "url": "https://files.pythonhosted.org/packages/f3/61/41289e8fddead3a8582b4b94b610391910fee66a667a74060c9e1ea6642e/appengine-python-standard-1.1.6.tar.gz"
             }
           ],
           "project_name": "appengine-python-standard",
@@ -177,7 +177,7 @@
             "urllib3<2,>=1.26.2"
           ],
           "requires_python": "<4,>=3.6",
-          "version": "1.1.5"
+          "version": "1.1.6"
         },
         {
           "artifacts": [
@@ -1589,13 +1589,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "3f445c8ce9b61ed6459aad86d8ccdba4a9afed841b2d1451a11ef4db08957424",
-              "url": "https://files.pythonhosted.org/packages/aa/42/c3873f5a4369d28eb0006bfc80837f28b18bd4e04526f55cc9c8eac7a803/google_auth-2.26.2-py2.py3-none-any.whl"
+              "hash": "8e4bad367015430ff253fe49d500fdc3396c1a434db5740828c728e45bcce245",
+              "url": "https://files.pythonhosted.org/packages/82/41/7fb855444cead5b2213e053447ce3a0b7bf2c3529c443e0cf75b2f13b405/google_auth-2.27.0-py2.py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "97327dbbf58cccb58fc5a1712bba403ae76668e64814eb30f7316f7e27126b81",
-              "url": "https://files.pythonhosted.org/packages/9a/a7/96f6b41c736ac080844a96d34896019127427e66f59d6b03e001d243c6c6/google-auth-2.26.2.tar.gz"
+              "hash": "e863a56ccc2d8efa83df7a80272601e43487fa9a728a376205c86c26aaefa821",
+              "url": "https://files.pythonhosted.org/packages/71/10/8a86f8c81350bff52399b9e1125bc72963812c179567e5e6e93dd74c0bbb/google-auth-2.27.0.tar.gz"
             }
           ],
           "project_name": "google-auth",
@@ -1613,7 +1613,7 @@
             "rsa<5,>=3.1.4"
           ],
           "requires_python": ">=3.7",
-          "version": "2.26.2"
+          "version": "2.27.0"
         },
         {
           "artifacts": [
@@ -2637,13 +2637,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "57d4e997349f1a92035aa25c17ace371a4213f2ca42f99bee9a602500cfd54d9",
-              "url": "https://files.pythonhosted.org/packages/24/3b/11fe92d68c6a42468ddab0cf03f454419b0788fff4e91ba46b8bebafeffd/Mako-1.3.0-py3-none-any.whl"
+              "hash": "463f03e04559689adaee25e0967778d6ad41285ed607dc1e7df0dd4e4df81f9e",
+              "url": "https://files.pythonhosted.org/packages/56/fc/a229b64f439c142142f584f78f63beb6b4514668e7e076e7d09b35fb18a0/Mako-1.3.1-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "e3a9d388fd00e87043edbe8792f45880ac0114e9c4adc69f6e9bfb2c55e3b11b",
-              "url": "https://files.pythonhosted.org/packages/a9/6e/6b41e654bbdcef90c6b9e7f280bf7cbd756dc2560ce76214f5cdbc4ddab5/Mako-1.3.0.tar.gz"
+              "hash": "baee30b9c61718e093130298e678abed0dbfa1b411fcc4c1ab4df87cd631a0f2",
+              "url": "https://files.pythonhosted.org/packages/9c/cf/947dfd8475332b603dc8cb46170a7c333415f6ff1b161896ee76b4358435/Mako-1.3.1.tar.gz"
             }
           ],
           "project_name": "mako",
@@ -2654,7 +2654,7 @@
             "pytest; extra == \"testing\""
           ],
           "requires_python": ">=3.8",
-          "version": "1.3.0"
+          "version": "1.3.1"
         },
         {
           "artifacts": [
@@ -3791,13 +3791,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "d89c696a773f8bd377d18e5ecda92b7a3793cbe66c87060a6fb58c7b6e1061f7",
-              "url": "https://files.pythonhosted.org/packages/05/b8/42ed91898d4784546c5f06c60506400548db3f7a4b3fb441cba4e5c17952/pluggy-1.3.0-py3-none-any.whl"
+              "hash": "7db9f7b503d67d1c5b95f59773ebb58a8c1c288129a88665838012cfb07b8981",
+              "url": "https://files.pythonhosted.org/packages/a5/5b/0cc789b59e8cc1bf288b38111d002d8c5917123194d45b29dcdac64723cc/pluggy-1.4.0-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "cf61ae8f126ac6f7c451172cf30e3e43d3ca77615509771b3a984a0730651e12",
-              "url": "https://files.pythonhosted.org/packages/36/51/04defc761583568cae5fd533abda3d40164cbdcf22dee5b7126ffef68a40/pluggy-1.3.0.tar.gz"
+              "hash": "8c85c2876142a764e5b7548e7d9a0e0ddb46f5185161049a79b7e974454223be",
+              "url": "https://files.pythonhosted.org/packages/54/c6/43f9d44d92aed815e781ca25ba8c174257e27253a94630d21be8725a2b59/pluggy-1.4.0.tar.gz"
             }
           ],
           "project_name": "pluggy",
@@ -3808,7 +3808,7 @@
             "tox; extra == \"dev\""
           ],
           "requires_python": ">=3.8",
-          "version": "1.3.0"
+          "version": "1.4.0"
         },
         {
           "artifacts": [
@@ -4654,13 +4654,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "f5971a9226b701070a4bf2c38c89e5a3f0d64de8debda981d1db98583009122a",
-              "url": "https://files.pythonhosted.org/packages/44/2f/62ea1c8b593f4e093cc1a7768f0d46112107e790c3e478532329e434f00b/python_dotenv-1.0.0-py3-none-any.whl"
+              "hash": "f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a",
+              "url": "https://files.pythonhosted.org/packages/6a/3e/b68c118422ec867fa7ab88444e1274aa40681c606d59ac27de5a5588f082/python_dotenv-1.0.1-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "a8df96034aae6d2d50a4ebe8216326c61c3eb64836776504fcca410e5937a3ba",
-              "url": "https://files.pythonhosted.org/packages/31/06/1ef763af20d0572c032fa22882cfbfb005fba6e7300715a37840858c919e/python-dotenv-1.0.0.tar.gz"
+              "hash": "e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca",
+              "url": "https://files.pythonhosted.org/packages/bc/57/e84d88dfe0aec03b7a2d4327012c1627ab5f03652216c63d49846d7a6c58/python-dotenv-1.0.1.tar.gz"
             }
           ],
           "project_name": "python-dotenv",
@@ -4668,7 +4668,7 @@
             "click>=5.0; extra == \"cli\""
           ],
           "requires_python": ">=3.8",
-          "version": "1.0.0"
+          "version": "1.0.1"
         },
         {
           "artifacts": [
@@ -5525,13 +5525,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "50bbbda9baa098e361f398fda0928062abbaf1f54f4fadcbe17c092a01eb9a25",
-              "url": "https://files.pythonhosted.org/packages/03/13/c60c738da2fb69d60ee1dc5631e8d152352003cc0bc4ce39582bdd90e293/starlette-0.35.1-py3-none-any.whl"
+              "hash": "d5b43a72f475fd1b9707f661aa66da42d59ae16c9b2a5845b4edee4309c425ee",
+              "url": "https://files.pythonhosted.org/packages/84/35/8a4e4564194fc929e700cf8a982dab356b49b6b40028ce8e9734785eab63/starlette-0.36.1-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "3e2639dac3520e4f58734ed22553f950d3f3cb1001cd2eaac4d57e8cdc5f66bc",
-              "url": "https://files.pythonhosted.org/packages/5e/8a/80e0343c8051e522752eaae54e96c814946ac97ae0c08b441620e3a22755/starlette-0.35.1.tar.gz"
+              "hash": "96df8541093dfd37624b5bf980802b99750db6718dd3ca341618fbbcdd6136fb",
+              "url": "https://files.pythonhosted.org/packages/54/5c/8131b96546d01a8882d03b86481b949b11947870aeb0b45f20004308719c/starlette-0.36.1.tar.gz"
             }
           ],
           "project_name": "starlette",
@@ -5545,7 +5545,7 @@
             "typing-extensions>=3.10.0; python_version < \"3.10\""
           ],
           "requires_python": ">=3.8",
-          "version": "0.35.1"
+          "version": "0.36.1"
         },
         {
           "artifacts": [
@@ -5863,13 +5863,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "cdb58ef6b8188c6c174994b2b1ba2150a9a8ae7ea5fb2f1b856b94a815d6071d",
-              "url": "https://files.pythonhosted.org/packages/81/d1/90d8a1c0de615eb849ff0cf5cc5dfbad0e360a8bf0f5f2d41dc54260bfce/uvicorn-0.26.0-py3-none-any.whl"
+              "hash": "890b00f6c537d58695d3bb1f28e23db9d9e7a17cbcc76d7457c499935f933e24",
+              "url": "https://files.pythonhosted.org/packages/ec/00/2555ae5c4c8550ffccf8eea97476750bd1cfc0880b4b3ab7237dff4b01d7/uvicorn-0.27.0-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "48bfd350fce3c5c57af5fb4995fded8fb50da3b4feb543eb18ad7e0d54589602",
-              "url": "https://files.pythonhosted.org/packages/22/fb/f85e32b605ead5a186d4279b3981ef498fa914423289000332eab4fe0385/uvicorn-0.26.0.tar.gz"
+              "hash": "c855578045d45625fd027367f7653d249f7c49f9361ba15cf9624186b26b8eb6",
+              "url": "https://files.pythonhosted.org/packages/52/75/9cf554ed256d8bcdf3a9bb831b599c4e48e4e5993931fb512f75e529ece4/uvicorn-0.27.0.tar.gz"
             }
           ],
           "project_name": "uvicorn",
@@ -5886,7 +5886,7 @@
             "websockets>=10.4; extra == \"standard\""
           ],
           "requires_python": ">=3.8",
-          "version": "0.26.0"
+          "version": "0.27.0"
         },
         {
           "artifacts": [
