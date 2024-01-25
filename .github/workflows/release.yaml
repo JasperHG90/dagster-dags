@@ -54,7 +54,7 @@ jobs:
       - name: Parse values
         uses: cuchi/jinja2-action@v1.2.2
         with:
-          template: deployment/values.yaml.j2
+          template: ./values.yaml.j2
           output_file: ./values_parsed.yaml
           strict: true
           variables: |
