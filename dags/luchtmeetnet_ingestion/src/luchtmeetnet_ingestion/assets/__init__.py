@@ -1,5 +1,5 @@
 import pandas as pd
-from dagster import Backoff, Jitter, RetryPolicy, asset
+from dagster import BackfillPolicy, Backoff, Jitter, RetryPolicy, asset
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
 from luchtmeetnet_ingestion.partitions import daily_station_partition
 
@@ -12,7 +12,7 @@ from luchtmeetnet_ingestion.partitions import daily_station_partition
     retry_policy=RetryPolicy(
         max_retries=3, delay=30, backoff=Backoff.EXPONENTIAL, jitter=Jitter.PLUS_MINUS
     ),
-    # auto_materialize_policy=AutoMaterializePolicy.eager()#max_materializations_per_minute=None),
+    backfill_policy=BackfillPolicy(max_partitions_per_run=3),
 )
 def air_quality_data(context, luchtmeetnet_api: LuchtMeetNetResource) -> pd.DataFrame:
     date, station = context.partition_key.split("|")
