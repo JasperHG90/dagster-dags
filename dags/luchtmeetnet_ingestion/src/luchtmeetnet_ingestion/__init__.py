@@ -10,10 +10,9 @@ from luchtmeetnet_ingestion.assets import air_quality_data
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
 from luchtmeetnet_ingestion.jobs import ingestion_job
 from luchtmeetnet_ingestion.schedules import daily_schedule
-from luchtmeetnet_ingestion.sensors import (
+from luchtmeetnet_ingestion.sensors import (  # stations_sensor,
     slack_message_on_failure,
     slack_message_on_success,
-    stations_sensor,
 )
 
 try:
@@ -53,7 +52,7 @@ definition = Definitions(
     ],
     resources=env_resources[environment],
     jobs=[ingestion_job],
-    sensors=[slack_message_on_failure, slack_message_on_success, stations_sensor],
+    sensors=[slack_message_on_failure, slack_message_on_success],  # , stations_sensor],
     schedules=[daily_schedule],
     # asset_checks=[values_above_zero],
 )
