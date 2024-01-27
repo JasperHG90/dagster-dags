@@ -16,7 +16,7 @@ RUN wget -qO - 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | gpg 
 
 # Prerequisites
 RUN apt-get update \
-    && apt-get -y install libsqlite3-dev libffi-dev pipx \
+    && apt-get -y install libsqlite3-dev libffi-dev pipx gcc musl-dev python3-dev \
     && rm -rf /var/lib/apt/lists/*
 RUN curl https://pyenv.run | bash
 ENV PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
@@ -34,6 +34,7 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL https://static.pantsbuild.org/setup/ge
 
 # Venv
 ENV PATH="/home/vscode/.local/bin:$PATH"
+RUN poetry config virtualenvs.in-project true
 
 RUN mkdir /home/vscode/.ssh
 RUN chmod -R 777 /home/vscode

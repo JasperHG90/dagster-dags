@@ -20,6 +20,10 @@ try:
 except metadata.PackageNotFoundError:
     __version__ = "0.0.0"
 
+environment = os.getenv("ENVIRONMENT", "dev")
+
+if environment == "dev":
+    os.environ["DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN"] = "dummy"
 
 shared_resources = {
     "luchtmeetnet_api": LuchtMeetNetResource(),
@@ -43,8 +47,6 @@ env_resources = {
         )
     },
 }
-
-environment = os.getenv("ENVIRONMENT", "dev")
 
 definition = Definitions(
     assets=[

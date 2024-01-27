@@ -16,7 +16,8 @@
         "marp-team.marp-vscode",
         "redhat.vscode-yaml",
         "mhutchie.git-graph",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "ms-azuretools.vscode-docker"
       ],
       "settings": {}
     }
