@@ -1,3 +1,8 @@
+GCP_REGION := "europe-west4"
+GCP_PROJECT_NAME := "jasper-ginn-dagster"
+CLUSTER_BASE_NAME := "clus-kube-euw4-jgdag"
+DEFAULT_ENV := "prd"
+
 venv:
   python -m venv .venv
 
@@ -26,6 +31,17 @@ test:
 
 package:
   VERSION=$(git rev-parse --short HEAD) pants package ::
+
+set_project:
+  gcloud config set project {{GCP_PROJECT_NAME}}
+
+authenticate_kubectl env=DEFAULT_ENV: set_project
+  # Update brew: brew upgrade --cask google-cloud-sdk
+  # Install: gcloud components install gke-gcloud-auth-plugin
+  USE_GKE_GCLOUD_AUTH_PLUGIN=true gcloud container clusters get-credentials \
+    "{{CLUSTER_BASE_NAME}}-{{env}}" \
+    --region {{GCP_REGION}} \
+    --project {{GCP_PROJECT_NAME}}
 
 webserver:
   #!/usr/bin/env bash
