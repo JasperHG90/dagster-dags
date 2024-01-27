@@ -6,6 +6,9 @@ DEFAULT_ENV := "prd"
 venv:
   python -m venv .venv
 
+boo:
+  echo "boo"
+
 venv_activate:
   . .venv/bin/activate
 

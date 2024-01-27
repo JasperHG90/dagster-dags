@@ -34,7 +34,7 @@
     }
   },
   "postAttachCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
-  "postStartCommand": "cp /home/vscode/workspace/.gitconfig /home/vscode/.gitconfig",
+  //"postStartCommand": "cp /home/vscode/workspace/.gitconfig /home/vscode/.gitconfig",
   "workspaceFolder": "/home/vscode/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/home/vscode/workspace,type=bind"
 }
