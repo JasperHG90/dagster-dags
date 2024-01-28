@@ -6,16 +6,13 @@ DEFAULT_ENV := "prd"
 venv:
   python -m venv .venv
 
-boo:
-  echo "boo"
-
 venv_activate:
   . .venv/bin/activate
 
-pip:
+pip: venv_activate
   pip install -r requirements.txt --upgrade pip
 
-pre_commit_setup:
+pre_commit_setup: venv_activate pip
   pre-commit install
 
 setup: venv pip pre_commit_setup

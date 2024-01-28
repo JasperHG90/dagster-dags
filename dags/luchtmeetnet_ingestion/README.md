@@ -49,7 +49,7 @@ Then try to install.
 
 ## 🚀 Deployment
 
-Deployment is configured using CI/CD. 
+Deployment is configured using CI/CD.
 
 How to package this DAG is defined in the 'BUILD' file in the root of this repository.
 
