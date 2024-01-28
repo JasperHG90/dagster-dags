@@ -19,12 +19,6 @@ dagster-slack = "~0"
 dagster-utils = {path = "../../shared/dagster_utils"}
 dagster-k8s = "^0.22.1"
 
-[tool.poetry.group.devcontainer.dependencies]
-duckdb = {path = "/home/vscode/.dist/duckdb-0.9.2-cp39-cp39-linux_aarch64.whl"}
-
-[tool.poetry.group.devcontainer]
-optional = true
-
 [tool.dagster]
 module_name = "luchtmeetnet_ingestion"
 
