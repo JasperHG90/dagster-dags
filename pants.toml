@@ -48,3 +48,4 @@ build_args = ["VERSION"]
 
 [environments-preview.names]
 py39_slim = "//:py39-slim"
+py39_slim_arm64 = "//:py39-slim-arm64"

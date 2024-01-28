@@ -12,7 +12,7 @@ pex_binary(
     include_sources=False,
     include_tools=True,
     dependencies=[":pyproject", ":poetry", "shared/dagster_utils:poetry"],
-    environment="py39_slim",
+    environment="py39_slim"
 )
 
 pex_binary(
