@@ -18,7 +18,11 @@ def air_quality_data(context, luchtmeetnet_api: LuchtMeetNetResource) -> pd.Data
     date, station = context.partition_key.split("|")
     context.log.debug(date)
     context.log.debug(f"Fetching data for {date}")
-    rp = {"start": f"{date}T00:00:00", "end": f"{date}T23:59:59", "station_number": station}
+    start, end = f"{date}T00:00:00", f"{date}T23:59:59"
+    rp = {"start": start, "end": end, "station_number": station}
     df = pd.DataFrame(luchtmeetnet_api.request("measurements", request_params=rp))
+    df["station_number"] = station
+    df["start"] = start
+    df["end"] = end
     context.log.debug(df.head())
     return df

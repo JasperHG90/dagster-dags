@@ -1,7 +1,9 @@
 import os
 
 from dagster import define_asset_job, multiprocess_executor
-from dagster_k8s import k8s_job_executor
+
+# from dagster_k8s import k8s_job_executor
+from dagster_celery_k8s import celery_k8s_job_executor
 from luchtmeetnet_ingestion.assets import air_quality_data
 from luchtmeetnet_ingestion.partitions import daily_station_partition
 
@@ -13,5 +15,5 @@ ingestion_job = define_asset_job(
     selection=[air_quality_data],
     description="Ingestion job for air quality data",
     partitions_def=daily_station_partition,
-    executor_def=multiprocess_executor if environment == "dev" else k8s_job_executor,
+    executor_def=multiprocess_executor if environment == "dev" else celery_k8s_job_executor,
 )
