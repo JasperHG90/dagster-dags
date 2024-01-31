@@ -6,6 +6,7 @@ from dagster import (
     RunFailureSensorContext,
     RunStatusSensorContext,
     SensorResult,
+    run_failure_sensor,
     run_status_sensor,
     sensor,
 )
@@ -22,26 +23,30 @@ def my_message_fn(slack: SlackResource, message: str) -> str:
 
 
 @run_status_sensor(
+    description="Slack message on success",
     run_status=DagsterRunStatus.SUCCESS,
     monitored_jobs=[ingestion_job],
     default_status=DefaultSensorStatus.RUNNING,
 )
 def slack_message_on_success(context: RunStatusSensorContext, slack: SlackResource):
-    message = f"Job {context.dagster_run.job_name} succeeded!"
+    message = f'Job "{context.dagster_run.job_name}" with run ID "{context.dagster_run.run_id}" succeeded!'
     if environment == "dev":
         context.log.info(message)
     else:
         my_message_fn(slack, message)
 
 
-@run_status_sensor(
-    run_status=DagsterRunStatus.FAILURE,
+@run_failure_sensor(
+    description="Slack message on failure",
     monitored_jobs=[ingestion_job],
     default_status=DefaultSensorStatus.RUNNING,
 )
 def slack_message_on_failure(context: RunFailureSensorContext, slack: SlackResource):
     message = (
-        f"Job {context.dagster_run.job_name} failed!" f"Error: {context.failure_event.message}"
+        (
+            f'Job "{context.dagster_run.job_name}" with ID "{context.dagster_run.run_id}" failed. Error Message:'
+            f" {context.failure_event.message}"
+        ),
     )
     if environment == "dev":
         context.log.info(message)
