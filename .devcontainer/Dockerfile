@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:ubuntu-22.04
+FROM --platform=linux/amd64 mcr.microsoft.com/devcontainers/base:ubuntu-22.04
 
 ENV GIT_PYTHON_REFRESH=quiet
 ENV DEBIAN_FRONTEND=noninteractive
@@ -10,25 +10,28 @@ ENV PIPX_DEFAULT_PYTHON="/home/vscode/.pyenv/shims/python"
 
 # Prerequisites
 RUN apt-get update \
-    && apt-get -y install libsqlite3-dev libffi-dev pipx gcc musl-dev python3-dev \
+    && apt-get -y install libsqlite3-dev libffi-dev pipx gcc musl-dev python3-dev libbz2-dev lzma liblzma-dev \
     && rm -rf /var/lib/apt/lists/*
+
 RUN curl https://pyenv.run | bash
 ENV PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
-RUN echo 'eval "$(pyenv init -)"' >> /home/vscode/.bashrc
-RUN pyenv install ${PYTHON_VERSION}
-RUN pyenv global ${PYTHON_VERSION}
-RUN pyenv rehash
-RUN pip install wheel --no-cache-dir --upgrade pip
 
-# DuckDB dist
-# See: https://github.com/duckdb/duckdb/issues/8035
-RUN mkdir /home/vscode/.dist
-RUN apt-get update \
-    && apt-get install -y g++ git cmake ninja-build libssl-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && git clone --depth 1 --branch v0.9.2 https://github.com/duckdb/duckdb /home/vscode/duckdb \
-    && BUILD_PYTHON=1 BUILD_HTTPFS=1 GEN=ninja cd /home/vscode/duckdb/tools/pythonpkg && python setup.py bdist_wheel --dist-dir /home/vscode/.dist \
-    && rm -R /home/vscode/duckdb
+RUN echo 'eval "$(pyenv init -)"' >> /home/vscode/.bashrc \
+    && pyenv install ${PYTHON_VERSION} \
+    && pyenv global ${PYTHON_VERSION} \
+    && pyenv rehash \
+    && pip install wheel --no-cache-dir --upgrade pip
+
+# # DuckDB dist
+# # See: https://github.com/duckdb/duckdb/issues/8035
+# RUN mkdir /home/vscode/.dist
+# RUN apt-get update \
+#     && apt-get install -y g++ git cmake ninja-build libssl-dev \
+#     && rm -rf /var/lib/apt/lists/* \
+#     && git clone --depth 1 --branch v0.9.2 https://github.com/duckdb/duckdb /home/vscode/duckdb \
+#     && BUILD_PYTHON=1 BUILD_HTTPFS=1 GEN=ninja cd /home/vscode/duckdb/tools/pythonpkg \
+#     && python setup.py bdist_wheel --dist-dir /home/vscode/.dist \
+#     && rm -R /home/vscode/duckdb
 
 # Just
 RUN wget -qO - 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg 1> /dev/null \
