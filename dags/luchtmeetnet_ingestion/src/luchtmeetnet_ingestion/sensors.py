@@ -42,12 +42,7 @@ def slack_message_on_success(context: RunStatusSensorContext, slack: SlackResour
     default_status=DefaultSensorStatus.RUNNING,
 )
 def slack_message_on_failure(context: RunFailureSensorContext, slack: SlackResource):
-    message = (
-        (
-            f'Job "{context.dagster_run.job_name}" with ID "{context.dagster_run.run_id}" failed. Error Message:'
-            f" {context.failure_event.message}"
-        ),
-    )
+    message = f'Job "{context.dagster_run.job_name}" with ID "{context.dagster_run.run_id}" failed. Error Message: {context.failure_event.message}"'
     if environment == "dev":
         context.log.info(message)
     else:
