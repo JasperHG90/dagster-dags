@@ -20,8 +20,8 @@ ingestion_job = define_asset_job(
         "dagster-k8s/config": {
             "container_config": {
                 "resources": {
-                    "requests": {"cpu": "500m", "memory": "512Mi"},
-                    "limits": {"cpu": "1000m", "memory": "1024Mi"},
+                    "requests": {"cpu": "125m", "memory": "128Mi"},
+                    "limits": {"cpu": "250m", "memory": "256Mi"},
                 },
             },
         }
