@@ -12,4 +12,3 @@ dev:
     mkdir -p .dagster && \
         cp dagster.yaml .dagster/dagster.yaml && \
         DAGSTER_HOME="$(pwd)/.dagster" poetry run dagster dev
-docker rmi $(docker images -q) -f
