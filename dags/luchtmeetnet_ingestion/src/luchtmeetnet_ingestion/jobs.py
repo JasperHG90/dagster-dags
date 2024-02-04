@@ -15,5 +15,15 @@ ingestion_job = define_asset_job(
     selection=[air_quality_data],
     description="Ingestion job for air quality data",
     partitions_def=daily_station_partition,
-    executor_def=multiprocess_executor,  # if environment == "dev" else celery_k8s_job_executor,
+    executor_def=multiprocess_executor,
+    tags={
+        "dagster-k8s/config": {
+            "container_config": {
+                "resources": {
+                    "requests": {"cpu": "500m", "memory": "512Mi"},
+                    "limits": {"cpu": "1000m", "memory": "1024Mi"},
+                },
+            },
+        }
+    },
 )
