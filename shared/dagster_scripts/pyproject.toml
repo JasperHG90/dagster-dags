@@ -12,6 +12,7 @@ dagster_scripts = "dagster_scripts.cli:entrypoint"
 [tool.poetry.dependencies]
 python = "^3.9,<3.12"
 typer = "^0.9.0"
+pydantic = "^2.6.1"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.26.0"
