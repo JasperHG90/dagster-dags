@@ -2,7 +2,7 @@ import logging
 
 import typer
 
-from dagster_scripts import __version__, commands, utils
+from dagster_scripts import __version__
 
 logger = logging.getLogger("dagster_scripts")
 handler = logging.StreamHandler()
