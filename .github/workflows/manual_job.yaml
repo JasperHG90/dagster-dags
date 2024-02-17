@@ -39,6 +39,7 @@ jobs:
             - name: Parse kubernetes spec
               working-directory: ./jobs
               run: |
+                . .gavenv/bin/activate
                 python jobs_cli.py parse \
                   ${{ github.event.inputs.configuration_location }} \
                   ./job_spec.yml \
