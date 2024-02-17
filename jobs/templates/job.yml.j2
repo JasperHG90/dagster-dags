@@ -2,18 +2,18 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: manual-job-{{ job_name_suffix }}
-  namespace: dagster-prod
+  namespace: dagster-prd
 spec:
   ttlSecondsAfterFinished: 86400 # 1 day
   backoffLimit: 0
   template:
     spec:
-      serviceAccountName: kubernetes
+      serviceAccountName: dagster-prd
       containers:
       - name: manual-job
         # This refers to "dagster_scripts" docker image
         image: {{ image }}:{{ image_tag }} # Specify version in tag
-        command: ["dagster_script", "{{ command }}"]
+        command: ["dagster_scripts", "{{ command }}"]
         args: ["/etc/configs/config.yml"]
         env:
         # These can be used for logging purposes
@@ -21,6 +21,10 @@ spec:
           value: "manual-job-{{ job_name_suffix }}"
         - name: CONFIG_VERSION
           value: "{{ config_version }}"
+        - name: DAGSTER_HOST
+          value: "dagster-prd-dagster-webserver.dagster-prd.svc.cluster.local"
+        - name: DAGSTER_PORT
+          value: "80"
         resources:
           requests:
             # Only calling API so very small resource
@@ -33,15 +37,15 @@ spec:
       volumes:
         - name: configs-volume
           configMap:
-            name: manual-job-config
+            name: job-config
       # Only try jobs once
       restartPolicy: "Never"
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: configs-volume
-  namespace: dagster-prod
+  name: job-config
+  namespace: dagster-prd
 data:
   config.yml: |
     {{ config | indent(4) }}

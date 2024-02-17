@@ -1,18 +1,17 @@
-import typing
-import itertools
+import asyncio
 import collections
 import functools
+import itertools
 import logging
-import pathlib as plb
 import os
-import asyncio
+import pathlib as plb
+import typing
 
 import yaml
 from dagster_graphql.client import DagsterGraphQLClient, DagsterGraphQLClientError
-from pydantic import BaseModel
-
-from dagster_scripts.configs.partitions import PartitionConfig
 from dagster_scripts.configs.backfill import BackfillConfig
+from dagster_scripts.configs.partitions import PartitionConfig
+from pydantic import BaseModel
 
 logger = logging.getLogger("dagster_scripts.commands.utils")
 
@@ -31,7 +30,7 @@ def load_config(path: typing.Union[str, plb.Path], config_cls: BaseModel) -> Bas
 def graphql_client(host: str = "localhost", port: int = 3000):
     """Decorator to provide the Dagster GraphQL client to a function"""
     _host = os.getenv("DAGSTER_HOST", host)
-    _port = os.getenv("DAGSTER_PORT", port)
+    _port = int(os.getenv("DAGSTER_PORT", port))
 
     def decorator(f):
         functools.wraps(f)
@@ -65,7 +64,9 @@ def request_job_run(
 
 
 @graphql_client()
-def submit_backfill_jobs(conf: BackfillConfig, client: typing.Optional[DagsterGraphQLClient] = None) -> typing.Iterator[str]:
+def submit_backfill_jobs(
+    conf: BackfillConfig, client: typing.Optional[DagsterGraphQLClient] = None
+) -> typing.Iterator[str]:
     if client is None:
         raise ValueError("No client provided")
     _client: DagsterGraphQLClient = client
@@ -76,13 +77,15 @@ def submit_backfill_jobs(conf: BackfillConfig, client: typing.Optional[DagsterGr
             job_name=conf.job_name,
             repository_name=conf.repository_name,
             client=_client,
-            tags=partition_config
+            tags=partition_config,
         )
         yield run_id
 
 
 @graphql_client()
-def await_backfill_status(run_ids: typing.List[str], client: typing.Optional[DagsterGraphQLClient] = None):
+def await_backfill_status(
+    run_ids: typing.List[str], client: typing.Optional[DagsterGraphQLClient] = None
+):
     """Await the completion of a set of runs"""
     if client is None:
         raise ValueError("No client provided")
@@ -112,11 +115,6 @@ async def _stop_for_backfill_status(client: DagsterGraphQLClient, run_ids: list)
 def _generate_partition_configs(conf: PartitionConfig) -> typing.List[typing.Dict[str, str]]:
     """Generate a list of partition configurations from a combination of partitions"""
     return [
-        dict(collections.ChainMap(*cnf_parsed)) for cnf_parsed in
-        itertools.product(
-            *[
-                partition.config_dict()
-                for partition in conf
-            ]
-        )
+        dict(collections.ChainMap(*cnf_parsed))
+        for cnf_parsed in itertools.product(*[partition.config_dict() for partition in conf])
     ]
