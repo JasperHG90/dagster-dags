@@ -1,5 +1,3 @@
-# 🎚️ Triggering one-time scripts with Dagster OS on GKE
-
 ---
 creation date: 2024-02-16 10:02
 tags:
@@ -13,8 +11,11 @@ tags:
   - "#pydantic"
   - one-time-jobs
 template: "[[🏷 Templates/ADR template]]"
-status: Proposed
+status: ✅ Accepted
 ---
+- [[#✍️ Context|✍️ Context]]
+- [[#🤝 Decision|🤝 Decision]]
+- [[#☝️Consequences|☝️Consequences]]
 
 ## ✍️ Context
 ---
@@ -30,9 +31,9 @@ Create a new library called "dagster_scripts", which contains a CLI for one-time
 5. To actually run a manual production job, we create a CI/CD pipeline that needs to be manually triggered. The design of this pipeline is subject of another ADR.
 6. The CI/CD pipeline triggers a kubernetes job, which pulls the docker image containing the CLI and runs the desired command.
 7. The kubernetes job template will be added to the repo, and should be templated to allow for CLI version specification.
-   ![](static/backfills.png)
+   ![](attachment/3700d996b63719480ecb6cc84ce2ccb9.png)
 
-## ☝️ Consequences
+## ☝️Consequences
 ---
 Harder:
 - Quickly running backfills. These should not be executed using the Dagster UI, but through a PR, which adds overhead.
@@ -43,3 +44,9 @@ Easier:
 - Tracing manual production jobs and their settings.
 - History of manual production jobs executed over time.
 - Everything is declared in code.
+
+## 🔗 References
+---
+- [[🔘 Manually triggering jobs on the Dagster GKE production server using a configuration file]]
+- [[💪 Executing manually triggered Dagster jobs within GKE]]
+- [[🚀 Defining a CICD job to manually trigger Dagster jobs in GKE from a configuration file]]
