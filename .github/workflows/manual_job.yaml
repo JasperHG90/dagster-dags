@@ -15,7 +15,7 @@ on:
           description: "Location of the configuration file that you want to run, relative to the 'jobs' folder (e.g. ./conf/MYCONF.yml)"
 
 jobs:
-    generate-job-spec:
+    generate_job_spec:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -58,7 +58,7 @@ jobs:
     deploy_job:
         runs-on: ubuntu-latest
         needs: generate-job-spec
-        if: always() && (needs.terraform_plan.result == 'success')
+        if: always() && (needs.generate_job_spec.result == 'success')
         steps:
             - name: Checkout
               uses: actions/checkout@v2
