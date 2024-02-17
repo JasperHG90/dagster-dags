@@ -21,6 +21,10 @@ spec:
           value: "manual-job-{{ job_name_suffix }}"
         - name: CONFIG_VERSION
           value: "{{ config_version }}"
+        - name: GITHUB_ACTIONS_RUN_ID
+          value: "{{ github_actions_run_id }}"
+        - name: GITHUB_ACTIONS_URL
+          value: "{{ github_actions_url }}"
         - name: DAGSTER_HOST
           value: "dagster-prd-dagster-webserver.dagster-prd.svc.cluster.local"
         - name: DAGSTER_PORT

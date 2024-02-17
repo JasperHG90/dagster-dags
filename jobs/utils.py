@@ -34,6 +34,8 @@ def parse_and_write_template(
     image: str,
     image_tag: str,
     command: str,
+    github_actions_run_id: str,
+    github_actions_url: str
 ):
     cnf = load_config(config_path)
     template = env.get_template("job.yml.j2")
@@ -42,6 +44,8 @@ def parse_and_write_template(
         image=image,
         image_tag=image_tag,
         command=command,
+        github_actions_run_id=github_actions_run_id,
+        github_actions_url=github_actions_url,
         config_version="v1",
         config=yaml.safe_dump(cnf)
     )

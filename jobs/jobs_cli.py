@@ -45,10 +45,16 @@ def parse_job(
     command: str = typer.Argument(
         ..., help="The command to run in the job."
     ),
+    github_actions_run_id: str = typer.Option(
+        ..., help="The github actions run id."
+    ),
+    github_actions_url: str = typer.Option(
+        ..., help="The github actions url."
+    )
 ):
     logger.info("Parsing job...")
     utils.parse_and_write_template(
-        job_config, output_path, image, image_tag, command
+        job_config, output_path, image, image_tag, command, github_actions_run_id, github_actions_url
     )
 
 
