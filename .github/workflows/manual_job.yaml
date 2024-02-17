@@ -1,0 +1,27 @@
+name: "Manual dagster job"
+
+on:
+    workflow_dispatch:
+      inputs:
+        command:
+          required: true
+          description: "Command to run from the 'dagster_utils' library"
+        version:
+          required: false
+          default: "latest"
+          description: "Version of the 'dagster_utils' library to use. Defaults to 'latest'"
+        configuration_location:
+          required: true
+          description: "Location of the configuration file that you want to run, relative to the root of the repository"
+
+jobs:
+    template:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: "Template kubernetes job spec"
+              run: |
+                echo "Command: ${{ github.event.inputs.command }}"
+                echo "Version: ${{ github.event.inputs.version }}"
+                echo "Configuration location: ${{ github.event.inputs.configuration_location }}"
