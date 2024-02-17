@@ -84,9 +84,9 @@ jobs:
             - name: 'Configure kubectl'
               run: |
                   USE_GKE_GCLOUD_AUTH_PLUGIN=true gcloud container clusters get-credentials \
-                      ${{ inputs.cluster_name }} \
-                      --region ${{ inputs.region }} \
-                      --project ${{ inputs.project_name }}
+                      clus-kube-euw4-jgdag-prd \
+                      --region europe-west4 \
+                      --project jasper-ginn-dagster
             - name: 'Deploy job'
               run: |
                   kubectl apply -f ./jobs/job_spec.yml -n dagster-prd
