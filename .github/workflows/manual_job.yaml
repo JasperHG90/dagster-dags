@@ -57,7 +57,7 @@ jobs:
                 path: ./jobs/job_spec.yml
     deploy_job:
         runs-on: ubuntu-latest
-        needs: generate-job-spec
+        needs: generate_job_spec
         if: always() && (needs.generate_job_spec.result == 'success')
         steps:
             - name: Checkout
