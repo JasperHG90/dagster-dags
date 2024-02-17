@@ -24,6 +24,7 @@ ingestion_job = define_asset_job(
                     "limits": {"cpu": "100m", "memory": "64Mi"},
                 },
             },
+            "job_spec_config": {"ttl_seconds_after_finished": 7200},
         }
     },
 )
