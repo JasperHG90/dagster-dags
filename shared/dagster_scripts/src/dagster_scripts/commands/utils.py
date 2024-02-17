@@ -74,6 +74,7 @@ def submit_backfill_jobs(
     for partition_config in partition_configs:
         _partition_config = partition_config | {
             "dagster/backfill": conf.tags.name,
+            "dagster/partition": _create_partition_key(partition_config),
             "manual/job_name": os.getenv("JOB_NAME", "NA"),
             "manual/github_actions_run_id": os.getenv("GITHUB_ACTIONS_RUN_ID", "NA"),
             "manual/github_actions_url": os.getenv("GITHUB_ACTIONS_URL", "NA"),
@@ -126,3 +127,13 @@ def _generate_partition_configs(conf: PartitionConfig) -> typing.List[typing.Dic
         dict(collections.ChainMap(*cnf_parsed))
         for cnf_parsed in itertools.product(*[partition.config_dict() for partition in conf])
     ]
+
+
+def _create_partition_key(partition_config: dict) -> str:
+    """
+    Create a partition key from a partition configuration
+
+    Logic should be the same as the "dagster.MultiPartitionKey.keys_by_dimension()" method
+    Dimensions are ordered by name and joined by "|"
+    """
+    return "|".join([i[-1] for i in sorted(partition_config.items())])
