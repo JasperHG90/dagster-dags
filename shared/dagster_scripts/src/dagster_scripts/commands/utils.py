@@ -102,6 +102,7 @@ def await_backfill_status(
 
 async def _poll_job_termination(client: DagsterGraphQLClient, run_id: str):
     """Poll the status of a run until it is complete"""
+    # TODO: timeout
     while True:
         status = client.get_run_status(run_id).value
         if status == "SUCCESS":
