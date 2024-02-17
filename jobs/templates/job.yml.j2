@@ -13,7 +13,7 @@ spec:
       - name: manual-job
         # This refers to "dagster_scripts" docker image
         image: {{ image }}:{{ image_tag }} # Specify version in tag
-        command: ["dagster_scripts", "{{ command }}"]
+        command: ["dagster_scripts", "--trace", "{{ command }}"]
         args: ["/etc/configs/config.yml"]
         env:
         # These can be used for logging purposes
