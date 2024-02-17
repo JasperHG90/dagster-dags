@@ -18,6 +18,7 @@ backend_packages.add = [
 root_patterns = [
   "/dags/luchtmeetnet_ingestion",
   "/shared/dagster_utils",
+  "/shared/dagster_scripts",
   "src",
   "tests"
 ]
