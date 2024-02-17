@@ -57,7 +57,7 @@ docker_image(
     name="img",
     dependencies=[":img-srcs", ":img-deps"],
     repository="dagster_scripts",
-    registries=["europe-west4-docker.pkg.dev/jasper-ginn-dagster/dags-areg-euw4-jgdag-prd"],
+    registries=["europe-west4-docker.pkg.dev/jasper-ginn-dagster/utilities-areg-euw4-jgdag-prd"],
     instructions=[
         "FROM --platform=linux/amd64 python:3.9-slim",
         "WORKDIR /app",
