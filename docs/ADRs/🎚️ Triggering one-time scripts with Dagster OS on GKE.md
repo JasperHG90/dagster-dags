@@ -28,7 +28,7 @@ Create a new library called "dagster_scripts", which contains a CLI for one-time
 2. The configuration file should be written in YAML.
 3. The configuration file should use type-checking using Pydantic.
 4. The CLI is packaged using docker and made available upon release and push to main.
-5. To actually run a manual production job, we create a CI/CD pipeline that needs to be manually triggered. The design of this pipeline is subject of another ADR.
+5. To actually run a manual production job, we create a CI/CD pipeline that needs to be manually triggered.
 6. The CI/CD pipeline triggers a kubernetes job, which pulls the docker image containing the CLI and runs the desired command.
 7. The kubernetes job template will be added to the repo, and should be templated to allow for CLI version specification.
    ![](attachment/3700d996b63719480ecb6cc84ce2ccb9.png)
