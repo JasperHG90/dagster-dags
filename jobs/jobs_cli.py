@@ -52,5 +52,5 @@ def parse_job(
     )
 
 
-def entrypoint():
+if __name__=="__main__":
     app()

@@ -36,7 +36,7 @@ def parse_and_write_template(
     command: str,
 ):
     cnf = load_config(config_path)
-    template = env.get_template("template.yml.j2")
+    template = env.get_template("job.yml.j2")
     template_rendered = template.render(
         job_name_suffix=coolname.generate_slug(2),
         image=image,
