@@ -81,6 +81,15 @@ def submit_backfill_jobs(conf: BackfillConfig, client: typing.Optional[DagsterGr
         yield run_id
 
 
+@graphql_client()
+def await_backfill_status(run_ids: typing.List[str], client: typing.Optional[DagsterGraphQLClient] = None):
+    """Await the completion of a set of runs"""
+    if client is None:
+        raise ValueError("No client provided")
+    _client: DagsterGraphQLClient = client
+    return asyncio.run(_stop_for_backfill_status(_client, run_ids))
+
+
 async def _poll_job_termination(client: DagsterGraphQLClient, run_id: str):
     """Poll the status of a run until it is complete"""
     while True:
@@ -98,15 +107,6 @@ async def _poll_job_termination(client: DagsterGraphQLClient, run_id: str):
 async def _stop_for_backfill_status(client: DagsterGraphQLClient, run_ids: list):
     """Await the completion of a set of runs"""
     return await asyncio.gather(*[_poll_job_termination(client, run_id) for run_id in run_ids])
-
-
-@graphql_client()
-def await_backfill_status(run_ids: typing.List[str], client: typing.Optional[DagsterGraphQLClient] = None):
-    """Await the completion of a set of runs"""
-    if client is None:
-        raise ValueError("No client provided")
-    _client: DagsterGraphQLClient = client
-    return asyncio.run(_stop_for_backfill_status(_client, run_ids))
 
 
 def _generate_partition_configs(conf: PartitionConfig) -> typing.List[typing.Dict[str, str]]:
