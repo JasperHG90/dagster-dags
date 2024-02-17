@@ -71,8 +71,14 @@ def submit_backfill_jobs(
         raise ValueError("No client provided")
     _client: DagsterGraphQLClient = client
     partition_configs = _generate_partition_configs(conf.tags.partitions)
+    job_name = os.getenv("JOB_NAME", "NA")
     for partition_config in partition_configs:
-        _partition_config = partition_config | {"dagster/backfill": conf.tags.name}
+        _partition_config = partition_config | {
+            "dagster/backfill": conf.tags.name,
+            "manual/job_name": job_name,
+            "manual/triggered_by": "cicd"
+            # Add: cicd pipeline number
+        }
         logger.debug(f"Submitting job run with tags: {_partition_config}")
         run_id = request_job_run(
             job_name=conf.job_name,
