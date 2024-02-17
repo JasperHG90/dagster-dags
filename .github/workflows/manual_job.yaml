@@ -20,8 +20,32 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v2
-            - name: "Template kubernetes job spec"
+            - name: Set up Python 3.9
+              uses: actions/setup-python@v4
+              with:
+                python-version: "3.9"
+            - name: Virtual environment
+              working-directory: ./jobs
               run: |
-                echo "Command: ${{ github.event.inputs.command }}"
-                echo "Version: ${{ github.event.inputs.version }}"
-                echo "Configuration location: ${{ github.event.inputs.configuration_location }}"
+                pip install --upgrade pip
+                python -m venv .gavenv
+              shell: bash
+            - name: Install dependencies
+              working-directory: ./jobs
+              run: |
+                . .gavenv/bin/activate
+                pip3 install -r requirements.txt
+              shell: bash
+            - name: Parse kubernetes spec
+              working-directory: ./jobs
+              run: |
+                python jobs_cli.py parse \
+                  ${{ github.event.inputs.configuration_location }} \
+                  ./job_spec.yml \
+                  europe-west4-docker.pkg.dev/jasper-ginn-dagster/utilities-areg-euw4-jgdag-prd/dagster_scripts \
+                  ${{ github.event.inputs.version }} \
+                  ${{ github.event.inputs.command }} \
+                  ${{ github.run_id }} \
+                  "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            - name: Echo parsed kubernetes spec
+              run: cat ./jobs/job_spec.yml
