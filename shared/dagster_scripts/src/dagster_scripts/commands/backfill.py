@@ -2,8 +2,6 @@ import pathlib as plb
 import typing
 import logging
 
-from dagster_graphql import DagsterGraphQLClient
-
 from dagster_scripts.configs.backfill import BackfillConfig
 from dagster_scripts.commands.utils import load_config, submit_backfill_jobs, await_backfill_status
 

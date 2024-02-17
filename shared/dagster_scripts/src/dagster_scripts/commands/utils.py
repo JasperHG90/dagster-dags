@@ -71,6 +71,7 @@ def submit_backfill_jobs(conf: BackfillConfig, client: typing.Optional[DagsterGr
     _client: DagsterGraphQLClient = client
     partition_configs = _generate_partition_configs(conf.tags.partitions)
     for partition_config in partition_configs:
+        logger.debug(f"Submitting job run with tags: {partition_config}")
         run_id = request_job_run(
             job_name=conf.job_name,
             repository_name=conf.repository_name,
@@ -85,10 +86,13 @@ async def _poll_job_termination(client: DagsterGraphQLClient, run_id: str):
     while True:
         status = client.get_run_status(run_id).value
         if status == "SUCCESS":
+            logger.debug(f"Run {run_id} status: \x1b[32;1m{status}\x1b[0m")
             return {"run_id": run_id, "status": status}
         elif status == "FAILURE":
+            logger.debug(f"Run {run_id} status: \x1b[31;1m{status}\x1b[0m")
             return {"run_id": run_id, "status": status}
-        await asyncio.sleep(0.1)
+        logger.debug(f"Run {run_id} status: \x1b[38;20m{status}\x1b[0m")
+        await asyncio.sleep(1)
 
 
 async def _stop_for_backfill_status(client: DagsterGraphQLClient, run_ids: list):
