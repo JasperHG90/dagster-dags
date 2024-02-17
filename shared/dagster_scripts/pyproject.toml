@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "dagster_scripts", from="src"}]
 
 [tool.poetry.scripts]
-dagster_scripts = "dagster_scripts.cli:entrypoint"
+dagster_scripts2 = "dagster_scripts.cli:entrypoint"
 
 [tool.poetry.dependencies]
 python = "^3.9,<3.12"
