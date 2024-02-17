@@ -12,7 +12,7 @@ on:
           description: "Version of the 'dagster_utils' library to use. Defaults to 'latest'"
         configuration_location:
           required: true
-          description: "Location of the configuration file that you want to run, relative to the root of the repository"
+          description: "Location of the configuration file that you want to run, relative to the 'jobs' folder (e.g. ./conf/MYCONF.yml)"
 
 jobs:
     template:
