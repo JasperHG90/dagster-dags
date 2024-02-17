@@ -1,10 +1,7 @@
 import typing
 import pathlib as plb
-import datetime as dt
 
 import yaml
-import pendulum
-from pydantic import BaseModel
 import jinja2
 import coolname
 
