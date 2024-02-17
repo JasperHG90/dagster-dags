@@ -1,8 +1,8 @@
 import logging
 
 import typer
-
 from dagster_scripts import __version__
+from dagster_scripts.commands.backfill import backfill, load_backfill_config
 
 logger = logging.getLogger("dagster_scripts")
 handler = logging.StreamHandler()
@@ -30,14 +30,15 @@ def version():
 
 
 @app.command(
-    name="validate-config",
-    help="✅ Validate a configuration file.",
-    short_help="✅ Validate a configuration file.",
+    name="backfill",
+    help="🚀 Backfill a set of runs using a configuration file.",
     no_args_is_help=True,
 )
-def _validate_config(path_to_config: str = typer.Argument(None, help="Path to a config file.")):
-    ...
-    #_ = commands.load_and_validate_config(path_to_config, _)
+def _backfill(
+    config_path: str = typer.Argument(..., help="Path to the backfill configuration file.")
+):
+    cnf = load_backfill_config(config_path)
+    backfill(cnf)
 
 
 def entrypoint():
