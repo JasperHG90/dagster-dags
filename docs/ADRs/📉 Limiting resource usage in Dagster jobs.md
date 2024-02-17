@@ -43,6 +43,7 @@ ingestion_job = define_asset_job(
 	                },
                 },
             },
+            "job_spec_config": {"ttl_seconds_after_finished": 7200},
         }
     },
 )

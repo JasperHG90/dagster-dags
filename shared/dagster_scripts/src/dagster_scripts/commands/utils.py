@@ -72,12 +72,13 @@ def submit_backfill_jobs(
     _client: DagsterGraphQLClient = client
     partition_configs = _generate_partition_configs(conf.tags.partitions)
     for partition_config in partition_configs:
-        logger.debug(f"Submitting job run with tags: {partition_config}")
+        _partition_config = partition_config | {"dagster/backfill": conf.tags.name}
+        logger.debug(f"Submitting job run with tags: {_partition_config}")
         run_id = request_job_run(
             job_name=conf.job_name,
             repository_name=conf.repository_name,
             client=_client,
-            tags=partition_config,
+            tags=_partition_config,
         )
         yield run_id
 
