@@ -103,6 +103,76 @@ Requests:
   memory:             400Mi
 ```
 
+These values can be set in "dagster-infra/app.tf" as follows:
+
+```terraform
+resource "helm_release" "dagster" {
+  name       = "dagster-${var.environment}"
+  repository = "https://dagster-io.github.io/helm"
+  chart      = "dagster"
+  namespace  = kubernetes_namespace.dagster.metadata[0].name
+
+  values = [
+    file("${path.module}/static/values.yaml")
+  ]
+  ...
+  # Resource requests
+  set {
+    name = "dagsterWebserver.resources.limits.cpu"
+    value = "120m"
+  }
+
+  set {
+    name = "dagsterWebserver.resources.limits.memory"
+    value = "400Mi"
+  }
+
+  set {
+    name = "dagsterWebserver.resources.requests.cpu"
+    value = "120m"
+  }
+
+  set {
+    name = "dagsterWebserver.resources.requests.memory"
+    value = "300Mi"
+  }
+
+  set {
+    name = "dagsterDaemon.resources.limits.cpu"
+    value = "200m"
+  }
+
+  set {
+    name = "dagsterDaemon.resources.limits.memory"
+    value = "400Mi"
+  }
+
+  set {
+    name = "dagsterDaemon.resources.requests.cpu"
+    value = "200m"
+  }
+
+  set {
+    name = "dagsterDaemon.resources.requests.memory"
+    value = "400Mi"
+  }
+}
+```
+
+These values can be set in "dagster-dags/values.yaml.j2" as follows:
+
+```yaml
+...
+deployments:
+	...
+	resources:
+      limits:
+        cpu: 250m
+        memory: 400Mi
+      requests:
+        cpu: 250m
+        memory: 400Mi
+```
 ## ☝️Consequences
 ---
 - Saves money
@@ -112,7 +182,3 @@ Requests:
 - We have split the code locations from the webserver and daemon, and need to specify the resource requests/limits in two places.
 	- In dagster-infra, this is done using Terraform
 	- In dagster-dags, we have to fill in the values directly in values.yaml
-
-## 🔗 References
----
-- [[🎚️ Limiting resource requests and limits on the Dagster webserver and daemon]]
