@@ -1,20 +1,15 @@
 name: Request for comments (RFC)
 description: Submit a Request For Comments (RFC)
 title: "[RFC]: "
-labels: ["RFC", "proposed"]
+labels: ["enhancement", "proposed"]
 projects: ["JasperHG90/1"]
 assignees:
   - JasperHG90
 body:
-  - type: markdown
+  - type: textarea
+    id: tldr
     attributes:
-      value: |
-        Thanks for taking the time to fill out this bug report!
-  - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: ex. email@example.com
+      label: 🤓 TL;DR
+      description: Add a quick overview of the RFC
     validations:
       required: false
