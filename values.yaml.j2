@@ -118,7 +118,13 @@ deployments:
     tolerations: []
     podSecurityContext: {}
     securityContext: {}
-    resources: {}
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
     labels: {}
 
     # Override the default K8s scheduler
