@@ -3,7 +3,6 @@ description: Submit a Request For Comments (RFC)
 title: "[RFC]: "
 labels: ["enhancement", "proposed"]
 projects: ["JasperHG90/1"]
-assignees: ''
 body:
   - type: textarea
     id: tldr
