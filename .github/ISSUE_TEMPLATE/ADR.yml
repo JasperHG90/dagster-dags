@@ -42,3 +42,5 @@ body:
           required: false
         - label: I've linked relevant issues, PRs, and RFCs
           required: false
+        - label: If the ADR supersedes a previous ADR, I've updated the previous ADR to reflect this
+          required: false
