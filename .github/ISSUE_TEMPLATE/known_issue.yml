@@ -1,7 +1,7 @@
 name: Known issue
 description: Submit a known issue that we can't fix right now
 title: "[Known issue]: "
-labels: ["enhancement", "proposed", "bug", "wontfix"]
+labels: ["bug", "wontfix"]
 projects: ["JasperHG90/1"]
 body:
   - type: textarea

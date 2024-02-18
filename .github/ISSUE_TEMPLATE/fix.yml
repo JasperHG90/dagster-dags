@@ -1,0 +1,36 @@
+name: Fix
+description: Submit a fix for a known issue
+title: "[Fix]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: 🐞 Issue
+      description: Link to the issue. Why was this a problem?
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: 🔧 Fix
+      description: Explain what the fix is and why this is a fix. Explain how you tested this
+    validations:
+      required: true
+  - type: textarea
+    id: monitor
+    attributes:
+      label: 🔍 How can we monitor the fix?
+      description: Explain how you will monitor the fix and for how long to ensure that the problem is fixed
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 📝 Checklist
+      description: Have you done the following?
+      options:
+        - label: I've linked all relevant issues, PRs, and RFCs, and issues where required
+          required: true
+        - label: I've changed the label of the original bug to 'fixed'
+          required: true
