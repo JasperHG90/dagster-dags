@@ -1,7 +1,7 @@
 name: Architectural Decision Record (ADR)
 description: Submit an Architectural Decision Record (ADR)
 title: "[ADR]: "
-labels: ["enhancement", "proposed"]
+labels: ["enhancement", "proposed", "ADR"]
 projects: ["JasperHG90/1"]
 body:
   - type: textarea
