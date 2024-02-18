@@ -1,0 +1,44 @@
+name: Architectural Decision Record (ADR)
+description: Submit an Architectural Decision Record (ADR)
+title: "[ADR]: "
+labels: ["enhancement", "proposed"]
+projects: ["JasperHG90/1"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: ✍️ Context
+      description: What is the issue that we're seeing that is motivating this decision or change?
+    validations:
+      required: false
+  - type: textarea
+    id: decision
+    attributes:
+      label: 🤝 Decision
+      description: What is the change that we're proposing and/or doing?
+    validations:
+      required: false
+  - type: textarea
+    id: impact
+    attributes:
+      label: 💥 Impact
+      description: What is the impact of the change that you’re proposing? Who will this impact? How will it impact them?
+    validations:
+      required: false
+  - type: textarea
+    id: consequences
+    attributes:
+      label: ☝️ Consequences
+      description: What becomes easier or more difficult to do because of this change?
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 📝 Checklist (after ADR has been accepted)
+      description: Set the status of the ADR to 'accepted' or 'rejected'
+      options:
+        - label: I've set the appropriate status label
+          required: false
+        - label: I've linked relevant issues, PRs, and RFCs
+          required: false
