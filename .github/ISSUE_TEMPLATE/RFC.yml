@@ -50,7 +50,7 @@ body:
     validations:
       required: false
   - type: textarea
-    id: tldr
+    id: impact
     attributes:
       label: 💥 Impact
       description: What is the impact of the change that you’re proposing? Who will this impact? How will it impact them?
