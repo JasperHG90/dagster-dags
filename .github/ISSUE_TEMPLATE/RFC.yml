@@ -66,8 +66,12 @@ body:
   - type: checkboxes
     id: checklist
     attributes:
-      label: I have updated the status of the RFC
-      description: Set the status of the RFC to 'proposed', 'accepted', or 'rejected'
+      label: 📝 Checklist (after RFC has been accepted)
+      description: Set the status of the RFC to 'accepted' or 'rejected'
       options:
         - label: I've set the appropriate status label
-          required: true
+          required: false
+        - label: I've summarized the final decision based on the comments
+          required: false
+        - label: I've linked relevant issues and PRs
+          required: false
