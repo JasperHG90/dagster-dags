@@ -9,7 +9,65 @@ body:
   - type: textarea
     id: tldr
     attributes:
-      label: ## 🤓 TL;DR
+      label: 🤓 TL;DR
       description: Add a quick overview of the RFC
     validations:
       required: false
+  - type: textarea
+    id: scope
+    attributes:
+      label: 🔭 Context and Scope
+      description: This section gives the reader a very rough overview of the landscape in which the new system is being built and what is actually being built. This isn’t a requirements doc. Keep it succinct!
+    validations:
+      required: false
+  - type: textarea
+    id: goals
+    attributes:
+      label: 🎯 Goals (and Non-Goals)
+      description: A short list of bullet points of what the goals of the system are, and, sometimes more importantly, what non-goals are
+    validations:
+      required: false
+  - type: textarea
+    id: design
+    attributes:
+      label: 🦉 The Actual Design
+      description: Requirements from users, functional requirements, anything that helps understand the context of this RFC
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🌈 Alternatives considered
+      description: If other options are considered, list them below (add other rows as necessary)
+      placeholder: |
+        |  | Option 1 | Option 2 | Option 3 |  |
+        | ---- | ---- | ---- | ---- | ---- |
+        | Overview |  |  |  |  |
+        | Links |  |  |  |  |
+        | Pros |  |  |  |  |
+        | Cons |  |  |  |  |
+        | Other |  |  |  |  |
+    validations:
+      required: false
+  - type: textarea
+    id: tldr
+    attributes:
+      label: 💥 Impact
+      description: What is the impact of the change that you’re proposing? Who will this impact? How will it impact them?
+    validations:
+      required: false
+  - type: textarea
+    id: decision
+    attributes:
+      label: 🤝 Final decision
+      description: Detail the final decision and the key reasons for reaching it (this should be filled out after the RFC has been accepted)
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: I have updated the status of the RFC
+      description: Set the status of the RFC to 'proposed', 'accepted', or 'rejected'
+      options:
+        - label: I've set the appropriate status label
+          required: true
