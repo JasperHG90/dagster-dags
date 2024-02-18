@@ -75,3 +75,5 @@ body:
           required: false
         - label: I've linked relevant issues and PRs
           required: false
+        - label: I've created follow-up tickets
+          required: false
