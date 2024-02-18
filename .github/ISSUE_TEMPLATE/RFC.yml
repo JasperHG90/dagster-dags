@@ -9,7 +9,7 @@ body:
   - type: textarea
     id: tldr
     attributes:
-      label: 🤓 TL;DR
+      label: ## 🤓 TL;DR
       description: Add a quick overview of the RFC
     validations:
       required: false
