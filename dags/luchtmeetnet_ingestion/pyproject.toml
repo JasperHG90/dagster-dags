@@ -16,9 +16,9 @@ dagit = "~1.6"
 pyarrow = "^14.0.2"
 dagster-postgres = "~0"
 dagster-slack = "~0"
-dagster-utils = {path = "../../shared/dagster_utils"}
 dagster-k8s = "^0.22.1"
 dagster-celery-k8s = "^0.22.1"
+dagster-utils = {path = "../../shared/dagster_utils"}
 
 [tool.dagster]
 module_name = "luchtmeetnet_ingestion"
