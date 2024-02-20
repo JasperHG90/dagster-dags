@@ -1,16 +1,11 @@
-import os
 from importlib import metadata
 
-from dagster import Definitions, EnvVar
-from dagster_slack import SlackResource
-from dagster_utils.IO.duckdb_io_manager import duckdb_parquet_io_manager
-from luchtmeetnet_ingestion.assets import air_quality_data
-
-# from luchtmeetnet_ingestion.assets.checks import values_above_zero
-from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
-from luchtmeetnet_ingestion.jobs import ingestion_job
+from dagster import Definitions
+from luchtmeetnet_ingestion.assets import air_quality_data, daily_air_quality_data
+from luchtmeetnet_ingestion.jobs import copy_to_data_lake_job, ingestion_job
+from luchtmeetnet_ingestion.resource_definitions import env_resources, environment
 from luchtmeetnet_ingestion.schedules import daily_schedule
-from luchtmeetnet_ingestion.sensors import (  # stations_sensor,
+from luchtmeetnet_ingestion.sensors import (
     slack_message_on_failure,
     slack_message_on_success,
 )
@@ -20,41 +15,11 @@ try:
 except metadata.PackageNotFoundError:
     __version__ = "0.0.0"
 
-environment = os.getenv("ENVIRONMENT", "dev")
-
-if environment == "dev":
-    os.environ["DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN"] = "dummy"
-
-shared_resources = {
-    "luchtmeetnet_api": LuchtMeetNetResource(),
-    # NB: on dev, this hook is not used. See 'sensors.py' for implementation
-    #  since the hooks depend on a SlackResource, we need to define it here
-    "slack": SlackResource(token=EnvVar("DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN")),
-}
-
-env_resources = {
-    "dev": shared_resources
-    | {"landing_zone": duckdb_parquet_io_manager.configured({"path": ".tmp/landing_zone"})},
-    "prd": shared_resources
-    | {
-        "landing_zone": duckdb_parquet_io_manager.configured(
-            {
-                "path": "s3://inge-cst-euw4-jgdag-prd",
-                "aws_access_key": {"env": "GCS_ACCESS_KEY_ID"},
-                "aws_secret_key": {"env": "GCS_SECRET_ACCESS_KEY"},
-                "aws_endpoint": "storage.googleapis.com",
-            }
-        )
-    },
-}
 
 definition = Definitions(
-    assets=[
-        air_quality_data,
-    ],
+    assets=[air_quality_data, daily_air_quality_data],
     resources=env_resources[environment],
-    jobs=[ingestion_job],
-    sensors=[slack_message_on_failure, slack_message_on_success],  # , stations_sensor],
+    jobs=[ingestion_job, copy_to_data_lake_job],
+    sensors=[slack_message_on_failure, slack_message_on_success],
     schedules=[daily_schedule],
-    # asset_checks=[values_above_zero],
 )
