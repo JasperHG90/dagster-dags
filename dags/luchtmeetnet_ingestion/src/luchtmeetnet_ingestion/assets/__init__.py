@@ -1,7 +1,16 @@
 import pandas as pd
-from dagster import BackfillPolicy, Backoff, Jitter, RetryPolicy, asset
+from dagster import (
+    AssetIn,
+    AutoMaterializePolicy,
+    AutoMaterializeRule,
+    BackfillPolicy,
+    Backoff,
+    Jitter,
+    RetryPolicy,
+    asset,
+)
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
-from luchtmeetnet_ingestion.partitions import daily_station_partition
+from luchtmeetnet_ingestion.partitions import daily_partition, daily_station_partition
 
 
 @asset(
@@ -26,3 +35,28 @@ def air_quality_data(context, luchtmeetnet_api: LuchtMeetNetResource) -> pd.Data
     df["end"] = end
     context.log.debug(df.head())
     return df
+
+
+@asset(
+    description="Copy air quality data from ingestion to bronze",
+    compute_kind="duckdb",
+    io_manager_key="data_lake_bronze",
+    partitions_def=daily_partition,
+    ins={
+        # Missing upstream partitions are
+        "ingested_data": AssetIn(
+            "air_quality_data",
+            input_manager_key="landing_zone",
+        )
+    },
+    # This asset automatically materializes when the upstream asset is materialized
+    #  even if only a subset of the upstream partitions are materialized
+    auto_materialize_policy=AutoMaterializePolicy.eager(
+        max_materializations_per_minute=None
+    ).without_rules(
+        # If a partition is missing, this will still run
+        AutoMaterializeRule.skip_on_parent_missing(),
+    ),
+)
+def daily_air_quality_data(context, ingested_data: pd.DataFrame) -> pd.DataFrame:
+    return ingested_data
