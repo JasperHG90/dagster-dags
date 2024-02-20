@@ -34,6 +34,7 @@ env_resources = {
                 "aws_access_key": {"env": "GCS_ACCESS_KEY_ID"},
                 "aws_secret_key": {"env": "GCS_SECRET_ACCESS_KEY"},
                 "aws_endpoint": "storage.googleapis.com",
+                "ignore_missing_partitions_on_load": True,
             }
         ),
         "data_lake_bronze": duckdb_parquet_io_manager.configured(
