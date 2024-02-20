@@ -5,6 +5,7 @@ import typing
 import duckdb
 import pandas as pd
 from dagster import (
+    BoolSource,
     Field,
     InitResourceContext,
     InputContext,
@@ -25,6 +26,7 @@ class DuckdbParquetIOManager(IOManager):
         aws_secret_key: typing.Optional[str] = None,
         aws_endpoint: typing.Optional[str] = None,
         aws_region: typing.Optional[str] = None,
+        ignore_missing_partitions_on_load: bool = False,
     ) -> None:
         if path.startswith(("s3://", "s3a://", "gs://")):
             self.path_is_local = False
@@ -35,6 +37,7 @@ class DuckdbParquetIOManager(IOManager):
         self.aws_secret_key = aws_secret_key
         self.aws_endpoint = aws_endpoint
         self.aws_region = aws_region
+        self.ignore_missing_partitions_on_load = ignore_missing_partitions_on_load
 
     def _get_table_name(self, asset_key: str, partition_key: typing.Optional[str] = None) -> str:
         if partition_key is not None:
@@ -73,15 +76,26 @@ class DuckdbParquetIOManager(IOManager):
 
     def load_input(self, context: InputContext) -> pd.DataFrame:
         """Load a pandas DataFrame using DuckDB"""
-        context.log.debug(context.asset_partition_keys)
+        if self.ignore_missing_partitions_on_load:
+            partitions = context.instance.get_materialized_partitions(
+                asset_key=context.upstream_output.asset_key
+            )
+            if len(context.asset_partition_keys) > len(partitions):
+                context.log.warning(
+                    f"Not all partitions are materialized. Missing partitions: {list(set(context.asset_partition_keys) - set(partitions))}"
+                )
+        else:
+            partitions = context.asset_partition_keys
+        context.log.debug(partitions)
         if context.has_partition_key:
             path = [
                 self._get_table_name(
                     partition_key=partition_key,
                     asset_key=context.upstream_output.asset_key.to_python_identifier(),
                 )
-                for partition_key in context.asset_partition_keys
+                for partition_key in partitions  # context.asset_partition_keys
             ]
+
         else:
             path = [
                 self._get_table_name(
@@ -110,6 +124,9 @@ class DuckdbParquetIOManager(IOManager):
         "aws_secret_key": Field(StringSource, is_required=False),
         "aws_endpoint": Field(StringSource, is_required=False),
         "aws_region": Field(StringSource, is_required=False),
+        "ignore_missing_partitions_on_load": Field(
+            BoolSource, is_required=False, default_value=False
+        ),
     }
 )
 def duckdb_parquet_io_manager(
@@ -121,4 +138,7 @@ def duckdb_parquet_io_manager(
         aws_secret_key=init_context.resource_config.get("aws_secret_key"),
         aws_endpoint=init_context.resource_config.get("aws_endpoint"),
         aws_region=init_context.resource_config.get("aws_region"),
+        ignore_missing_partitions_on_load=init_context.resource_config.get(
+            "ignore_missing_partitions_on_load"
+        ),
     )
