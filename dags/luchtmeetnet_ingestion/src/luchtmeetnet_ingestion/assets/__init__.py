@@ -1,8 +1,6 @@
 import pandas as pd
-from dagster import (
+from dagster import (  # AutoMaterializePolicy,; AutoMaterializeRule,
     AssetIn,
-    AutoMaterializePolicy,
-    AutoMaterializeRule,
     BackfillPolicy,
     Backoff,
     Jitter,
@@ -51,12 +49,12 @@ def air_quality_data(context, luchtmeetnet_api: LuchtMeetNetResource) -> pd.Data
     },
     # This asset automatically materializes when the upstream asset is materialized
     #  even if only a subset of the upstream partitions are materialized
-    auto_materialize_policy=AutoMaterializePolicy.eager(
-        max_materializations_per_minute=None
-    ).without_rules(
-        # If a partition is missing, this will still run
-        AutoMaterializeRule.skip_on_parent_missing(),
-    ),
+    # auto_materialize_policy=AutoMaterializePolicy.eager(
+    #     max_materializations_per_minute=None
+    # ).without_rules(
+    #     # If a partition is missing, this will still run
+    #     AutoMaterializeRule.skip_on_parent_missing(),
+    # ),
 )
 def daily_air_quality_data(context, ingested_data: pd.DataFrame) -> pd.DataFrame:
     return ingested_data
