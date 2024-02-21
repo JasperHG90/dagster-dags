@@ -37,27 +37,22 @@ def my_message_fn(slack: SlackResource, message: str) -> str:
 )
 def run_copy_to_data_lake_after_ingestion(context: RunStatusSensorContext):
     # Also check for tag of registering known materializations
-    context.log.debug(f"Dagster event: {context.dagster_event}")
-    context.log.debug(f"Dagster run: {context.dagster_run}")
     is_backfill = False if context.dagster_run.tags.get("dagster/backfill") is None else True
     context.log.debug(f"Is backfill: {is_backfill}")
     if is_backfill:
         backfill = context.instance.get_backfill(context.dagster_run.tags.get("dagster/backfill"))
         context.log.debug(f"Backfill: {backfill}")
         partitions = backfill.partition_names
-        context.log.debug(f"Backfill partitions: {partitions}")
     else:
         # Ordered by partition name
         partition_key = context.partition_key
         date, _ = partition_key.split("|")
         partitions = [f"{date}|{s}" for s in stations_partition.get_partition_keys()]
-        context.log.debug(f"Partitions: {partitions}")
     status_by_partition = context.instance.get_status_by_partition(
         AssetKey("air_quality_data"),
         partition_keys=partitions,
         partitions_def=daily_station_partition,
     )
-    context.log.debug(f"Status by partition: {status_by_partition}")
     num_total = len(status_by_partition)
     status_by_partition_filtered = {k: v for k, v in status_by_partition.items() if v is not None}
     num_done = sum(
