@@ -52,6 +52,9 @@ class DuckdbParquetIOManager(IOManager):
 
     def handle_output(self, context: OutputContext, obj: pd.DataFrame):
         """Write a pandas DataFrame to disk using DuckDB"""
+        context.log.debug(f"Asset key: {context.asset_key}")
+        context.log.debug(f"Partition key: {context.partition_key}")
+        context.log.debug(f"Asset partition definition: {str(context.asset_partitions_def)}")
         path = self._get_table_name(
             partition_key=context.partition_key if context.has_partition_key else None,
             asset_key=context.asset_key.to_python_identifier(),
@@ -76,17 +79,28 @@ class DuckdbParquetIOManager(IOManager):
 
     def load_input(self, context: InputContext) -> pd.DataFrame:
         """Load a pandas DataFrame using DuckDB"""
+        context.log.debug(f"Asset key: {context.asset_key}")
+        context.log.debug(f"Partition key: {context.partition_key}")
+        context.log.debug(f"Asset partition definition: {str(context.asset_partitions_def)}")
+        context.log.debug(f"Upstream asset key: {context.upstream_output.asset_key}")
         if self.ignore_missing_partitions_on_load:
-            partitions = context.instance.get_materialized_partitions(
-                asset_key=context.upstream_output.asset_key
-            )
+            status_by_partition = {
+                k: v
+                for k, v in context.instance.get_status_by_partition(
+                    context.asset_key,
+                    partition_keys=context.asset_partition_keys,
+                    partitions_def=context.asset_partitions_def,
+                ).items()
+                if v is not None
+            }
+            partitions = [k for k, v in status_by_partition.items() if v.value == "MATERIALIZED"]
             if len(context.asset_partition_keys) > len(partitions):
                 context.log.warning(
                     f"Not all partitions are materialized. Missing partitions: {list(set(context.asset_partition_keys) - set(partitions))}"
                 )
         else:
             partitions = context.asset_partition_keys
-        context.log.debug(partitions)
+        context.log.debug(f"Partitions: {partitions}")
         if context.has_partition_key:
             path = [
                 self._get_table_name(
