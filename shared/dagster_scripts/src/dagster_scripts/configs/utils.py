@@ -5,7 +5,7 @@ import typing
 from dagster_scripts.configs.partitions import PartitionConfig
 
 
-def _generate_partition_configs(
+def generate_partition_configs(
     conf: typing.List[PartitionConfig],
 ) -> typing.List[typing.Dict[str, str]]:
     """Generate a list of partition configurations from a combination of partitions"""
@@ -15,7 +15,7 @@ def _generate_partition_configs(
     ]
 
 
-def _create_partition_key(partition_config: dict) -> str:
+def create_partition_key(partition_config: dict) -> str:
     """
     Create a partition key from a partition configuration
 
