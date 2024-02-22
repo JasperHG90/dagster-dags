@@ -5,6 +5,7 @@ import os
 import pathlib as plb
 import typing
 
+import tqdm
 from dagster import (
     AssetKey,
     AssetMaterialization,
@@ -79,11 +80,15 @@ def check_asset_exists(f: typing.Callable):
             asset_key = args[0]
         else:
             asset_key = kwargs["asset_key"]
-        asset_keys = [
-            asset_key.to_user_string() for asset_key in _dagster_instance.all_asset_keys()
-        ]
-        if asset_key not in asset_keys:
-            raise ValueError(f"Asset '{asset_key}' not found")
+        if kwargs.get("skip_checks") is None:
+            _skip_checks = args[1]
+        else:
+            _skip_checks = kwargs["skip_checks"]
+        logger.debug(f"Skip checks is {_skip_checks}")
+        if not _skip_checks:
+            logger.debug(f"Checking if asset '{asset_key}' exists")
+            if not _dagster_instance.has_asset_key(AssetKey(asset_key)):
+                raise ValueError(f"Asset '{asset_key}' not found")
         return f(*args, **kwargs)
 
     return wrapper
@@ -139,6 +144,7 @@ def _filter_asset_partitions(
 @check_asset_exists
 def get_materialized_partitions(
     asset_key: str,
+    skip_checks: bool = False,
     asset_partitions: typing.Optional[typing.Sequence[str]] = None,
     dagster_instance: typing.Optional[DagsterInstance] = None,
 ) -> typing.List[str]:
@@ -153,12 +159,16 @@ def get_materialized_partitions(
         typing.List[str]: List of partition keys that have been materialized
     """
     return _get_materialized_partitions(
-        asset_key, asset_partitions=asset_partitions, dagster_instance=dagster_instance
+        asset_key,
+        skip_checks=skip_checks,
+        asset_partitions=asset_partitions,
+        dagster_instance=dagster_instance,
     )
 
 
 def _get_materialized_partitions(
     asset_key: str,
+    skip_checks: bool = False,
     asset_partitions: typing.Optional[typing.Sequence[str]] = None,
     dagster_instance: typing.Optional[DagsterInstance] = None,
 ) -> typing.List[str]:
@@ -175,9 +185,10 @@ def _get_materialized_partitions(
 
 @dagster_instance_from_config()
 @check_asset_exists
-def report_asset_status(
+def report_asset_status_for_partitions(
     asset_key: str,
-    asset_partitions: typing.Sequence[str] = None,
+    asset_partitions: typing.Sequence[str],
+    skip_checks: bool = False,
     dagster_instance: typing.Optional[DagsterInstance] = None,
 ) -> typing.List[str]:
     """Set the status as materialized for a set of partitions
@@ -190,14 +201,18 @@ def report_asset_status(
     Returns:
         typing.List[str]: List of partition keys that have been materialized
     """
-    return _report_asset_status(
-        asset_key, asset_partitions=asset_partitions, dagster_instance=dagster_instance
+    return _report_asset_status_for_partitions(
+        asset_key,
+        skip_checks=skip_checks,
+        asset_partitions=asset_partitions,
+        dagster_instance=dagster_instance,
     )
 
 
-def _report_asset_status(
+def _report_asset_status_for_partitions(
     asset_key: str,
     asset_partitions: typing.Sequence[str],
+    skip_checks: bool = False,
     dagster_instance: typing.Optional[DagsterInstance] = None,
 ) -> typing.List[str]:
     """See docstring for report_asset_status"""
@@ -211,7 +226,7 @@ def _report_asset_status(
     logger.debug(
         f"Reporting asset status for Asset key='{asset_key}' ({len(asset_materializations)} partitions)"
     )
-    for asset_materialization in asset_materializations:
+    for asset_materialization in tqdm.tqdm(asset_materializations):
         dagster_instance.report_runless_asset_event(asset_materialization)
 
 

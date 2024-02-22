@@ -25,6 +25,7 @@ class StorageConfig(BaseModel):
         if self.type == StorageTypeEnum.local:
             if not plb.Path(self.path).resolve().exists():
                 raise ValueError(f"Path {self.path} does not exist")
+        return self
 
 
 class AssetConfig(BaseModel):
@@ -32,6 +33,7 @@ class AssetConfig(BaseModel):
     storage_location: StorageConfig
     report_asset_policy: PolicyEnum
     type: FileTypeEnum
+    skip_checks: bool = False
 
 
 class ReportAssetConfig(BaseModel):

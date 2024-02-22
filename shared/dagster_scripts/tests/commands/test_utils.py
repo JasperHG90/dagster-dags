@@ -43,28 +43,28 @@ class TestCheckAssetExistsDecorator:
 
     def test_check_asset_exists_fails(self):
         @utils.check_asset_exists
-        def test_function(asset_key, dagster_instance):
+        def test_function(asset_key, skip_checks, dagster_instance):
             return asset_key
         with DagsterInstance.ephemeral() as dagster_instance:
             with pytest.raises(ValueError, match="Asset 'my_asset' not found"):
                 # NB: must be a keyword arg!
-                test_function("my_asset", dagster_instance=dagster_instance)
+                test_function("my_asset", False, dagster_instance=dagster_instance)
 
     def test_check_asset_exists_succeeds(self):
         @utils.check_asset_exists
-        def test_function(asset_key, dagster_instance):
+        def test_function(asset_key, skip_checks, dagster_instance):
             return asset_key
         with DagsterInstance.ephemeral() as dagster_instance:
             materialize([my_asset], instance=dagster_instance)
-            assert test_function("my_asset", dagster_instance=dagster_instance) == "my_asset"
+            assert test_function("my_asset", False, dagster_instance=dagster_instance) == "my_asset"
 
     def test_check_asset_exists_with_dagster_instance_decorator(self, dagster_home):
         @utils.dagster_instance_from_config(config_dir=str(dagster_home))
         @utils.check_asset_exists # NB: has to be first decorator to assure that dagster instance is available
-        def test_function(asset_key, dagster_instance):
+        def test_function(asset_key, skip_checks, dagster_instance):
             return asset_key
         with pytest.raises(ValueError, match="Asset 'my_asset' not found"):
-            assert test_function("my_asset") == "my_asset"
+            assert test_function("my_asset", False) == "my_asset"
 
 
 class TestGetMaterializedPartitions:
@@ -97,7 +97,7 @@ class TestReportAssetStatus:
 
     def test_report_subset_asset_status(self):
         with DagsterInstance.ephemeral() as dagster_instance:
-            utils._report_asset_status(
+            utils._report_asset_status_for_partitions(
                 "my_partitioned_asset",
                 asset_partitions=daily_partition.get_partition_keys(),
                 dagster_instance=dagster_instance

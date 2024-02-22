@@ -3,6 +3,10 @@ import logging
 import typer
 from dagster_scripts import __version__
 from dagster_scripts.commands.backfill import backfill, load_backfill_config
+from dagster_scripts.commands.report_asset import (
+    load_report_asset_config,
+    report_asset_status,
+)
 
 logger = logging.getLogger("dagster_scripts")
 handler = logging.StreamHandler()
@@ -39,6 +43,20 @@ def _backfill(
 ):
     cnf = load_backfill_config(config_path)
     backfill(cnf)
+
+
+@app.command(
+    name="report-asset-status",
+    help="📝 Report one or multiple assets as materialized.",
+    no_args_is_help=True,
+)
+def _report_asset_status(
+    config_path: str = typer.Argument(
+        ..., help="Path to the report asset astatus configuration file."
+    )
+):
+    cnf = load_report_asset_config(config_path)
+    report_asset_status(cnf)
 
 
 def entrypoint():

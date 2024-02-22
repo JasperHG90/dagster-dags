@@ -100,7 +100,8 @@ def report_asset_config() -> typing.Dict[str, typing.Any]:
                     "path": "gs://my-bucket/my-path"
                 },
                 "report_asset_policy": "missing",
-                "type": "parquet"
+                "type": "parquet",
+                "skip_checks": False
             }
         ]
     }
