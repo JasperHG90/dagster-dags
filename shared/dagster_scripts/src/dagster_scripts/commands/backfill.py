@@ -5,6 +5,7 @@ import typing
 from dagster_scripts.commands.utils import (
     await_backfill_status,
     filter_asset_partitions,
+    get_materialized_partitions,
     load_config,
     submit_backfill_jobs,
 )
@@ -23,11 +24,18 @@ def load_backfill_config(path: typing.Union[str, plb.Path]) -> BackfillConfig:
 
 def backfill(config: BackfillConfig) -> None:
     """Backfill a set of runs"""
-    partition_configs = generate_partition_configs(config)
-    if config.backfill_policy == PolicyEnum.missing:
+    partition_configs = generate_partition_configs(config.tags.partitions)
+    if config.backfill_policy.policy == PolicyEnum.missing:
+        logger.debug(
+            f"Backfill policy is '{PolicyEnum.missing}'. Only backfilling missing partitions."
+        )
+        logger.debug("Filtering partitions for missing materializations")
+        materialized_partitions = get_materialized_partitions(
+            asset_key=config.backfill_policy.asset_key
+        )
         _partition_configs = filter_asset_partitions(
             partition_configs=partition_configs,
-            materialized_partitions=config.backfill_policy.asset_key,
+            materialized_partitions=materialized_partitions,
         )
     else:
         _partition_configs = partition_configs

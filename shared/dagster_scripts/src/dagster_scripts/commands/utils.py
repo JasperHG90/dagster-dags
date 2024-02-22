@@ -77,6 +77,9 @@ def dagster_instance_from_config(
 
 
 def check_asset_exists(f: typing.Callable):
+    """Check if an asset exists in the Dagster instance before running a function
+    For internal use only.
+    """
     functools.wraps(f)
 
     def wrapper(*args, **kwargs):
@@ -84,7 +87,10 @@ def check_asset_exists(f: typing.Callable):
         if dagster_instance is None:
             raise ValueError("Dagster instance not provided.")
         _dagster_instance: DagsterInstance = dagster_instance
-        asset_key = args[0]
+        if kwargs.get("asset_key") is None:
+            asset_key = args[0]
+        else:
+            asset_key = kwargs["asset_key"]
         asset_keys = [
             asset_key.to_user_string() for asset_key in _dagster_instance.all_asset_keys()
         ]
