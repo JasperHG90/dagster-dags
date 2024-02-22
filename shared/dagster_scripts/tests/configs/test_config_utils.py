@@ -10,6 +10,16 @@ def tags_config_cls(tags_config: typing.Dict[str, typing.Dict[str, str]]):
     return base.TagsConfig(**tags_config)
 
 
+def test_create_partition_key(tags_config_cls: base.TagsConfig):
+    partition_key = utils._create_partition_key(
+        {
+            "dagster/partition/stations": "NL01497",
+            "dagster/partition/daily": "2024-01-31"
+        }
+    )
+    assert partition_key == "2024-01-31|NL01497"
+
+
 def test_generate_partition_configs(tags_config_cls: base.TagsConfig):
     partition_configs = (
         pd.DataFrame(
