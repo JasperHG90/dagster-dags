@@ -13,12 +13,16 @@ def test_backfill_config(backfill_config):
     backfill.BackfillConfig(**backfill_config)
 
 
+def test_backfill_policy_config_with_missing(backfill_policy_config):
+    backfill.BackfillPolicy(**backfill_policy_config)
+
+
 def test_backfill_config_policy_with_unknown_policy():
     with pytest.raises(ValidationError):
         backfill.BackfillConfig(
             job_name="test",
             repository_name="test",
-            policy="failed", # Not part of the BackfillPolicyEnum
+            backfill_policy=backfill.BackfillPolicy(policy="unknown"),
             tags=base.TagsConfig(
                 name="test",
                 partitions=[

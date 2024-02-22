@@ -38,11 +38,21 @@ def tags_config() -> typing.Dict[str, typing.Any]:
 
 
 @pytest.fixture(scope="function")
+def backfill_policy_config() -> typing.Dict[str, typing.Any]:
+    return {
+        "policy": "missing",
+        "asset_key": "my_asset_key"
+    }
+
+
+@pytest.fixture(scope="function")
 def backfill_config() -> typing.Dict[str, typing.Any]:
     return {
         "job_name": "ingestion_job",
         "repository_name": "luchtmeetnet_ingestion",
-        "policy": "missing",
+        "backfill_policy": {
+            "policy": "all"
+        },
         "tags": {
             "name": "34543",
             "partitions": [

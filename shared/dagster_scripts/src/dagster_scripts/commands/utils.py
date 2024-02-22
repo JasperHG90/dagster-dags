@@ -109,11 +109,15 @@ def filter_asset_partitions(
     Returns:
         typing.List[typing.Dict[str, str]]: list of partition configurations that have not been materialized
     """
-    return [
+    filtered_partition_configs = [
         partition_config
         for partition_config in partition_configs
         if create_partition_key(partition_config) not in materialized_partitions
     ]
+    logger.debug(
+        f"Filtered {len(partition_configs)} partition configurations to {len(filtered_partition_configs)}"
+    )
+    return filtered_partition_configs
 
 
 @dagster_instance_from_config()
@@ -150,6 +154,7 @@ def _get_materialized_partitions(
         asset_partitions=asset_partitions,
     )
     events = dagster_instance.get_event_records(filter)
+    logger.debug(f"Found {len(events)} materializations for asset '{asset_key}'")
     return [event.partition_key for event in events]
 
 

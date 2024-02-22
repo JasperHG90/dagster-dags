@@ -2,8 +2,9 @@ import logging
 import pathlib as plb
 import typing
 
-from dagster_scripts.commands.utils import (  # get_materialized_partitions,
+from dagster_scripts.commands.utils import (
     await_backfill_status,
+    filter_asset_partitions,
     load_config,
     submit_backfill_jobs,
 )
@@ -23,15 +24,17 @@ def load_backfill_config(path: typing.Union[str, plb.Path]) -> BackfillConfig:
 def backfill(config: BackfillConfig) -> None:
     """Backfill a set of runs"""
     partition_configs = generate_partition_configs(config)
-    if config.policy == PolicyEnum.missing:
-        # materialized_partitions = get_materialized_partitions()
-        _partition_configs = partition_configs
+    if config.backfill_policy == PolicyEnum.missing:
+        _partition_configs = filter_asset_partitions(
+            partition_configs=partition_configs,
+            materialized_partitions=config.backfill_policy.asset_key,
+        )
     else:
         _partition_configs = partition_configs
     backfill_run_ids = submit_backfill_jobs(
         job_name=config.job_name,
         repository_name=config.repository_name,
         backfill_name=config.tags.name,
-        partition_configs=partition_configs,
+        partition_configs=_partition_configs,
     )
     return await_backfill_status(backfill_run_ids)
