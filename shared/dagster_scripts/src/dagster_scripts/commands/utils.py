@@ -72,7 +72,27 @@ def dagster_instance_from_config(
     return decorator
 
 
+def check_asset_exists(f: typing.Callable):
+    functools.wraps(f)
+
+    def wrapper(*args, **kwargs):
+        dagster_instance: typing.Union[None, DagsterInstance] = kwargs.get("dagster_instance")
+        if dagster_instance is None:
+            raise ValueError("Dagster instance not provided.")
+        _dagster_instance: DagsterInstance = dagster_instance
+        asset_key = args[0]
+        asset_keys = [
+            asset_key.to_user_string() for asset_key in _dagster_instance.all_asset_keys()
+        ]
+        if asset_key not in asset_keys:
+            raise ValueError(f"Asset '{asset_key}' not found")
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
 @dagster_instance_from_config()
+@check_asset_exists
 def get_materialized_partitions(
     asset_key: str,
     asset_partitions: typing.Optional[typing.Sequence[str]] = None,
@@ -109,6 +129,7 @@ def _get_materialized_partitions(
 
 
 @dagster_instance_from_config()
+@check_asset_exists
 def report_asset_status(
     asset_key: str,
     asset_partitions: typing.Sequence[str] = None,
