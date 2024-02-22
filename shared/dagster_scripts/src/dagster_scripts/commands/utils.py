@@ -57,7 +57,7 @@ def dagster_instance(config_dir: str, config_filename: str = "dagster.yaml"):
             with DagsterInstance.from_config(
                 config_dir=_config_dir, config_filename=_config_filename
             ) as instance:
-                return f(*args, instance=instance, **kwargs)
+                return f(*args, dagster_instance=instance, **kwargs)
 
         return wrapper
 
