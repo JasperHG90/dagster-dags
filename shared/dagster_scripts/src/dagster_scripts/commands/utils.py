@@ -45,7 +45,7 @@ def graphql_client(host: str = "localhost", port: int = 3000):
     return decorator
 
 
-def dagster_instance(config_dir: str, config_filename: str = "dagster.yaml"):
+def needs_dagster_instance(config_dir: str, config_filename: str = "dagster.yaml"):
     """Decorator to provide a Dagster instance to a function"""
     _config_dir = os.getenv("DAGSTER_CONFIG_DIR", config_dir)
     _config_filename = os.getenv("DAGSTER_CONFIG_FILENAME", config_filename)
