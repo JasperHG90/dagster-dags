@@ -1,4 +1,4 @@
-# Luchtmeetnet ingestion
+# 🌬️ Luchtmeetnet ingestion
 
 ## ☄️ Setting up for local development
 
