@@ -8,6 +8,7 @@ import pathlib as plb
 import typing
 
 import yaml
+from dagster import DagsterInstance
 from dagster_graphql.client import DagsterGraphQLClient, DagsterGraphQLClientError
 from dagster_scripts.configs.backfill import BackfillConfig
 from dagster_scripts.configs.partitions import PartitionConfig
@@ -38,6 +39,25 @@ def graphql_client(host: str = "localhost", port: int = 3000):
         def wrapper(*args, **kwargs):
             client = DagsterGraphQLClient(_host, port_number=_port)
             return f(*args, client=client, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def dagster_instance(config_dir: str, config_filename: str = "dagster.yaml"):
+    """Decorator to provide a Dagster instance to a function"""
+    _config_dir = os.getenv("DAGSTER_CONFIG_DIR", config_dir)
+    _config_filename = os.getenv("DAGSTER_CONFIG_FILENAME", config_filename)
+
+    def decorator(f):
+        functools.wraps(f)
+
+        def wrapper(*args, **kwargs):
+            with DagsterInstance.from_config(
+                config_dir=_config_dir, config_filename=_config_filename
+            ) as instance:
+                return f(*args, instance=instance, **kwargs)
 
         return wrapper
 
