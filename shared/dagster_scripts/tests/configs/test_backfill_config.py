@@ -37,3 +37,8 @@ def test_backfill_config_with_start_date_before_end_date():
             name="test",
             values=partitions.DateRangeConfig(start_date="2021-01-02", end_date="2021-01-01"),
         )
+
+
+def test_date_partition_config_from_dict(tags_config):
+    conf = partitions.DatePartitionConfig(**tags_config["partitions"][0])
+    assert isinstance(conf.values, partitions.DateRangeConfig)

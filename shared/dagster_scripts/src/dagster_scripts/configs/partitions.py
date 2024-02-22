@@ -8,7 +8,6 @@ from pydantic import BaseModel, field_validator
 
 class PartitionConfig(BaseModel, ABC):
     name: str
-    values: typing.Any
 
     @abstractmethod
     def config_dict(self):
@@ -29,11 +28,12 @@ class DatePartitionConfig(PartitionConfig):
     def config_dict(self):
         return [{f"dagster/partition/{self.name}": d.to_date_string()} for d in self._get_range()]
 
-    @field_validator("values")
+    @field_validator("values", mode="after")
     @classmethod
-    def check_date_range_monotonic(cls, v: DateRangeConfig):
+    def check_date_range_monotonic(cls, v: dict):
         if v.start_date > v.end_date:
             raise ValueError("Start date must be before end date")
+        return v
 
 
 class StaticPartitionConfig(PartitionConfig):
