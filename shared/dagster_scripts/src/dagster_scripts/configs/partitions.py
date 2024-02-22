@@ -3,7 +3,7 @@ import typing
 from abc import ABC, abstractmethod
 
 import pendulum
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class PartitionConfig(BaseModel, ABC):
@@ -28,6 +28,12 @@ class DatePartitionConfig(PartitionConfig):
 
     def config_dict(self):
         return [{f"dagster/partition/{self.name}": d.to_date_string()} for d in self._get_range()]
+
+    @field_validator("values")
+    @classmethod
+    def check_date_range_monotonic(cls, v: DateRangeConfig):
+        if v.start_date > v.end_date:
+            raise ValueError("Start date must be before end date")
 
 
 class StaticPartitionConfig(PartitionConfig):
