@@ -8,7 +8,13 @@ import pathlib as plb
 import typing
 
 import yaml
-from dagster import DagsterInstance
+from dagster import (
+    AssetKey,
+    AssetMaterialization,
+    DagsterEventType,
+    DagsterInstance,
+    EventRecordsFilter,
+)
 from dagster_graphql.client import DagsterGraphQLClient, DagsterGraphQLClientError
 from dagster_scripts.configs.backfill import BackfillConfig
 from dagster_scripts.configs.partitions import PartitionConfig
@@ -45,7 +51,9 @@ def graphql_client(host: str = "localhost", port: int = 3000):
     return decorator
 
 
-def dagster_instance_from_config(config_dir: str, config_filename: str = "dagster.yaml"):
+def dagster_instance_from_config(
+    config_dir: str = "/opt/dagster_home/dagster", config_filename: str = "dagster.yaml"
+):
     """Decorator to provide a Dagster instance to a function"""
     _config_dir = os.getenv("DAGSTER_CONFIG_DIR", config_dir)
     _config_filename = os.getenv("DAGSTER_CONFIG_FILENAME", config_filename)
@@ -62,6 +70,58 @@ def dagster_instance_from_config(config_dir: str, config_filename: str = "dagste
         return wrapper
 
     return decorator
+
+
+@dagster_instance_from_config()
+def get_materialized_partitions(
+    asset_key: str,
+    asset_partitions: typing.Optional[typing.Sequence[str]] = None,
+    dagster_instance: typing.Optional[DagsterInstance] = None,
+) -> typing.List[str]:
+    """Get all asset materializations for a specific asset and partition values
+
+    Args:
+        asset_key (str): name of the asset
+        asset_partitions (typing.Sequence[str], optional): Sequence of partition keys for which to subset. Defaults to None.
+        dagster_instance (typing.Optional[DagsterInstance], optional): DagsterInstance. Defaults to None.
+
+    Returns:
+        typing.List[str]: List of partition keys that have been materialized
+    """
+    filter = EventRecordsFilter(
+        event_type=DagsterEventType.ASSET_MATERIALIZATION,
+        asset_key=AssetKey(asset_key),
+        asset_partitions=asset_partitions,
+    )
+    events = dagster_instance.get_event_records(filter)
+    return [event.partition_key for event in events]
+
+
+@dagster_instance_from_config()
+def report_asset_status(
+    asset_key: str,
+    asset_partitions: typing.Sequence[str] = None,
+    dagster_instance: typing.Optional[DagsterInstance] = None,
+) -> typing.List[str]:
+    """Set the status as materialized for a set of partitions
+
+    Args:
+        asset_key (str): name of the asset
+        asset_partitions (typing.Sequence[str], optional): Sequence of partition keys for which to subset. Defaults to None.
+        dagster_instance (typing.Optional[DagsterInstance], optional): DagsterInstance. Defaults to None.
+
+    Returns:
+        typing.List[str]: List of partition keys that have been materialized
+    """
+    asset_materializations = [
+        AssetMaterialization(
+            AssetKey(asset_key),
+            partition=partition_key,
+        )
+        for partition_key in asset_partitions
+    ]
+    for asset_materialization in asset_materializations:
+        dagster_instance.report_runless_asset_event(asset_materialization)
 
 
 def request_job_run(
