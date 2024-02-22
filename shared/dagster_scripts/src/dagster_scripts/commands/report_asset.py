@@ -21,24 +21,23 @@ def get_files(dir):
     )
 
 
-files = get_files("landing_zone/air_quality_data")
-
-
 def load_report_asset_config(path: typing.Union[str, plb.Path]) -> ReportAssetConfig:
     """Load a backfill configuration from disk"""
     logger.debug(f"Loading backfill configuration from {path}")
     return load_config(path, ReportAssetConfig)
 
 
-# TODO: skip asset check
 def report_asset_status(config: ReportAssetConfig) -> None:
     """Report a set of assets"""
     for asset in config.assets:
+        logger.debug(f"Asset key: {asset.key}")
         if asset.storage_location.type == StorageTypeEnum.gcs:
             raise NotImplementedError("GCS storage not yet supported")
         files = get_files(asset.storage_location.path)
         materialized_partitions = get_materialized_partitions(
-            asset.key, files["partition_key"].tolist()
+            asset.key,
+            skip_checks=asset.skip_checks,
+            asset_partitions=files["partition_key"].tolist(),
         )
         logger.debug(
             f"Found {len(materialized_partitions)} materialized partitions for asset {asset.key}"
@@ -49,4 +48,6 @@ def report_asset_status(config: ReportAssetConfig) -> None:
         logger.debug(
             f"Reporting {len(missing_partitions)} missing partitions for asset {asset.key}"
         )
-        report_asset_status_for_partitions(asset.key, missing_partitions)
+        report_asset_status_for_partitions(
+            asset.key, missing_partitions, skip_checks=asset.skip_checks
+        )
