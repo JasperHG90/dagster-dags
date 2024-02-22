@@ -32,7 +32,7 @@ def test_dagster_instance_from_config(dagster_home: plb.Path):
 
 
 def test_filter_asset_partitions(partition_configs: typing.List[typing.Dict[str,str]], materialized_partitions: typing.List[str]):
-    partitions_filtered = utils.filter_asset_partitions(partition_configs, materialized_partitions)
+    partitions_filtered = utils._filter_asset_partitions(partition_configs, materialized_partitions)
     assert partitions_filtered == [
         {"dagster/partition/daily": "2020-01-02", "dagster/partition/stations": "NL01497"},
         {"dagster/partition/daily": "2020-01-03", "dagster/partition/stations": "NL01497"},

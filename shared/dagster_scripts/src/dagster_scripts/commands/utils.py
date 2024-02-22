@@ -14,6 +14,7 @@ from dagster import (
     EventRecordsFilter,
 )
 from dagster_graphql.client import DagsterGraphQLClient, DagsterGraphQLClientError
+from dagster_scripts.configs.base import PolicyEnum
 from dagster_scripts.configs.utils import create_partition_key
 from pydantic import BaseModel
 
@@ -101,7 +102,28 @@ def check_asset_exists(f: typing.Callable):
     return wrapper
 
 
-def filter_asset_partitions(
+def filter_partition_configs_for_missing_assets(
+    asset_key: str, partition_configs: typing.List[typing.Dict[str, str]]
+) -> typing.List[typing.Dict[str, str]]:
+    """Filter partition configs for missing assets
+
+    Args:
+        asset_key (str): asset key of the asset used to filter the partition configs
+        partition_configs (typing.List[typing.Dict[str, str]]): list of partition configs, generated using `dagster_scripts.configs.utils.generate_partition_configs`
+
+    Returns:
+        typing.List[typing.Dict[str, str]]: list of partition configs filtered for missing assets
+    """
+    logger.debug(f"Backfill policy is '{PolicyEnum.missing}'. Only backfilling missing partitions.")
+    logger.debug("Filtering partitions for missing materializations")
+    materialized_partitions = get_materialized_partitions(asset_key=asset_key)
+    return _filter_asset_partitions(
+        partition_configs=partition_configs,
+        materialized_partitions=materialized_partitions,
+    )
+
+
+def _filter_asset_partitions(
     partition_configs: typing.List[typing.Dict[str, str]],
     materialized_partitions: typing.List[str],
 ) -> typing.List[typing.Dict[str, str]]:
