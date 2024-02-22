@@ -1,4 +1,5 @@
 import pathlib as plb
+import typing
 
 import pytest
 from dagster_scripts.commands import utils
@@ -28,6 +29,14 @@ def test_dagster_instance_from_config(dagster_home: plb.Path):
         return dagster_instance
     dagster_instance = test_function()
     assert isinstance(dagster_instance, DagsterInstance)
+
+
+def test_filter_asset_partitions(partition_configs: typing.List[typing.Dict[str,str]], materialized_partitions: typing.List[str]):
+    partitions_filtered = utils.filter_asset_partitions(partition_configs, materialized_partitions)
+    assert partitions_filtered == [
+        {"dagster/partition/daily": "2020-01-02", "dagster/partition/stations": "NL01497"},
+        {"dagster/partition/daily": "2020-01-03", "dagster/partition/stations": "NL01497"},
+    ]
 
 
 class TestCheckAssetExistsDecorator:
