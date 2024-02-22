@@ -1,7 +1,5 @@
 import asyncio
-import collections
 import functools
-import itertools
 import logging
 import os
 import pathlib as plb
@@ -17,7 +15,10 @@ from dagster import (
 )
 from dagster_graphql.client import DagsterGraphQLClient, DagsterGraphQLClientError
 from dagster_scripts.configs.backfill import BackfillConfig
-from dagster_scripts.configs.partitions import PartitionConfig
+from dagster_scripts.configs.utils import (
+    _create_partition_key,
+    _generate_partition_configs,
+)
 from pydantic import BaseModel
 
 logger = logging.getLogger("dagster_scripts.commands.utils")
@@ -252,21 +253,3 @@ async def _poll_job_termination(client: DagsterGraphQLClient, run_id: str):
 async def _stop_for_backfill_status(client: DagsterGraphQLClient, run_ids: list):
     """Await the completion of a set of runs"""
     return await asyncio.gather(*[_poll_job_termination(client, run_id) for run_id in run_ids])
-
-
-def _generate_partition_configs(conf: PartitionConfig) -> typing.List[typing.Dict[str, str]]:
-    """Generate a list of partition configurations from a combination of partitions"""
-    return [
-        dict(collections.ChainMap(*cnf_parsed))
-        for cnf_parsed in itertools.product(*[partition.config_dict() for partition in conf])
-    ]
-
-
-def _create_partition_key(partition_config: dict) -> str:
-    """
-    Create a partition key from a partition configuration
-
-    Logic should be the same as the "dagster.MultiPartitionKey.keys_by_dimension()" method
-    Dimensions are ordered by name and joined by "|"
-    """
-    return "|".join([i[-1] for i in sorted(partition_config.items())])
