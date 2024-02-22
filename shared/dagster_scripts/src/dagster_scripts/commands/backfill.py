@@ -5,12 +5,11 @@ import typing
 from dagster_scripts.commands.utils import (
     await_backfill_status,
     filter_partition_configs_for_missing_assets,
-    load_config,
     submit_backfill_jobs,
 )
 from dagster_scripts.configs.backfill import BackfillConfig
 from dagster_scripts.configs.base import PolicyEnum
-from dagster_scripts.configs.utils import generate_partition_configs
+from dagster_scripts.configs.utils import generate_partition_configs, load_config
 
 logger = logging.getLogger("dagster_scripts.commands.backfill")
 

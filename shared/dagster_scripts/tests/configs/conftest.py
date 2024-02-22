@@ -87,3 +87,20 @@ def backfill_config() -> typing.Dict[str, typing.Any]:
             ]
         }
     }
+
+
+@pytest.fixture(scope="function")
+def report_asset_config() -> typing.Dict[str, typing.Any]:
+    return {
+        "repository_name": "luchtmeetnet_ingestion",
+        "assets": [
+            {
+                "key": "my_asset_key",
+                "storage_location": {
+                    "path": "gs://my-bucket/my-path"
+                },
+                "report_asset_policy": "missing",
+                "type": "parquet"
+            }
+        ]
+    }

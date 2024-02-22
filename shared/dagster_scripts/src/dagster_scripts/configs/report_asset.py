@@ -34,6 +34,6 @@ class AssetConfig(BaseModel):
     type: FileTypeEnum
 
 
-class BackfillConfig(BaseModel):
+class ReportAssetConfig(BaseModel):
     repository_name: str
     assets: typing.List[AssetConfig]
