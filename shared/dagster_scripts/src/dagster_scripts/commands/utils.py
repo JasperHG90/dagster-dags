@@ -88,6 +88,26 @@ def get_materialized_partitions(
     Returns:
         typing.List[str]: List of partition keys that have been materialized
     """
+    return _get_materialized_partitions(
+        asset_key, asset_partitions=asset_partitions, dagster_instance=dagster_instance
+    )
+
+
+def _get_materialized_partitions(
+    asset_key: str,
+    asset_partitions: typing.Optional[typing.Sequence[str]] = None,
+    dagster_instance: typing.Optional[DagsterInstance] = None,
+) -> typing.List[str]:
+    """Get all asset materializations for a specific asset and partition values
+
+    Args:
+        asset_key (str): name of the asset
+        asset_partitions (typing.Sequence[str], optional): Sequence of partition keys for which to subset. Defaults to None.
+        dagster_instance (typing.Optional[DagsterInstance], optional): DagsterInstance. Defaults to None.
+
+    Returns:
+        typing.List[str]: List of partition keys that have been materialized
+    """
     filter = EventRecordsFilter(
         event_type=DagsterEventType.ASSET_MATERIALIZATION,
         asset_key=AssetKey(asset_key),
