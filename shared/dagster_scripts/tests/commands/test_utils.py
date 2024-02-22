@@ -37,7 +37,7 @@ class TestCheckAssetExistsDecorator:
         def test_function(asset_key, dagster_instance):
             return asset_key
         with DagsterInstance.ephemeral() as dagster_instance:
-            with pytest.raises(ValueError):
+            with pytest.raises(ValueError, match="Asset 'my_asset' not found"):
                 # NB: must be a keyword arg!
                 test_function("my_asset", dagster_instance=dagster_instance)
 
