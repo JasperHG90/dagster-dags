@@ -11,7 +11,7 @@ class BackfillTagsConfig(BaseModel):
     partitions: typing.List[typing.Union[StaticPartitionConfig, DatePartitionConfig]]
 
 
-class BackfillPolicy(str, Enum):
+class BackfillPolicyEnum(str, Enum):
     missing = "missing"
     all = "all"
 
@@ -19,5 +19,5 @@ class BackfillPolicy(str, Enum):
 class BackfillConfig(BaseModel):
     job_name: str
     repository_name: str
-    policy: BackfillPolicy
+    policy: BackfillPolicyEnum
     tags: BackfillTagsConfig
