@@ -3,8 +3,8 @@ import pathlib as plb
 from dagster_scripts.commands import utils
 from dagster import DagsterInstance, asset, materialize, DailyPartitionsDefinition, AssetExecutionContext
 
-
-daily_partition = DailyPartitionsDefinition(start_date="2021-01-01", end_date="2021-01-02")
+# Two partitions!
+daily_partition = DailyPartitionsDefinition(start_date="2021-01-01", end_date="2021-01-03")
 
 @asset(
     description="Barebones asset to check if the asset materialization works and we can get run information",
@@ -53,3 +53,21 @@ class TestGetMaterializedPartitions:
                 asset_partitions=[daily_partition.get_first_partition_key()],
                 dagster_instance=dagster_instance)
             ) == 1
+
+
+class TestReportAssetStatus:
+
+    def test_report_subset_asset_status(self):
+        with DagsterInstance.ephemeral() as dagster_instance:
+            utils._report_asset_status(
+                "my_partitioned_asset",
+                asset_partitions=daily_partition.get_partition_keys(),
+                dagster_instance=dagster_instance
+            )
+            assert len(utils._get_materialized_partitions(
+                "my_partitioned_asset",
+                asset_partitions=daily_partition.get_partition_keys(),
+                dagster_instance=dagster_instance)
+            ) == 2
+
+        dagster_instance.all_asset_keys()
