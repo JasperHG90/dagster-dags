@@ -16,6 +16,8 @@ pydantic = "^2.6.1"
 pendulum = "<3.0.0"
 pyyaml = "^6.0.1"
 dagster-graphql = "^1.6.5"
+dagster = "^1.6.5"
+dagster-postgres = "^0.22.5"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.26.0"
