@@ -2,8 +2,7 @@
 import pytest
 from pydantic import ValidationError
 
-from dagster_scripts.configs import backfill
-from dagster_scripts.configs import partitions
+from dagster_scripts.configs import backfill, partitions, base
 
 
 def test_partition_config(date_partition_config):
@@ -20,7 +19,7 @@ def test_backfill_config_policy_with_unknown_policy():
             job_name="test",
             repository_name="test",
             policy="failed", # Not part of the BackfillPolicyEnum
-            tags=backfill.BackfillTagsConfig(
+            tags=base.TagsConfig(
                 name="test",
                 partitions=[
                     partitions.DatePartitionConfig(
