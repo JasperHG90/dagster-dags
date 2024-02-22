@@ -21,6 +21,7 @@ dagster-postgres = "^0.22.5"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.26.0"
+pytest = "^8.0.1"
 
 [tool.poetry-git-version-plugin]
 alpha_version_format = '{version}a{distance}+{commit_hash}'
