@@ -38,6 +38,20 @@ def tags_config() -> typing.Dict[str, typing.Any]:
 
 
 @pytest.fixture(scope="function")
+def report_asset_storage_config() -> typing.Dict[str, typing.Any]:
+    return {
+        "path": "gs://my-bucket/my-path"
+    }
+
+
+@pytest.fixture(scope="function")
+def report_asset_storage_config_unknown_scheme() -> typing.Dict[str, typing.Any]:
+    return {
+        "path": "minio://my-bucket/my-path"
+    }
+
+
+@pytest.fixture(scope="function")
 def backfill_policy_config() -> typing.Dict[str, typing.Any]:
     return {
         "policy": "missing",
