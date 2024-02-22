@@ -1,0 +1,8 @@
+repository_name: luchtmeetnet_ingestion
+assets:
+  - key: air_quality_data
+    storage_location:
+      path: /Users/jasperginn/Documents/code_projects/dagster/dagster-dags/dags/luchtmeetnet_ingestion/.tmp/landing_zone/air_quality_data
+    report_asset_policy: missing
+    type: parquet
+    skip_checks: True
