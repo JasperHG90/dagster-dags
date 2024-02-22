@@ -62,6 +62,13 @@ def dagster_instance_from_config(
         functools.wraps(f)
 
         def wrapper(*args, **kwargs):
+            if not plb.Path(_config_dir).resolve().exists():
+                raise NotADirectoryError(f"Config directory at '{_config_dir}' not found")
+            if not (plb.Path(_config_dir) / _config_filename).resolve().exists():
+                raise FileNotFoundError(
+                    f"Config file at '{_config_dir}/{_config_filename}' not found"
+                )
+
             with DagsterInstance.from_config(
                 config_dir=_config_dir, config_filename=_config_filename
             ) as instance:
