@@ -14,3 +14,12 @@ class TagsConfig(BaseModel):
 class PolicyEnum(str, Enum):
     missing = "missing"
     all = "all"
+
+
+class FileTypeEnum(str, Enum):
+    parquet = "parquet"
+
+
+class StorageTypeEnum(str, Enum):
+    gcs = "gcs"
+    local = "local"
