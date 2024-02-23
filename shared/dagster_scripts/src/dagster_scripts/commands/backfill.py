@@ -25,7 +25,9 @@ def backfill(config: BackfillConfig) -> None:
     partition_configs = generate_partition_configs(config.tags.partitions)
     if config.backfill_policy.policy == PolicyEnum.missing:
         _partition_configs = filter_partition_configs_for_missing_assets(
-            config.backfill_policy.asset_key, partition_configs
+            asset_key=config.backfill_policy.asset_key,
+            skip_checks=config.skip_checks,
+            partition_configs=partition_configs,
         )
     else:
         _partition_configs = partition_configs

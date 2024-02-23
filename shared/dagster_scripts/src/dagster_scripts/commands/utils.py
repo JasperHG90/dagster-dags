@@ -95,7 +95,7 @@ def check_asset_exists(f: typing.Callable):
 
 
 def filter_partition_configs_for_missing_assets(
-    asset_key: str, partition_configs: typing.List[typing.Dict[str, str]]
+    asset_key: str, skip_checks: bool, partition_configs: typing.List[typing.Dict[str, str]]
 ) -> typing.List[typing.Dict[str, str]]:
     """Filter partition configs for missing assets
 
@@ -108,7 +108,9 @@ def filter_partition_configs_for_missing_assets(
     """
     logger.debug(f"Backfill policy is '{PolicyEnum.missing}'. Only backfilling missing partitions.")
     logger.debug("Filtering partitions for missing materializations")
-    materialized_partitions = get_materialized_partitions(asset_key=asset_key)
+    materialized_partitions = get_materialized_partitions(
+        asset_key=asset_key, skip_checks=skip_checks
+    )
     return _filter_asset_partitions(
         partition_configs=partition_configs,
         materialized_partitions=materialized_partitions,

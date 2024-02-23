@@ -20,3 +20,4 @@ class BackfillConfig(BaseModel):
     repository_name: str
     backfill_policy: BackfillPolicy
     tags: TagsConfig
+    skip_checks: bool = False
