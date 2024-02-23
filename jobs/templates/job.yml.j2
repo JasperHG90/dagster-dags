@@ -14,7 +14,7 @@ spec:
         # This refers to "dagster_scripts" docker image
         image: {{ image }}:{{ image_tag }} # Specify version in tag
         command: ["dagster_scripts", "--trace", "{{ command }}"]
-        args: [{{ args }}]
+        args: ["/etc/configs/config.yml"]
         env:
         # These can be used for logging purposes
         - name: JOB_NAME
@@ -46,7 +46,7 @@ spec:
         - name: configs-volume
           mountPath: /etc/configs
         - name: dagster-config-volume
-          mountPath: /opt/dagster_home/dagster
+          mountPath: /opt/dagster/dagster_home
       volumes:
         - name: configs-volume
           configMap:
