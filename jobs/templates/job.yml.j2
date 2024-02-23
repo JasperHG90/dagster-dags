@@ -12,7 +12,6 @@ spec:
       initContainers:
       - name: init
         image: ubuntu:latest
-        # Output path: /scratch/<GS-FOLDER-NAME>
         command: ["sh", "-c", "cat /opt/gcp/gcp-credentials.json | base64 -d > /opt/gcp-decoded/gcp-credentials.json"]
         volumeMounts:
         - mountPath: "/opt/gcp-decoded"

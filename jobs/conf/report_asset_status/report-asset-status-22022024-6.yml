@@ -5,3 +5,8 @@ assets:
     report_asset_policy: missing
     type: parquet
     skip_checks: True
+  - key: daily_air_quality_data
+    storage_location: gs://dala-cst-euw4-jgdag-prd/bronze/daily_air_quality_data
+    report_asset_policy: missing
+    type: parquet
+    skip_checks: True

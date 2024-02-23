@@ -1,5 +1,10 @@
 alias p := parse
-alias d := deploy
+alias dep := deploy
+alias e := exec
+alias j := jobs
+alias l := logs
+alias del := delete
+alias po := pods
 
 parse command job_config:
     python jobs_cli.py parse \
@@ -20,3 +25,18 @@ exec pod_name:
     --tty \
     {{pod_name}} \
     -n dagster-prd -- /bin/bash
+
+jobs:
+    kubectl get jobs -n dagster-prd
+
+pods:
+    kubectl get pods -n dagster-prd
+
+delete type name:
+    kubectl delete {{type}} {{name}} -n dagster-prd
+
+logs name:
+    kubectl logs {{name}} -n dagster-prd --stream
+
+attach name:
+    kubectl attach {{name}} -n dagster-prd
