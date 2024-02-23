@@ -2,7 +2,6 @@ import logging
 import pathlib as plb
 import typing
 
-import pandas as pd
 from dagster_scripts.commands.utils import (
     get_materialized_partitions,
     report_asset_status_for_partitions,
@@ -11,14 +10,6 @@ from dagster_scripts.configs.report_asset import ReportAssetConfig, StorageTypeE
 from dagster_scripts.configs.utils import load_config
 
 logger = logging.getLogger("dagster_scripts.commands.report_asset")
-
-
-def get_files(dir):
-    _path = plb.Path(dir)
-    globs = _path.glob("*.parquet")
-    return pd.DataFrame(
-        [{"path": f, "file": f.name, "partition_key": f.with_suffix("").name} for f in globs]
-    )
 
 
 def load_report_asset_config(path: typing.Union[str, plb.Path]) -> ReportAssetConfig:
@@ -33,7 +24,7 @@ def report_asset_status(config: ReportAssetConfig) -> None:
         logger.debug(f"Asset key: {asset.key}")
         if asset.storage_location.type == StorageTypeEnum.gcs:
             raise NotImplementedError("GCS storage not yet supported")
-        files = get_files(asset.storage_location.path)
+        files = asset.list_files()
         materialized_partitions = get_materialized_partitions(
             asset.key,
             skip_checks=asset.skip_checks,

@@ -3,16 +3,21 @@ import typing
 from urllib.parse import urlparse
 
 from dagster_scripts.configs.base import FileTypeEnum, PolicyEnum, StorageTypeEnum
+from google.cloud import storage
 from pydantic import BaseModel, computed_field, model_validator
 
 
-class StorageConfig(BaseModel):
-    path: str
+class AssetConfig(BaseModel):
+    key: str
+    storage_location: str
+    report_asset_policy: PolicyEnum
+    type: FileTypeEnum
+    skip_checks: bool = False
 
     @computed_field(repr=True)
     @property
-    def type(self) -> str:
-        path_scheme = urlparse(self.path).scheme
+    def storage_type(self) -> StorageTypeEnum:
+        path_scheme = urlparse(self.storage_location).scheme
         if path_scheme == "gs":
             return StorageTypeEnum.gcs
         elif path_scheme == "":
@@ -20,20 +25,64 @@ class StorageConfig(BaseModel):
         else:
             raise ValueError(f"Unsupported storage type {path_scheme}")
 
+    @computed_field(repr=True)
+    @property
+    def bucket(self) -> str:
+        if self.storage_type == StorageTypeEnum.gcs:
+            return urlparse(self.storage_location).netloc
+        else:
+            return None
+
+    @computed_field(repr=True)
+    @property
+    def prefix(self) -> str:
+        if self.storage_type == StorageTypeEnum.gcs:
+            return urlparse(self.storage_location).path.lstrip("/").rstrip("/")
+        else:
+            return None
+
     @model_validator(mode="after")
     def check_model(self):
-        if self.type == StorageTypeEnum.local:
-            if not plb.Path(self.path).resolve().exists():
-                raise ValueError(f"Path {self.path} does not exist")
+        if self.storage_type == StorageTypeEnum.local:
+            if not plb.Path(self.storage_location).resolve().exists():
+                raise ValueError(f"Path {self.storage_location} does not exist")
         return self
 
+    def list_files(self) -> typing.List[str]:
+        """List all files in the storage location.
 
-class AssetConfig(BaseModel):
-    key: str
-    storage_location: StorageConfig
-    report_asset_policy: PolicyEnum
-    type: FileTypeEnum
-    skip_checks: bool = False
+        Raises:
+            ValueError: If the storage type is not supported
+
+        Returns:
+            typing.List[str]: list of asset partitions found in the storage location
+        """
+        if self.storage_type == StorageTypeEnum.local:
+            return self._list_files_local()
+        elif self.storage_type == StorageTypeEnum.gcs:
+            return self._list_files_gcs()
+        else:
+            raise ValueError(f"Unsupported storage type {self.type}")
+
+    def _list_files_local(self):
+        """
+        List files in a local directory.
+        Internal use only
+        """
+        _path = plb.Path(self.storage_location)
+        globs = _path.glob("*.parquet")
+        return [f.with_suffix("").name for f in globs]
+
+    def _list_files_gcs(self) -> typing.List[str]:
+        """
+        List all files in a GCS bucket.
+        Internal use only
+        """
+        storage_client = storage.Client()
+        blobs: typing.Iterator[storage.Blob] = storage_client.list_blobs(
+            prefix=self.prefix(), bucket_or_name=self.bucket(), match_glob=f"**.{self.type}"
+        )
+        return [blob.name for blob in blobs]
 
 
 class ReportAssetConfig(BaseModel):

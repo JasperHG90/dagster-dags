@@ -45,13 +45,6 @@ def report_asset_storage_config() -> typing.Dict[str, typing.Any]:
 
 
 @pytest.fixture(scope="function")
-def report_asset_storage_config_unknown_scheme() -> typing.Dict[str, typing.Any]:
-    return {
-        "path": "minio://my-bucket/my-path"
-    }
-
-
-@pytest.fixture(scope="function")
 def backfill_policy_config() -> typing.Dict[str, typing.Any]:
     return {
         "policy": "missing",
@@ -90,15 +83,24 @@ def backfill_config() -> typing.Dict[str, typing.Any]:
 
 
 @pytest.fixture(scope="function")
+def asset_config() -> typing.Dict[str, typing.Any]:
+    return {
+        "key": "my_asset_key",
+        "storage_location": "gs://my-bucket/my-path",
+        "report_asset_policy": "missing",
+        "type": "parquet",
+        "skip_checks": False
+    }
+
+
+@pytest.fixture(scope="function")
 def report_asset_config() -> typing.Dict[str, typing.Any]:
     return {
         "repository_name": "luchtmeetnet_ingestion",
         "assets": [
             {
                 "key": "my_asset_key",
-                "storage_location": {
-                    "path": "gs://my-bucket/my-path"
-                },
+                "storage_location": "gs://my-bucket/my-path",
                 "report_asset_policy": "missing",
                 "type": "parquet",
                 "skip_checks": False
