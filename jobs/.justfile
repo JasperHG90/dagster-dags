@@ -13,3 +13,10 @@ parse job_config:
 
 deploy job_spec:
     kubectl apply -f ./job_spec.yml -n dagster-prd
+
+exec pod_name:
+    kubectl exec \
+    --stdin \
+    --tty \
+    {{pod_name}} \
+    -n dagster-prd -- /bin/bash

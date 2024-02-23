@@ -50,11 +50,15 @@ def parse_job(
     ),
     github_actions_url: str = typer.Argument(
         ..., help="The github actions url."
-    )
+    ),
+    debug: bool = typer.Option(
+        False,
+        help="If enabled, then use a simple ubuntu image so that you can boot into it."
+    ),
 ):
     logger.info("Parsing job...")
     utils.parse_and_write_template(
-        job_config, output_path, image, image_tag, command, github_actions_run_id, github_actions_url
+        job_config, output_path, image, image_tag, command, github_actions_run_id, github_actions_url, debug
     )
 
 
