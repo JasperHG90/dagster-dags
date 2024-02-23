@@ -9,6 +9,16 @@ spec:
   template:
     spec:
       serviceAccountName: dagster-prd
+      initContainers:
+      - name: init
+        image: ubuntu:latest
+        # Output path: /scratch/<GS-FOLDER-NAME>
+        command: ["sh", "-c", "cat /opt/gcp/gcp-credentials.json | base64 -d > /opt/gcp-decoded/gcp-credentials.json"]
+        volumeMounts:
+        - mountPath: "/opt/gcp-decoded"
+          name: google-application-credentials-decoded
+        - name: google-application-credentials
+          mountPath: /opt/gcp/
       containers:
       - name: manual-job
         # This refers to "dagster_scripts" docker image
@@ -36,6 +46,8 @@ spec:
             secretKeyRef:
               name: dagster-postgresql-secret2
               key: postgresql-password
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/opt/gcp/gcp-credentials.json"
         resources:
           requests:
             # Only calling API so very small resource
@@ -47,6 +59,8 @@ spec:
           mountPath: /etc/configs
         - name: dagster-config-volume
           mountPath: /opt/dagster_home/dagster
+        - name: google-application-credentials-decoded
+          mountPath: /opt/gcp/
       volumes:
         - name: configs-volume
           configMap:
@@ -54,6 +68,14 @@ spec:
         - name: dagster-config-volume
           configMap:
             name: dagster-config
+        - name: google-application-credentials
+          secret:
+            secretName: datareadwriter-sa-json-key-b64
+            items:
+            - key: DATAREADWRITER_SA_JSON_KEY_B64
+              path: gcp-credentials.json
+        - name: google-application-credentials-decoded
+          emptyDir: {}
       # Only try jobs once
       restartPolicy: "Never"
 ---

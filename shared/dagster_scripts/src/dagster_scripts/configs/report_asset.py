@@ -1,4 +1,5 @@
 import logging
+import os
 import pathlib as plb
 import typing
 from urllib.parse import urlparse
@@ -93,7 +94,7 @@ class AssetConfig(BaseModel):
         blobs: typing.Iterator[storage.Blob] = storage_client.list_blobs(
             prefix=self.prefix, bucket_or_name=self.bucket, match_glob=f"**.{self.type}"
         )
-        return [blob.name for blob in blobs]
+        return [os.path.splitext(blob.name)[0].strip(self.prefix).lstrip("/") for blob in blobs]
 
 
 class ReportAssetConfig(BaseModel):
