@@ -19,6 +19,7 @@ dagster-graphql = "^1.6.5"
 dagster = "^1.6.5"
 dagster-postgres = "^0.22.5"
 tqdm = "^4.66.2"
+google-cloud-storage = "^2.14.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.26.0"
