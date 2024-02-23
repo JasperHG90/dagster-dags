@@ -30,7 +30,7 @@ spec:
         - name: DAGSTER_PORT
           value: "80"
         - name: DAGSTER_HOME
-          value: "/opt/dagster/dagster_home"
+          value: "/opt/dagster_home/dagster"
         - name: DAGSTER_PG_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -46,7 +46,7 @@ spec:
         - name: configs-volume
           mountPath: /etc/configs
         - name: dagster-config-volume
-          mountPath: /opt/dagster/dagster_home
+          mountPath: /opt/dagster_home/dagster
       volumes:
         - name: configs-volume
           configMap:
