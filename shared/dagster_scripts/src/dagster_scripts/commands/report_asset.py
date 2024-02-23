@@ -6,7 +6,7 @@ from dagster_scripts.commands.utils import (
     get_materialized_partitions,
     report_asset_status_for_partitions,
 )
-from dagster_scripts.configs.report_asset import ReportAssetConfig, StorageTypeEnum
+from dagster_scripts.configs.report_asset import ReportAssetConfig
 from dagster_scripts.configs.utils import load_config
 
 logger = logging.getLogger("dagster_scripts.commands.report_asset")
@@ -22,8 +22,6 @@ def report_asset_status(config: ReportAssetConfig) -> None:
     """Report a set of assets"""
     for asset in config.assets:
         logger.debug(f"Asset key: {asset.key}")
-        if asset.storage_type == StorageTypeEnum.gcs:
-            raise NotImplementedError("GCS storage not yet supported")
         files = asset.list_files()
         materialized_partitions = get_materialized_partitions(
             asset.key,
