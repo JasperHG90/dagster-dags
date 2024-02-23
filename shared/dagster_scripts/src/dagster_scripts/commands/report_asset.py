@@ -22,20 +22,18 @@ def report_asset_status(config: ReportAssetConfig) -> None:
     """Report a set of assets"""
     for asset in config.assets:
         logger.debug(f"Asset key: {asset.key}")
-        if asset.storage_location.type == StorageTypeEnum.gcs:
+        if asset.storage_type == StorageTypeEnum.gcs:
             raise NotImplementedError("GCS storage not yet supported")
         files = asset.list_files()
         materialized_partitions = get_materialized_partitions(
             asset.key,
             skip_checks=asset.skip_checks,
-            asset_partitions=files["partition_key"].tolist(),
+            asset_partitions=files,
         )
         logger.debug(
             f"Found {len(materialized_partitions)} materialized partitions for asset {asset.key}"
         )
-        missing_partitions = list(
-            set(files["partition_key"].tolist()) - set(materialized_partitions)
-        )
+        missing_partitions = list(set(files) - set(materialized_partitions))
         logger.debug(
             f"Reporting {len(missing_partitions)} missing partitions for asset {asset.key}"
         )

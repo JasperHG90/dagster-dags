@@ -1,7 +1,8 @@
 set dotenv-load
 
 alias i := install
-alias b := backfill
+alias bf := backfill
+alias ras := report_asset_status
 
 # Install poetry dependencies
 install:
