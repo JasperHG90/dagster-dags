@@ -41,10 +41,9 @@ def parse_and_write_template(
     template = env.get_template("job.yml.j2")
     template_rendered = template.render(
         job_name_suffix=coolname.generate_slug(2),
-        image=image if not debug else "ubuntu",
-        image_tag=image_tag if not debug else "latest",
+        image=image,
+        image_tag=image_tag,
         command=command,
-        args=", ".join(['"/etc/configs/config.yml"']) if not debug else ", ".join(['"while true; do sleep 30; done;"']),
         github_actions_run_id=github_actions_run_id,
         github_actions_url=github_actions_url,
         config_version="v1",
