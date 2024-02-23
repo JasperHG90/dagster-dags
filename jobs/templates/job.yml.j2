@@ -29,6 +29,13 @@ spec:
           value: "dagster-prd-dagster-webserver.dagster-prd.svc.cluster.local"
         - name: DAGSTER_PORT
           value: "80"
+        - name: DAGSTER_HOME
+          value: "/opt/dagster/dagster_home"
+        - name: DAGSTER_PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dagster-postgresql-secret2
+              key: postgresql-password
         resources:
           requests:
             # Only calling API so very small resource
@@ -38,10 +45,15 @@ spec:
         volumeMounts:
         - name: configs-volume
           mountPath: /etc/configs
+        - name: dagster-config-volume
+          mountPath: /opt/dagster/dagster_home
       volumes:
         - name: configs-volume
           configMap:
             name: job-config
+        - name: dagster-config-volume
+          configMap:
+            name: dagster-config
       # Only try jobs once
       restartPolicy: "Never"
 ---
@@ -53,3 +65,12 @@ metadata:
 data:
   config.yml: |
     {{ config | indent(4) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dagster-config
+  namespace: dagster-prd
+data:
+  dagster.yaml: |
+    {{ dagster_config | indent(4) }}

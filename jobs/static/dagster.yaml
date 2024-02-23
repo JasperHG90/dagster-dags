@@ -1,0 +1,47 @@
+# This file is used to connect to the postgres database
+#  on a pod when calling e.g. `dagster.DagsterInstance.get()`
+
+schedule_storage:
+  module: dagster_postgres.schedule_storage
+  class: PostgresScheduleStorage
+  config:
+    postgres_db:
+      username: postgres
+      password:
+        env: DAGSTER_PG_PASSWORD
+      hostname: "10.186.0.3"
+      db_name: dagster
+      port: 5432
+      params:
+        {}
+
+run_storage:
+  module: dagster_postgres.run_storage
+  class: PostgresRunStorage
+  config:
+    postgres_db:
+      username: postgres
+      password:
+        env: DAGSTER_PG_PASSWORD
+      hostname: "10.186.0.3"
+      db_name: dagster
+      port: 5432
+      params:
+        {}
+
+event_log_storage:
+  module: dagster_postgres.event_log
+  class: PostgresEventLogStorage
+  config:
+    postgres_db:
+      username: postgres
+      password:
+        env: DAGSTER_PG_PASSWORD
+      hostname: "10.186.0.3"
+      db_name: dagster
+      port: 5432
+      params:
+        {}
+
+telemetry:
+  enabled: false

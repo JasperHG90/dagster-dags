@@ -5,6 +5,7 @@ import yaml
 import jinja2
 import coolname
 
+_path = plb.Path(__file__).resolve().parent
 
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader("templates"), # Use PackageLoader("package-name", "templates-folder-name") for package
@@ -35,6 +36,7 @@ def parse_and_write_template(
     github_actions_url: str
 ):
     cnf = load_config(config_path)
+    dagster_config = load_config(_path / "static" / "dagster.yaml")
     template = env.get_template("job.yml.j2")
     template_rendered = template.render(
         job_name_suffix=coolname.generate_slug(2),
@@ -44,7 +46,8 @@ def parse_and_write_template(
         github_actions_run_id=github_actions_run_id,
         github_actions_url=github_actions_url,
         config_version="v1",
-        config=yaml.safe_dump(cnf)
+        config=yaml.safe_dump(cnf),
+        dagster_config=yaml.safe_dump(dagster_config)
     )
     with plb.Path(output_path).open("w") as f:
         f.write(template_rendered)

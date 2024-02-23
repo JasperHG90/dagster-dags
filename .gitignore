@@ -25,3 +25,5 @@ __pycache__
 .vscode
 
 .DS_Store
+
+job_spec.yml
