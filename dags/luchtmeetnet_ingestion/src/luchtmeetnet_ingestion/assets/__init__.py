@@ -23,7 +23,7 @@ from pandas.util import hash_pandas_object
     io_manager_key="landing_zone",
     partitions_def=daily_station_partition,
     retry_policy=RetryPolicy(
-        max_retries=3, delay=15, backoff=Backoff.LINEAR, jitter=Jitter.PLUS_MINUS
+        max_retries=3, delay=30, backoff=Backoff.EXPONENTIAL, jitter=Jitter.PLUS_MINUS
     ),
     backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=10),
     code_version="v1",
