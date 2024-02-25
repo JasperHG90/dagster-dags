@@ -65,7 +65,7 @@ trigger_weekly_asset_from_daily_asset = PartitionedAssetSensorFactory(
 # Also: check for asset runs and job runs
 # Check: works with multiple partitions? Out of scope
 
-
+# Expect two downstream materialization run requests because all partitions have succeeded
 def test_multi_asset_sensor_backfill_all_materialized():
     my_multi_partition_asset: AssetsDefinition = my_asset_factory(fail_materializations=None)
     with DagsterInstance.ephemeral() as instance:
