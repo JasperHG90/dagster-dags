@@ -10,6 +10,7 @@ from dagster import (
     MultiAssetSensorEvaluationContext,
     RunRequest,
     SkipReason,
+    EventLogRecord
 )
 
 from dagster_utils.factories.base import DagsterObjectFactory
@@ -71,23 +72,24 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
             materializations_by_partition = context.latest_materialization_records_by_partition(
                 AssetKey(self.monitored_asset)
             )
-            if len(materializations_by_partition) == 0:
-                yield SkipReason("No materializations found. Skipping . . .")
             context.log.debug(f"Materializations: {materializations_by_partition}")
 
             # Get all corresponding weekly partitions for any materialized daily partitions
             for partition, materialization in materializations_by_partition.items():
+                materialization: EventLogRecord
                 context.log.info(f"Partition: {partition}")
                 weekly_partitions = context.get_downstream_partition_keys(
                     partition,
                     from_asset_key=AssetKey(self.monitored_asset),
                     to_asset_key=AssetKey(self.downstream_asset),
                 )
-
+                context.log.info(f"Weekly partitions: {weekly_partitions}")
                 run_tags = materialization.event_log_entry.tags
-                is_backfill = False if run_tags.get("dagster/backfill") is None else True
-                backfill_name = run_tags.get("dagster/backfill")
-                context.log.debug(f"Is backfill: {is_backfill}")
+                context.log.debug(run_tags)
+                if isinstance(run_tags, dict):
+                    is_backfill = False if run_tags.get("dagster/backfill") is None else True
+                    backfill_name = run_tags.get("dagster/backfill")
+                    context.log.debug(f"Is backfill: {is_backfill}")
 
                 if weekly_partitions:  # Check that a downstream weekly partition exists
                     # Upstream daily partition can only map to at most one downstream weekly partition
@@ -96,31 +98,38 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
                         from_asset_key=AssetKey(self.downstream_asset),
                         to_asset_key=AssetKey(self.monitored_asset),
                     )
+                    context.log.debug(f"Daily partitions in week: {daily_partitions_in_week}")
+                    # Filter for daily partitions in the backfill (if this is a backfill). Need failed
+                    #  partitionss from get materialization info
+                    if is_backfill:
+                        backfill = context.instance.get_backfill(backfill_name)
+                        partitions = backfill.partition_names
                     num_total, num_done, num_failed, _ = _get_materialization_info(
                         context.instance,
                         self.monitored_asset,
                         daily_partitions_in_week,
                         self.partitions_def_monitored_asset,
+                        filter_partitions=partitions if is_backfill else None,
                     )
-                    context.log.debug(f"Total: {num_total}, Done: {num_done}, Failed: {num_failed}")
+                    context.log.info(f"Total: {num_total}, Done: {num_done}, Failed: {num_failed}")
                     if num_done < num_total:
                         context.log.debug(
                             f"Only {num_done} out of {num_total} partitions have been materialized. Skipping . . ."
                         )
-                        yield SkipReason(
+                        context.log.debug(
                             f"Only {num_done} out of {num_total} partitions have been materialized. Waiting until all partitions have been materialized."
                         )
-                        context.log.debug(f"Total: {num_total}, Done: {num_done}, Failed: {num_failed}")
+                        context.log.info(f"Total: {num_total}, Done: {num_done}, Failed: {num_failed}")
                     else:
                         if num_failed > 0:
                             if self.require_all_partitions_monitored_asset:
                                 context.advance_cursor({AssetKey(self.monitored_asset): materialization})
-                                yield SkipReason(
+                                yield context.log.debug(
                                     f"'require_all_partitions_monitored_asset' is set to True. Encountered {num_failed} failed partitions. Skipping materialization of downstream asset with partition '{weekly_partitions[0]}'."
                                 )
                                 continue
                             else:
-                                context.log.warning(
+                                context.log.debug(
                                     f"'require_all_partitions_monitored_asset' is set to False. {num_failed} partitions failed to materialize. Will still run downstream task."
                                 )
                         if weekly_partitions[0] in run_requests_by_partition:
@@ -128,11 +137,15 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
                         run_requests_by_partition[weekly_partitions[0]] = RunRequest(
                             partition_key=weekly_partitions[0],
                             run_key=weekly_partitions[0] if not is_backfill else f"{weekly_partitions[0]}_{backfill_name}",
-                            tags={} if not is_backfill else {"dagster/backfill": backfill_name}
+                            tags={} if not is_backfill else {"dagster/backfill": backfill_name},
+                            job_name=self.job.name,
                         )
-                        context.log.info(run_requests_by_partition)
                         # Advance the cursor so we only check event log records past the cursor
                         context.advance_cursor({AssetKey(self.monitored_asset): materialization})
+            if len(materializations_by_partition) == 0:
+                yield SkipReason("No materializations found. Skipping . . .")
+            elif len(run_requests_by_partition) == 0:
+                yield SkipReason("Materializations found for monitored asset but no downstream materialization requested. See logs for more details. Skipping ...")
             for request in list(run_requests_by_partition.values()):
                 yield request
         return _sensor

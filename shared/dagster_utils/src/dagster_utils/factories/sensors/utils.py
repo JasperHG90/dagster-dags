@@ -13,7 +13,8 @@ def _get_materialization_info(
         monitored_asset: str,
         partition_keys: typing.Sequence[str],
         partitions_def_monitored_asset: PartitionsDefinition,
-        return_only_successful_partitions: bool = False
+        return_only_successful_partitions: bool = False,
+        filter_partitions: typing.Optional[typing.List[str]] = None
     ) -> typing.Tuple[int, int, int, typing.Mapping[str, AssetPartitionStatus]]:
     # If not yet materialized, then None, else status.FAILED
     status_by_partition = instance.get_status_by_partition(
@@ -21,6 +22,10 @@ def _get_materialization_info(
         partition_keys=partition_keys,
         partitions_def=partitions_def_monitored_asset
     )
+    if filter_partitions:
+        status_by_partition = {
+            k: v for k, v in status_by_partition.items() if k in filter_partitions
+        }
     num_total = len(status_by_partition)
     status_by_partition_filtered = {k: v for k, v in status_by_partition.items() if v is not None}
     num_done = sum(
