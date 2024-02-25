@@ -37,6 +37,8 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
         sensor also works if the monitored asset has some partitions that have failed by setting the
         `require_all_partitions_monitored_asset` parameter to False.
 
+        NB: logs are broken for this sensor! (Dagster issue)
+
         Args:
             name (str): name of the sensor
             monitored_asset (str): name of asset that is monitored to determine if the job should be triggered
