@@ -12,6 +12,7 @@ from dagster import (
     SkipReason,
     EventLogRecord
 )
+import pendulum
 
 from dagster_utils.factories.base import DagsterObjectFactory
 from dagster_utils.factories.sensors.utils import _get_materialization_info
@@ -30,6 +31,7 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
         minimum_interval_seconds: typing.Optional[int] = None,
         default_status: DefaultSensorStatus = DefaultSensorStatus.STOPPED,
         description: typing.Optional[str] = None,
+        remove_stale_materializations_after_hours: typing.Optional[int] = None,
     ):
         """A sensor that monitors some partitioned asset and triggers a job when the asset is materialized.
 
@@ -57,6 +59,7 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
         self.partitions_def_monitored_asset = partitions_def_monitored_asset
         self.require_all_partitions_monitored_asset = require_all_partitions_monitored_asset
         self.minimum_interval_seconds = minimum_interval_seconds
+        self.remove_stale_materializations_after_hours = remove_stale_materializations_after_hours
         self.default_status = default_status
 
     def __call__(self) -> MultiAssetSensorDefinition:
@@ -80,6 +83,11 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
             for partition, materialization in materializations_by_partition.items():
                 materialization: EventLogRecord
                 context.log.info(f"Partition: {partition}")
+                if self.remove_stale_materializations_after_hours is not None:
+                    if pendulum.from_timestamp(materialization.timestamp).add(hours=self.remove_stale_materializations_after_hours) < pendulum.now(tz="UTC"):
+                        context.log.info(f"Materialization is stale. Removing . . .")
+                        context.advance_cursor({AssetKey(self.monitored_asset): materialization})
+                        continue
                 weekly_partitions = context.get_downstream_partition_keys(
                     partition,
                     from_asset_key=AssetKey(self.monitored_asset),
