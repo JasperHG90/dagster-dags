@@ -3,7 +3,7 @@ import os
 from dagster import EnvVar
 from dagster_slack import SlackResource
 from dagster_utils.IO.duckdb_io_manager import duckdb_parquet_io_manager
-from luchtmeetnet_ingestion.IO.resources import luchtmeetnet_resource
+from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
 
 environment = os.getenv("ENVIRONMENT", "dev")
 
@@ -11,11 +11,8 @@ if environment == "dev":
     os.environ["DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN"] = "dummy"
 
 shared_resources = {
-    "luchtmeetnet_api": luchtmeetnet_resource.configured(
-        {
-            "rate_calls": 100,  # See https://api-docs.luchtmeetnet.nl/ for rate limits
-            "rate_minutes": 5,
-        }
+    "luchtmeetnet_api": LuchtMeetNetResource(
+        rate_calls=100, rate_minutes=5  # See https://api-docs.luchtmeetnet.nl/ for rate limits
     ),
     # NB: on dev, this hook is not used. See 'sensors.py' for implementation
     #  since the hooks depend on a SlackResource, we need to define it here

@@ -1,17 +1,36 @@
 import time
+from contextlib import contextmanager
 from typing import Any, Dict, List, Optional
 
-from dagster import AssetExecutionContext, Field, InitResourceContext, resource
+from dagster import AssetExecutionContext, ConfigurableResource
 from luchtmeetnet_ingestion.luchtmeetnet.api import get_results_luchtmeetnet_endpoint
+from pydantic import PrivateAttr
 from pyrate_limiter import BucketFullException, Duration, Limiter, Rate
+
+
+@contextmanager
+def rate_limiter(rate_calls: int, rate_minutes: int):
+    rate = Rate(rate_calls, Duration.MINUTE * rate_minutes)
+    limiter = Limiter(rate)
+    try:
+        yield limiter
+    finally:
+        ...
 
 
 # Todo: change resource type so can add description/docs
 #  https://docs.dagster.io/concepts/resources
-class LuchtMeetNetResource:
-    def __init__(self, rate_calls: int, rate_minutes: int):
-        self.rate_calls = rate_calls
-        self.rate_minutes = rate_minutes
+class LuchtMeetNetResource(ConfigurableResource):
+    rate_calls: int
+    rate_minutes: int
+
+    _limiter = PrivateAttr()
+
+    @contextmanager
+    def yield_for_execution(self, context):
+        with rate_limiter(self.rate_calls, self.rate_minutes) as limiter:
+            self._limiter = limiter
+            yield self
 
     def request(
         self,
@@ -21,13 +40,10 @@ class LuchtMeetNetResource:
         retries_before_failing: int = 10,
         delay_in_seconds: int = 30,
     ) -> List[Dict[str, Any]]:
-        # context = self.get_resource_context()
         partition_key = context.partition_key
-        rate = Rate(self.rate_calls, Duration.MINUTE * self.rate_minutes)
-        limiter = Limiter(rate)
         for retry in range(retries_before_failing):
             try:
-                limiter.try_acquire(partition_key)
+                self._limiter.try_acquire(partition_key)
             except BucketFullException as e:
                 context.log.warning(f"Rate limit exceeded for {partition_key} on try={retry}.")
                 if retry == retries_before_failing - 1:
@@ -42,19 +58,3 @@ class LuchtMeetNetResource:
             return get_results_luchtmeetnet_endpoint(
                 endpoint=endpoint, request_params=request_params
             )
-
-
-@resource(
-    config_schema={
-        "rate_calls": Field(int, is_required=True, description="Number of calls allowed per rate"),
-        "rate_minutes": Field(int, is_required=True, description="Number of minutes for the rate"),
-    },
-    version="v1",
-)
-def luchtmeetnet_resource(
-    init_context: InitResourceContext,
-) -> LuchtMeetNetResource:
-    return LuchtMeetNetResource(
-        rate_calls=init_context.resource_config["rate_calls"],
-        rate_minutes=init_context.resource_config["rate_minutes"],
-    )
