@@ -1,6 +1,7 @@
 import typing
 from datetime import datetime as dt
 
+import pytest
 from dagster import (
     AssetExecutionContext,
     AssetKey,
@@ -51,14 +52,29 @@ daily_asset_job = define_asset_job(
 )
 
 # See also: https://github.com/dagster-io/hooli-data-eng-pipelines/blob/master/hooli_data_eng_tests/test_assets.py
-trigger_weekly_asset_from_daily_asset = PartitionedAssetSensorFactory(
-    name="trigger_weekly_asset_from_daily_asset",
-    monitored_asset="my_multi_partition_asset",
-    downstream_asset="my_daily_partition_asset",
-    job=daily_asset_job,
-    partitions_def_monitored_asset=multi_partition,
-    require_all_partitions_monitored_asset=False,
-)()
+@pytest.fixture()
+def sensor_not_all_partitions():
+    return PartitionedAssetSensorFactory(
+        name="trigger_weekly_asset_from_daily_asset",
+        monitored_asset="my_multi_partition_asset",
+        downstream_asset="my_daily_partition_asset",
+        job=daily_asset_job,
+        partitions_def_monitored_asset=multi_partition,
+        require_all_partitions_monitored_asset=False,
+    )()
+
+
+@pytest.fixture()
+def sensor_all_partitions():
+    return PartitionedAssetSensorFactory(
+        name="trigger_weekly_asset_from_daily_asset",
+        monitored_asset="my_multi_partition_asset",
+        downstream_asset="my_daily_partition_asset",
+        job=daily_asset_job,
+        partitions_def_monitored_asset=multi_partition,
+        require_all_partitions_monitored_asset=True,
+    )()
+
 
 # TODO
 # ignore asset materialization reports
@@ -66,7 +82,7 @@ trigger_weekly_asset_from_daily_asset = PartitionedAssetSensorFactory(
 # Check: works with multiple partitions? Out of scope
 
 # Expect two downstream materialization run requests because all partitions have succeeded
-def test_multi_asset_sensor_backfill_all_materialized():
+def test_multi_asset_sensor_backfill_all_materialized(sensor_not_all_partitions):
     my_multi_partition_asset: AssetsDefinition = my_asset_factory(fail_materializations=None)
     with DagsterInstance.ephemeral() as instance:
         definition = Definitions(
@@ -84,7 +100,7 @@ def test_multi_asset_sensor_backfill_all_materialized():
                 instance=instance,
                 tags={"dagster/backfill": "my_backfill"},
             )
-        run_requests = [*trigger_weekly_asset_from_daily_asset(multi_asset_context)]
+        run_requests = [*sensor_not_all_partitions(multi_asset_context)]
     assert len(run_requests) == 2
     for request in run_requests:
         assert request.run_key in ["2021-01-01_my_backfill", "2021-01-02_my_backfill"]
@@ -93,7 +109,7 @@ def test_multi_asset_sensor_backfill_all_materialized():
 
 # Expect two downstream materialization run requests because still at least one partition
 # on 2021-01-01 has succeeded
-def test_multi_asset_sensor_backfill_with_failed_asset_materialization():
+def test_multi_asset_sensor_backfill_with_failed_asset_materialization(sensor_not_all_partitions):
     my_multi_partition_asset: AssetsDefinition = my_asset_factory(
         fail_materializations=["2021-01-01|NL01387"]
     )
@@ -117,7 +133,7 @@ def test_multi_asset_sensor_backfill_with_failed_asset_materialization():
             # This is expected
             except ValueError:
                 continue
-        run_requests = [*trigger_weekly_asset_from_daily_asset(multi_asset_context)]
+        run_requests = [*sensor_not_all_partitions(multi_asset_context)]
     assert len(run_requests) == 2
     for request in run_requests:
         assert request.run_key in ["2021-01-01_my_backfill", "2021-01-02_my_backfill"]
@@ -125,7 +141,7 @@ def test_multi_asset_sensor_backfill_with_failed_asset_materialization():
 
 # Expect only a single downstream materialization run request because all partitions on
 # 2021-01-01 have failed
-def test_multi_asset_sensor_backfill_with_all_failed_asset_materializations_on_day():
+def test_multi_asset_sensor_backfill_with_all_failed_asset_materializations_on_day(sensor_not_all_partitions):
     my_multi_partition_asset: AssetsDefinition = my_asset_factory(
         fail_materializations=["2021-01-01|NL01387", "2021-01-01|NL01388"]
     )
@@ -149,14 +165,14 @@ def test_multi_asset_sensor_backfill_with_all_failed_asset_materializations_on_d
             # This is expected
             except ValueError:
                 continue
-        run_requests = [*trigger_weekly_asset_from_daily_asset(multi_asset_context)]
+        run_requests = [*sensor_not_all_partitions(multi_asset_context)]
     assert len(run_requests) == 1
     for request in run_requests:
         assert request.run_key == "2021-01-02_my_backfill"
 
 
 # Materialization should be skipped because the backfill is not yet done
-def test_multi_asset_sensor_backfill_with_asset_not_yet_materialized():
+def test_multi_asset_sensor_backfill_with_asset_not_yet_materialized(sensor_not_all_partitions):
     my_multi_partition_asset: AssetsDefinition = my_asset_factory(fail_materializations=None)
     with DagsterInstance.ephemeral() as instance:
         definition = Definitions(
@@ -177,7 +193,7 @@ def test_multi_asset_sensor_backfill_with_asset_not_yet_materialized():
                 instance=instance,
                 tags={"dagster/backfill": "my_backfill"},
             )
-        run_requests = [*trigger_weekly_asset_from_daily_asset(multi_asset_context)]
+        run_requests = [*sensor_not_all_partitions(multi_asset_context)]
         assert len(run_requests) == 2
         assert isinstance(run_requests[0], SkipReason)
         assert (
@@ -190,7 +206,7 @@ def test_multi_asset_sensor_backfill_with_asset_not_yet_materialized():
 
 
 # Materialization of downstream asset should happen because none has failed
-def test_multi_asset_sensor_daily_run_all_materialized():
+def test_multi_asset_sensor_daily_run_all_materialized(sensor_not_all_partitions):
     my_multi_partition_asset: AssetsDefinition = my_asset_factory(fail_materializations=None)
     with DagsterInstance.ephemeral() as instance:
         definition = Definitions(
@@ -209,7 +225,7 @@ def test_multi_asset_sensor_daily_run_all_materialized():
                 partition_key=partition_key,
                 instance=instance,
             )
-        run_requests = [*trigger_weekly_asset_from_daily_asset(multi_asset_context)]
+        run_requests = [*sensor_not_all_partitions(multi_asset_context)]
     assert len(run_requests) == 1
     for request in run_requests:
         assert request.run_key == "2021-01-01"
@@ -217,7 +233,7 @@ def test_multi_asset_sensor_daily_run_all_materialized():
 
 
 # Materialization of downstream asset should happen because only one partition has failed
-def test_multi_asset_sensor_daily_run_one_asset_failed():
+def test_multi_asset_sensor_daily_run_one_asset_failed(sensor_not_all_partitions):
     my_multi_partition_asset: AssetsDefinition = my_asset_factory(
         fail_materializations=["2021-01-01|NL01387"]
     )
@@ -242,7 +258,7 @@ def test_multi_asset_sensor_daily_run_one_asset_failed():
             # This is expected
             except ValueError:
                 continue
-        run_requests = [*trigger_weekly_asset_from_daily_asset(multi_asset_context)]
+        run_requests = [*sensor_not_all_partitions(multi_asset_context)]
     assert len(run_requests) == 1
     for request in run_requests:
         assert request.run_key == "2021-01-01"
@@ -250,7 +266,7 @@ def test_multi_asset_sensor_daily_run_one_asset_failed():
 
 
 # Materialization of downstream asset should not happen because still waiting on partition to materialize
-def test_multi_asset_sensor_daily_run_with_asset_not_yet_materialized():
+def test_multi_asset_sensor_daily_run_with_asset_not_yet_materialized(sensor_not_all_partitions):
     my_multi_partition_asset: AssetsDefinition = my_asset_factory(fail_materializations=None)
     with DagsterInstance.ephemeral() as instance:
         definition = Definitions(
@@ -271,10 +287,43 @@ def test_multi_asset_sensor_daily_run_with_asset_not_yet_materialized():
                 partition_key=partition_key,
                 instance=instance,
             )
-        run_requests = [*trigger_weekly_asset_from_daily_asset(multi_asset_context)]
+        run_requests = [*sensor_not_all_partitions(multi_asset_context)]
     assert len(run_requests) == 1
     assert isinstance(run_requests[0], SkipReason)
     assert (
         run_requests[0].skip_message
         == "Only 1 out of 2 partitions have been materialized. Waiting until all partitions have been materialized."
     )
+
+
+# Expect one downstream materialization run requests because even though one partition has succeeded on
+#  2021-01-01, the sensor requires all partitions to be materialized
+def test_multi_asset_sensor_backfill_with_require_all_partitions(sensor_all_partitions):
+    my_multi_partition_asset: AssetsDefinition = my_asset_factory(
+        fail_materializations=["2021-01-01|NL01387"]
+    )
+    with DagsterInstance.ephemeral() as instance:
+        definition = Definitions(
+            assets=[my_multi_partition_asset, my_daily_partition_asset], jobs=[daily_asset_job]
+        )
+        multi_asset_context = build_multi_asset_sensor_context(
+            instance=instance,
+            monitored_assets=[AssetKey("my_multi_partition_asset")],
+            definitions=definition,
+        )
+        for partition_key in multi_partition.get_partition_keys():
+            try:
+                materialize(
+                    [my_multi_partition_asset],
+                    partition_key=partition_key,
+                    instance=instance,
+                    tags={"dagster/backfill": "my_backfill"},
+                )
+            # This is expected
+            except ValueError:
+                continue
+        run_requests = [*sensor_all_partitions(multi_asset_context)]
+    assert len(run_requests) == 2
+    assert isinstance(run_requests[0], SkipReason)
+    assert run_requests[0].skip_message == "'require_all_partitions_monitored_asset' is set to True. Encountered 1 failed partitions. Skipping materialization of downstream asset with partition '2021-01-01'."
+    assert run_requests[1].run_key == "2021-01-02_my_backfill"

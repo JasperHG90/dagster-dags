@@ -112,8 +112,9 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
                             if self.require_all_partitions_monitored_asset:
                                 context.advance_cursor({AssetKey(self.monitored_asset): materialization})
                                 yield SkipReason(
-                                    f"'require_all_partitions_monitored_asset' is set to True. Encountered {num_failed} failed partitions. Advancing cursor and skipping materialization of downstream asset."
+                                    f"'require_all_partitions_monitored_asset' is set to True. Encountered {num_failed} failed partitions. Skipping materialization of downstream asset with partition '{weekly_partitions[0]}'."
                                 )
+                                continue
                             else:
                                 context.log.warning(
                                     f"'require_all_partitions_monitored_asset' is set to False. {num_failed} partitions failed to materialize. Will still run downstream task."
