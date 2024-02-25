@@ -19,6 +19,7 @@ dagster-slack = "~0"
 dagster-k8s = "^0.22.1"
 dagster-celery-k8s = "^0.22.1"
 dagster-utils = {path = "../../shared/dagster_utils"}
+pyrate-limiter = "^3.2.1"
 
 [tool.dagster]
 module_name = "luchtmeetnet_ingestion"

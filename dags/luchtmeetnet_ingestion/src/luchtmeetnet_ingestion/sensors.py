@@ -9,8 +9,8 @@ from dagster import (
     run_status_sensor,
 )
 from dagster_slack import SlackResource
-from dagster_utils.factories.sensors.partitioned_asset_sensor import (
-    PartitionedAssetSensorFactory,
+from dagster_utils.factories.sensors.trigger_job_run_status_sensor import (
+    PartitionedJobSensorFactory,
 )
 from luchtmeetnet_ingestion.jobs import copy_to_data_lake_job, ingestion_job
 from luchtmeetnet_ingestion.partitions import daily_station_partition
@@ -22,14 +22,15 @@ def my_message_fn(slack: SlackResource, message: str) -> str:
     slack.get_client().chat_postMessage(channel="#dagster-notifications", text=message)
 
 
-run_copy_to_data_lake_after_ingestion = PartitionedAssetSensorFactory(
+run_copy_to_data_lake_after_ingestion = PartitionedJobSensorFactory(
     name="run_copy_to_data_lake_after_ingestion",
     monitored_asset="air_quality_data",
-    downstream_asset="daily_air_quality_data",
-    job=copy_to_data_lake_job,
+    monitored_job=ingestion_job,
+    downstream_job=copy_to_data_lake_job,
     partitions_def_monitored_asset=daily_station_partition,
-    require_all_partitions_monitored_asset=False,
     default_status=DefaultSensorStatus.RUNNING,
+    description="Run copy to data lake after ingestion",
+    run_status=DagsterRunStatus.SUCCESS,
 )()
 
 

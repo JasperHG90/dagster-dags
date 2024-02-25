@@ -11,7 +11,9 @@ if environment == "dev":
     os.environ["DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN"] = "dummy"
 
 shared_resources = {
-    "luchtmeetnet_api": LuchtMeetNetResource(),
+    "luchtmeetnet_api": LuchtMeetNetResource(
+        rate={"calls": 100, "minutes": 5}  # See https://api-docs.luchtmeetnet.nl/ for rate limits
+    ),
     # NB: on dev, this hook is not used. See 'sensors.py' for implementation
     #  since the hooks depend on a SlackResource, we need to define it here
     "slack": SlackResource(token=EnvVar("DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN")),

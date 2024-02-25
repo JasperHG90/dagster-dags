@@ -1,5 +1,6 @@
 import pandas as pd
 from dagster import (  # AutoMaterializePolicy,; AutoMaterializeRule,
+    AssetExecutionContext,
     AssetIn,
     BackfillPolicy,
     Backoff,
@@ -17,17 +18,23 @@ from luchtmeetnet_ingestion.partitions import daily_partition, daily_station_par
     io_manager_key="landing_zone",
     partitions_def=daily_station_partition,
     retry_policy=RetryPolicy(
-        max_retries=3, delay=30, backoff=Backoff.EXPONENTIAL, jitter=Jitter.PLUS_MINUS
+        max_retries=3, delay=15, backoff=Backoff.LINEAR, jitter=Jitter.PLUS_MINUS
     ),
-    backfill_policy=BackfillPolicy(max_partitions_per_run=3),
+    backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=10),
 )
-def air_quality_data(context, luchtmeetnet_api: LuchtMeetNetResource) -> pd.DataFrame:
+def air_quality_data(
+    context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
+) -> pd.DataFrame:
     date, station = context.partition_key.split("|")
     context.log.debug(date)
     context.log.debug(f"Fetching data for {date}")
     start, end = f"{date}T00:00:00", f"{date}T23:59:59"
     rp = {"start": start, "end": end, "station_number": station}
-    df = pd.DataFrame(luchtmeetnet_api.request("measurements", request_params=rp))
+    df = pd.DataFrame(
+        luchtmeetnet_api.request(
+            "measurements", partition_key=context.partition_key, request_params=rp
+        )
+    )
     df["station_number"] = station
     df["start"] = start
     df["end"] = end

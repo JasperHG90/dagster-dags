@@ -2118,6 +2118,21 @@ plugins = ["importlib-metadata"]
 windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
+name = "pyrate-limiter"
+version = "3.2.1"
+description = "Python Rate-Limiter using Leaky-Bucket Algorithm"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "pyrate_limiter-3.2.1-py3-none-any.whl", hash = "sha256:0e555a91ca84be8d00b8ea244dea96ce857964a320ed0af10d3116cbfa80a352"},
+    {file = "pyrate_limiter-3.2.1.tar.gz", hash = "sha256:40999749d40aaf7a7c96645dc403e54849999d379a7051a13771d6ef59a0c11a"},
+]
+
+[package.extras]
+all = ["filelock (>=3.0)", "redis (>=5.0.0,<6.0.0)"]
+docs = ["furo (>=2022.3.4,<2023.0.0)", "myst-parser (>=0.17)", "sphinx (>=4.3.0,<5.0.0)", "sphinx-autodoc-typehints (>=1.17,<2.0)", "sphinx-copybutton (>=0.5)", "sphinxcontrib-apidoc (>=0.3,<0.4)"]
+
+[[package]]
 name = "pyreadline3"
 version = "3.4.1"
 description = "A python implementation of GNU readline."
@@ -3121,4 +3136,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.12"
-content-hash = "665632f212a3437c2ddf1a9a2eb5b9907f823a9e5bca61892248fca5f0e20b29"
+content-hash = "0b2d184286ca3eb047b0cdc5507b823138cc2ee3460e5f94bb1111d54efa8d4f"
