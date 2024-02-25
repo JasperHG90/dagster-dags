@@ -1,7 +1,12 @@
 from importlib import metadata
 
 from dagster import Definitions
-from luchtmeetnet_ingestion.assets import air_quality_data, daily_air_quality_data
+from luchtmeetnet_ingestion.assets import (
+    air_quality_data,
+    air_quality_station_names,
+    daily_air_quality_data,
+    station_names,
+)
 from luchtmeetnet_ingestion.jobs import copy_to_data_lake_job, ingestion_job
 from luchtmeetnet_ingestion.resource_definitions import env_resources, environment
 from luchtmeetnet_ingestion.schedules import daily_schedule
@@ -18,7 +23,7 @@ except metadata.PackageNotFoundError:
 
 
 definition = Definitions(
-    assets=[air_quality_data, daily_air_quality_data],
+    assets=[air_quality_data, daily_air_quality_data, station_names, air_quality_station_names],
     resources=env_resources[environment],
     jobs=[ingestion_job, copy_to_data_lake_job],
     sensors=[

@@ -20,6 +20,7 @@ dagster-k8s = "^0.22.1"
 dagster-celery-k8s = "^0.22.1"
 dagster-utils = {path = "../../shared/dagster_utils"}
 pyrate-limiter = "^3.2.1"
+coolname = "^2.2.0"
 
 [tool.dagster]
 module_name = "luchtmeetnet_ingestion"

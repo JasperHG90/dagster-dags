@@ -413,6 +413,17 @@ humanfriendly = ">=7.1"
 cron = ["capturer (>=2.4)"]
 
 [[package]]
+name = "coolname"
+version = "2.2.0"
+description = "Random name and slug generator"
+optional = false
+python-versions = "*"
+files = [
+    {file = "coolname-2.2.0-py2.py3-none-any.whl", hash = "sha256:4d1563186cfaf71b394d5df4c744f8c41303b6846413645e31d31915cdeb13e8"},
+    {file = "coolname-2.2.0.tar.gz", hash = "sha256:6c5d5731759104479e7ca195a9b64f7900ac5bead40183c09323c7d0be9e75c7"},
+]
+
+[[package]]
 name = "croniter"
 version = "2.0.1"
 description = "croniter provides iteration for datetime object with cron like format"
@@ -3136,4 +3147,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.12"
-content-hash = "0b2d184286ca3eb047b0cdc5507b823138cc2ee3460e5f94bb1111d54efa8d4f"
+content-hash = "fc3d83db84ef369687e3f79446263ba0e40ca8069bb3a24c08805fcc04490b13"

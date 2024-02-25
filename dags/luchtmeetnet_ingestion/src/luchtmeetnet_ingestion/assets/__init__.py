@@ -4,9 +4,12 @@ import pandas as pd
 from dagster import (
     AssetExecutionContext,
     AssetIn,
+    AutoMaterializePolicy,
+    AutoMaterializeRule,
     BackfillPolicy,
     Backoff,
     DataVersion,
+    FreshnessPolicy,
     Jitter,
     Output,
     RetryPolicy,
@@ -50,7 +53,6 @@ def air_quality_data(
     io_manager_key="data_lake_bronze",
     partitions_def=daily_partition,
     ins={
-        # Missing upstream partitions are
         "ingested_data": AssetIn(
             "air_quality_data",
             input_manager_key="landing_zone",
@@ -62,3 +64,32 @@ def daily_air_quality_data(
     context: AssetExecutionContext, ingested_data: pd.DataFrame
 ) -> pd.DataFrame:
     return ingested_data
+
+
+@asset(
+    io_manager_key="landing_zone",
+    compute_kind="duckdb",
+    description="Luchtmeetnet API stations",
+    freshness_policy=FreshnessPolicy(maximum_lag_minutes=30, cron_schedule="0 0 1 * *"),
+    auto_materialize_policy=AutoMaterializePolicy.eager().with_rules(
+        AutoMaterializeRule.materialize_on_missing()
+    ),
+)
+def station_names(
+    context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
+) -> pd.DataFrame:
+    return pd.DataFrame(luchtmeetnet_api.request("stations", context=context))
+
+
+@asset(
+    io_manager_key="data_lake_bronze",
+    description="Copy station names from ingestion to bronze",
+    compute_kind="duckdb",
+    auto_materialize_policy=AutoMaterializePolicy.eager().with_rules(
+        AutoMaterializeRule.materialize_on_missing()
+    ),
+)
+def air_quality_station_names(
+    context: AssetExecutionContext, station_names: pd.DataFrame
+) -> pd.DataFrame:
+    return station_names

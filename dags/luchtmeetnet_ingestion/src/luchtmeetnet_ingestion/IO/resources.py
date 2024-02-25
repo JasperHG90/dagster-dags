@@ -2,6 +2,7 @@ import time
 from contextlib import contextmanager
 from typing import Any, Dict, List, Optional
 
+from coolname import generate_slug
 from dagster import AssetExecutionContext, ConfigurableResource
 from luchtmeetnet_ingestion.luchtmeetnet.api import get_results_luchtmeetnet_endpoint
 from pydantic import PrivateAttr
@@ -40,7 +41,10 @@ class LuchtMeetNetResource(ConfigurableResource):
         retries_before_failing: int = 10,
         delay_in_seconds: int = 30,
     ) -> List[Dict[str, Any]]:
-        partition_key = context.partition_key
+        if not context.has_partition_key:
+            partition_key = generate_slug(2)
+        else:
+            partition_key = context.partition_key
         for retry in range(retries_before_failing):
             try:
                 self._limiter.try_acquire(partition_key)
