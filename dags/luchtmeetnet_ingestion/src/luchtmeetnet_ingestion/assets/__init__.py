@@ -1,4 +1,5 @@
 import hashlib
+import os
 
 import pandas as pd
 from dagster import (
@@ -9,14 +10,17 @@ from dagster import (
     BackfillPolicy,
     Backoff,
     DataVersion,
-    FreshnessPolicy,
     Jitter,
     Output,
     RetryPolicy,
     asset,
 )
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
-from luchtmeetnet_ingestion.partitions import daily_partition, daily_station_partition
+from luchtmeetnet_ingestion.partitions import (
+    daily_partition,
+    daily_station_partition,
+    stations_partition,
+)
 from pandas.util import hash_pandas_object
 
 
@@ -70,7 +74,8 @@ def daily_air_quality_data(
     io_manager_key="landing_zone",
     compute_kind="duckdb",
     description="Luchtmeetnet API stations",
-    freshness_policy=FreshnessPolicy(maximum_lag_minutes=30, cron_schedule="0 0 1 * *"),
+    partitions_def=stations_partition,
+    # freshness_policy=FreshnessPolicy(maximum_lag_minutes=30, cron_schedule="0 0 1 * *"),
     auto_materialize_policy=AutoMaterializePolicy.eager().with_rules(
         AutoMaterializeRule.materialize_on_missing()
     ),
@@ -78,7 +83,11 @@ def daily_air_quality_data(
 def station_names(
     context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
 ) -> pd.DataFrame:
-    return pd.DataFrame(luchtmeetnet_api.request("stations", context=context))
+    return pd.DataFrame(
+        luchtmeetnet_api.request(
+            os.path.join("stations", context.partition_key), context=context, paginate=False
+        )
+    )
 
 
 @asset(

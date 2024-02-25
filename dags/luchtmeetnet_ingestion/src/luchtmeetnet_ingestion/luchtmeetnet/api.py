@@ -13,6 +13,7 @@ def get_results_luchtmeetnet_endpoint(
     request_params: Optional[Dict[str, Any]] = None,
     page: int = 1,
     responses: Optional[List] = None,
+    paginate: bool = True,
 ) -> List[Dict[str, Any]]:
     """Recursively retrieve all results from a luchtmeetnet endpoint.
 
@@ -41,13 +42,18 @@ def get_results_luchtmeetnet_endpoint(
     if responses is None:
         responses = []
     if request_params is None:
-        _request_params = {"page": page}
+        _request_params = None
+        if paginate:
+            _request_params = {"page": page}
     else:
         _request_params = request_params.copy()
-        _request_params["page"] = page
+        if paginate:
+            _request_params["page"] = page
     resp = requests.get(url, params=_request_params)
     resp.raise_for_status()
     resp_json = resp.json()
+    if not paginate:
+        return [resp_json["data"]]
     logger.debug(f"Results: {len(resp_json['data'])}")
     for record in resp_json["data"]:
         responses.append(record)

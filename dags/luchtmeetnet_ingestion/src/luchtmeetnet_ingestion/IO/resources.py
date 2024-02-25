@@ -40,6 +40,7 @@ class LuchtMeetNetResource(ConfigurableResource):
         request_params: Optional[Dict[str, Any]] = None,
         retries_before_failing: int = 10,
         delay_in_seconds: int = 30,
+        paginate: bool = True,
     ) -> List[Dict[str, Any]]:
         if not context.has_partition_key:
             partition_key = generate_slug(2)
@@ -60,5 +61,5 @@ class LuchtMeetNetResource(ConfigurableResource):
             )
             context.log.debug(f"Requesting data from {endpoint} with params: {request_params}")
             return get_results_luchtmeetnet_endpoint(
-                endpoint=endpoint, request_params=request_params
+                endpoint=endpoint, request_params=request_params, paginate=paginate
             )
