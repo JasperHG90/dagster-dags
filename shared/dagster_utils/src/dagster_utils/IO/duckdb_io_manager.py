@@ -81,7 +81,6 @@ class DuckdbParquetIOManager(IOManager):
         """Load a pandas DataFrame using DuckDB"""
         context.log.debug(f"Asset key: {context.asset_key}")
         context.log.debug(f"Partition key: {context.partition_key}")
-        context.log.debug(f"Asset partition definition: {str(context.asset_partitions_def)}")
         context.log.debug(f"Upstream asset key: {context.upstream_output.asset_key}")
         if self.ignore_missing_partitions_on_load:
             status_by_partition = {

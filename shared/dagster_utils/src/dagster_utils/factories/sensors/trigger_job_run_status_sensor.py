@@ -46,26 +46,6 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
             run_status (DagsterRunStatus): the condition that triggers the sensor
             description (typing.Optional[str], optional): Description of this sensor. Defaults to None.
         """
-
-        """A sensor that monitors some partitioned asset and triggers a job when the asset is materialized.
-
-        This works for assets that have the same partitioned, or when the downstream asset shares a partition. This
-        sensor also works if the monitored asset has some partitions that have failed by setting the
-        `require_all_partitions_monitored_asset` parameter to False.
-
-        NB: logs are broken for this sensor! (Dagster issue)
-
-        Args:
-            name (str): name of the sensor
-            monitored_asset (str): name of asset that is monitored to determine if the job should be triggered
-            downstream_asset (str): name of asset that is materialized by the job
-            job (JobDefinition): job that should be triggered when the monitored asset is materialized
-            partitions_def_monitored_asset (PartitionsDefinition): Partitions definition of the monitored asset.
-            require_all_partitions_monitored_asset (bool, optional): If True, then downstream asset will be materialized even if upstream asset has failed partitions. Defaults to False.
-            minimum_interval_seconds (typing.Optional[int], optional): The minimum number of seconds that will elapse between sensor evaluations. Defaults to None.
-            default_status (DefaultSensorStatus, optional): Default status of the sensor. Defaults to DefaultSensorStatus.STOPPED.
-            description (typing.Optional[str], optional): Description of this sensor. Defaults to None.
-        """
         super().__init__(name, description)
         self.monitored_asset = monitored_asset
         self.monitored_job = monitored_job
@@ -92,7 +72,7 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
             context.log.debug(f"Is backfill: {is_backfill}")
             if is_backfill:
                 backfill = context.instance.get_backfill(context.dagster_run.tags.get("dagster/backfill"))
-                context.log.debug(f"Backfill: {backfill}")
+                context.log.debug(f"Backfill: {backfill.backfill_id}")
                 partitions = backfill.partition_names
             else:
                 # Ordered by partition name
