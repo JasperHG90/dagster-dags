@@ -9,10 +9,11 @@ from dagster import (
     DefaultSensorStatus,
     MultiAssetSensorEvaluationContext,
     RunRequest,
-    SkipReason
+    SkipReason,
 )
 
-from .base import DagsterObjectFactory
+from dagster_utils.factories.base import DagsterObjectFactory
+from dagster_utils.factories.sensors.utils import _get_materialization_info
 
 
 class PartitionedAssetSensorFactory(DagsterObjectFactory):
@@ -52,8 +53,7 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
         self.default_status = default_status
 
     def __call__(self) -> MultiAssetSensorDefinition:
-        # Define sensor here, return it.
-        #  arguments should be passed to init and referenced with self
+
         @multi_asset_sensor(
             monitored_assets=[AssetKey(self.monitored_asset)],
             job=self.job,
@@ -64,7 +64,6 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
         )
         def _sensor(context: MultiAssetSensorEvaluationContext) -> typing.Generator[typing.Union[RunRequest, SkipReason], None, None]:
             run_requests_by_partition = {}
-            # PROBLEM: if all failed .... but then we won't have downstream materialization anyway
             materializations_by_partition = context.latest_materialization_records_by_partition(
                 AssetKey(self.monitored_asset)
             )
@@ -93,34 +92,13 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
                         from_asset_key=AssetKey(self.downstream_asset),
                         to_asset_key=AssetKey(self.monitored_asset),
                     )
-
-                    # If not yet materialized, then None, else status.FAILED
-                    status_by_partition = context.instance.get_status_by_partition(
-                        AssetKey(self.monitored_asset),
-                        partition_keys=daily_partitions_in_week,
-                        partitions_def=self.partitions_def_monitored_asset
-                    )
-                    num_total = len(status_by_partition)
-                    status_by_partition_filtered = {k: v for k, v in status_by_partition.items() if v is not None}
-                    num_done = sum(
-                        [
-                            True if status.value in ["FAILED", "MATERIALIZED"] else False
-                            for _, status in status_by_partition_filtered.items()
-                        ]
-                    )
-                    num_failed = sum(
-                        [
-                            True if status.value in ["FAILED"] else False
-                            for _, status in status_by_partition_filtered.items()
-                        ]
+                    num_total, num_done, num_failed, _ = _get_materialization_info(
+                        context.instance,
+                        self.monitored_asset,
+                        daily_partitions_in_week,
+                        self.partitions_def_monitored_asset,
                     )
                     context.log.debug(f"Total: {num_total}, Done: {num_done}, Failed: {num_failed}")
-                    successful_partitions = [
-                        key
-                        for key, status in status_by_partition_filtered.items()
-                        if status.value == "MATERIALIZED"
-                    ]
-                    context.log.debug(f"Successful partitions: {successful_partitions}")
                     if num_done < num_total:
                         context.log.debug(
                             f"Only {num_done} out of {num_total} partitions have been materialized. Skipping . . ."
@@ -128,6 +106,7 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
                         yield SkipReason(
                             f"Only {num_done} out of {num_total} partitions have been materialized. Waiting until all partitions have been materialized."
                         )
+                        context.log.debug(f"Total: {num_total}, Done: {num_done}, Failed: {num_failed}")
                     else:
                         if num_failed > 0:
                             if self.require_all_partitions_monitored_asset:
@@ -139,10 +118,8 @@ class PartitionedAssetSensorFactory(DagsterObjectFactory):
                                 context.log.warning(
                                     f"'require_all_partitions_monitored_asset' is set to False. {num_failed} partitions failed to materialize. Will still run downstream task."
                                 )
-                        # This is overwriting the value if it exists
                         if weekly_partitions[0] in run_requests_by_partition:
                             continue
-                        # If backfill_name available, add it here
                         run_requests_by_partition[weekly_partitions[0]] = RunRequest(
                             partition_key=weekly_partitions[0],
                             run_key=weekly_partitions[0] if not is_backfill else f"{weekly_partitions[0]}_{backfill_name}",

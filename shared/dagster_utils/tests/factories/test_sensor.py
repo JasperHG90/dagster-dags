@@ -17,7 +17,7 @@ from dagster import (
     define_asset_job,
     materialize,
 )
-from dagster_utils.factories.sensor import PartitionedAssetSensorFactory
+from dagster_utils.factories.sensors.partitioned_asset_sensor import PartitionedAssetSensorFactory
 
 daily_partition = DailyPartitionsDefinition(start_date="2021-01-01", end_date="2021-01-03")
 
