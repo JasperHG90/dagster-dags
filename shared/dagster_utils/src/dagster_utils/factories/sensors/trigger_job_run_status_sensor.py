@@ -86,6 +86,8 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
                 self.partitions_def_monitored_asset,
                 return_only_successful_partitions=True
             )
+            # TODO: should create new run requests for each partition as partitions are materialized
+            #  now, we do it all at the end. See: https://github.com/dagster-io/dagster/issues/19224
             if num_done < num_total:
                 context.log.debug(
                     f"Only {num_done} out of {num_total} partitions have been materialized. Skipping . . ."

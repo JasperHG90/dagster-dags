@@ -54,7 +54,6 @@ class DuckdbParquetIOManager(IOManager):
         """Write a pandas DataFrame to disk using DuckDB"""
         context.log.debug(f"Asset key: {context.asset_key}")
         context.log.debug(f"Partition key: {context.partition_key}")
-        context.log.debug(f"Asset partition definition: {str(context.asset_partitions_def)}")
         path = self._get_table_name(
             partition_key=context.partition_key if context.has_partition_key else None,
             asset_key=context.asset_key.to_python_identifier(),
@@ -140,7 +139,8 @@ class DuckdbParquetIOManager(IOManager):
         "ignore_missing_partitions_on_load": Field(
             BoolSource, is_required=False, default_value=False
         ),
-    }
+    },
+    version="v1",
 )
 def duckdb_parquet_io_manager(
     init_context: InitResourceContext,
