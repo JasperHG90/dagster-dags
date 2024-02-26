@@ -29,14 +29,14 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
         downstream_job: JobDefinition,
         partitions_def_monitored_asset: PartitionsDefinition,
         partitions_def_downstream_asset: PartitionsDefinition,
-        run_status: DagsterRunStatus,
+        run_status: typing.List[DagsterRunStatus] = [DagsterRunStatus.SUCCESS],
         minimum_interval_seconds: typing.Optional[int] = None,
         default_status: DefaultSensorStatus = DefaultSensorStatus.STOPPED,
         description: typing.Optional[str] = None,
     ):
         """A sensor that monitors a partitioned asset in a job and triggers another job when the assets are materialized.
 
-        This works for assets that have the same partition, or when the downstream asset shares a partition. This sensor
+        This works for when the upstream partition has more partitions than the downstream asset. This sensor
         always triggers downstream jobs even when some upstream partitions have failed.
 
         Args:
@@ -96,7 +96,7 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
             run_records = context.instance.get_run_records(
                 filters=RunsFilter(
                     job_name=job_name,
-                    statuses=[DagsterRunStatus.SUCCESS],
+                    statuses=self.run_status,
                     updated_after=time_window_start,
                 ),
                 order_by="update_timestamp",
