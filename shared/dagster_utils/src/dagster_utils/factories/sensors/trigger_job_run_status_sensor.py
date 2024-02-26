@@ -1,22 +1,23 @@
 import typing
 
-from dagster import (
+import pendulum
+from dagster import (  # RunStatusSensorContext,; RunStatusSensorDefinition,; run_status_sensor,
+    AssetKey,
+    DagsterEventType,
     DagsterRunStatus,
     DefaultSensorStatus,
+    EventRecordsFilter,
     JobDefinition,
     PartitionsDefinition,
     RunRequest,
     RunsFilter,
-    RunStatusSensorContext,
-    RunStatusSensorDefinition,
+    SensorDefinition,
+    SensorEvaluationContext,
     SkipReason,
-    run_status_sensor,
+    sensor,
 )
 from dagster_utils.factories.base import DagsterObjectFactory
-from dagster_utils.factories.sensors.utils import (
-    PartitionResolver,
-    _get_materialization_info,
-)
+from dagster_utils.factories.sensors.utils import PartitionResolver
 
 
 class PartitionedJobSensorFactory(DagsterObjectFactory):
@@ -63,83 +64,140 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
             downstream_partition=partitions_def_downstream_asset,
         )
 
-    def __call__(self) -> RunStatusSensorDefinition:
-        @run_status_sensor(
+    def __call__(self) -> SensorDefinition:
+        # @run_status_sensor(
+        #     name=self.name,
+        #     description=self.description,
+        #     run_status=self.run_status,
+        #     monitored_jobs=[self.monitored_job],
+        #     request_job=self.downstream_job,
+        #     minimum_interval_seconds=self.minimum_interval_seconds,
+        #     default_status=self.default_status,
+        # )
+
+        @sensor(
             name=self.name,
             description=self.description,
-            run_status=self.run_status,
-            monitored_jobs=[self.monitored_job],
-            request_job=self.downstream_job,
+            job=self.downstream_job,
             minimum_interval_seconds=self.minimum_interval_seconds,
             default_status=self.default_status,
         )
-        def _sensor(context: RunStatusSensorContext):
-            # Also check for tag of registering known materializations
-            is_backfill = (
-                False if context.dagster_run.tags.get("dagster/backfill") is None else True
+        def _sensor(context: SensorEvaluationContext):
+            run_requests = 0
+            time_window_start = pendulum.now() - pendulum.duration(seconds=120)  # Make configurable
+            run_records = context.instance.get_run_records(
+                filters=RunsFilter(
+                    job_name=self.monitored_job,
+                    statuses=[DagsterRunStatus.SUCCESS],
+                    updated_after=time_window_start,
+                ),
+                order_by="update_timestamp",
+                ascending=False,
             )
-            context.log.debug(f"Is backfill: {is_backfill}")
-            if is_backfill:
-                backfill = context.instance.get_backfill(
-                    context.dagster_run.tags.get("dagster/backfill")
-                )
-                context.log.debug(f"Backfill: {backfill.backfill_id}")
-                partitions = backfill.partition_names
-            else:
-                # Ordered by partition name
+            for run_record in run_records:
+                partition_key = run_record.dagster_run.tags.get("dagster/partition")
+                # From the partition key, get the upstream partition key
                 downstream_partition_key = (
-                    self.partition_mapper.map_upstream_to_downstream_partitions(
-                        [context.partition_key]
-                    )[context.partition_key]
+                    self.partition_mapper.map_upstream_to_downstream_partitions([partition_key])[
+                        partition_key
+                    ]
                 )
-                context.log.debug(f"Upstream partition key: {context.partition_key}")
-                context.log.debug(f"Downstream partition key: {downstream_partition_key}")
-                partitions = self.partition_mapper.map_downstream_to_upstream_partitions(
-                    [downstream_partition_key]
-                )[downstream_partition_key]
-            # Retrieve materialization information for partitions
-            num_total, num_done, num_failed, successful_partitions = _get_materialization_info(
-                context.instance,
-                self.monitored_asset,
-                partitions,
-                self.partitions_def_monitored_asset,
-                return_only_successful_partitions=True,
-            )
-            # TODO: should create new run requests for each partition as partitions are materialized
-            #  now, we do it all at the end. See: https://github.com/dagster-io/dagster/issues/19224
-            if num_done < num_total:
-                context.log.debug(
-                    f"Only {num_done} out of {num_total} partitions have been materialized. Skipping . . ."
+                # Now, map the upstream key back to all downstream partitions
+                all_upstream_partitions = (
+                    self.partition_mapper.map_downstream_to_upstream_partitions(
+                        [downstream_partition_key]
+                    )[downstream_partition_key]
                 )
-                yield SkipReason(
-                    f"Only {num_done} out of {num_total} partitions have been materialized. Waiting until all partitions have been materialized."
+                is_backfill = (
+                    False if run_record.dagster_run.tags.get("dagster/backfill") is None else True
                 )
-            else:
-                if num_failed > 0:
-                    context.log.warning(
-                        f"{num_failed} partitions failed to materialize. Will still run downstream task."
-                    )
+                is_scheduled_runs = (
+                    False
+                    if run_record.dagster_run.tags.get("dagster/schedule_name") is None
+                    else True
+                )
+                context.log.debug(f"Is backfill: {is_backfill}")
+                context.log.debug(f"Is scheduled run: {is_scheduled_runs}")
                 if is_backfill:
-                    unique_dates = list(
-                        set([key.split("|")[0] for key in successful_partitions])
-                    )  # Todo replace with partition mapper
-                    context.log.debug(f"Requesting run for dates {unique_dates}")
-                    for date in unique_dates:
-                        run_key = f"{date}_{context.dagster_run.tags.get('dagster/backfill')}"
-                        context.log.debug(f"Run key: {run_key}")
-                        yield RunRequest(run_key=run_key, partition_key=date)
-                else:
-                    date, _ = context.partition_key.split("|")  # Todo replace with partition mapper
-                    context.log.debug(f"Requesting run for date {date}")
-                    context.log.debug(f"Run key: {date}")
-                    sensor_has_runs = context.instance.get_runs(
-                        filters=RunsFilter(tags={"dagster/run_key": date})
+                    backfill = context.instance.get_backfill(
+                        run_record.dagster_run.tags.get("dagster/backfill")
                     )
-                    if len(sensor_has_runs) > 0:
-                        yield SkipReason(
-                            f"Run for partition {downstream_partition_key} already exists. Skipping . . ."
-                        )
+                    # Backfill partitions for all upstream partitions of this run
+                    all_upstream_partitions = [
+                        partition
+                        for partition in backfill.partition_names
+                        if partition in all_upstream_partitions
+                    ]
+                    context.log.debug(f"Backfill: {backfill.backfill_id}")
+                    group_name = run_record.dagster_run.tags.get("dagster/backfill")
+                    context.log.debug(f"Backfill: {group_name}")
+                else:
+                    group_name = run_record.dagster_run.tags.get("dagster/schedule_name")
+                    context.log.debug(f"Schedule: {group_name}")
+                run_key = f"{downstream_partition_key}_{group_name}"
+                run_key_completed = context.instance.get_runs(
+                    filters=RunsFilter(tags={"dagster/run_key": run_key})
+                )
+                if len(run_key_completed) > 0:
+                    context.log.debug(
+                        f"Run for partition {downstream_partition_key} already exists. Skipping . . ."
+                    )
+                    continue
+                else:
+                    # Retrieve materialization & failed runs information for partitions
+                    filter_materialized_assets = EventRecordsFilter(
+                        event_type=DagsterEventType.ASSET_MATERIALIZATION,
+                        asset_key=AssetKey(self.monitored_asset),
+                        asset_partitions=all_upstream_partitions,
+                    )
+                    events_successful_materializations = context.instance.get_event_records(
+                        filter_materialized_assets
+                    )
+                    # NB: cannot filter for asset
+                    filter_failed_pipelines = EventRecordsFilter(
+                        event_type=DagsterEventType.PIPELINE_FAILURE,
+                        after_timestamp=(
+                            pendulum.now() - pendulum.duration(minutes=60)
+                        ).timestamp(),  # Make configurable
+                    )
+                    filter_events_failed = context.instance.get_event_records(
+                        filter_failed_pipelines
+                    )
+                    filter_runs_failed = RunsFilter(
+                        [event.run_id for event in filter_events_failed]
+                    )
+                    runs_failed = context.instance.get_runs(filters=filter_runs_failed)
+                    if is_backfill:
+                        runs_failed_run_key = [
+                            run
+                            for run in runs_failed
+                            if run.tags.get("dagster/backfill") == group_name
+                        ]
                     else:
-                        yield RunRequest(run_key=date, partition_key=date)
+                        runs_failed_run_key = [
+                            run
+                            for run in runs_failed
+                            if run.tags.get("dagster/schedule_name") == group_name
+                        ]
+                    num_total = len(all_upstream_partitions)
+                    num_successful = len(events_successful_materializations)
+                    num_failed = len(runs_failed_run_key)
+                    num_done = num_successful + num_failed
+                    num_unfinished = num_total - num_done
+                if num_unfinished > 0:
+                    context.log.debug(
+                        f"Only {num_done} out of {num_total} partitions have been materialized for partition {downstream_partition_key}. Skipping . . ."
+                    )
+                    continue
+                else:
+                    if num_failed > 0:
+                        context.log.warning(
+                            f"{num_failed} partitions failed to materialize for partition {downstream_partition_key}. Will still run downstream task."
+                        )
+                    yield RunRequest(run_key=run_key, partition_key=downstream_partition_key)
+                    run_requests += 1
+
+            if run_requests == 0:
+                yield SkipReason("No runs requested")
 
         return _sensor
