@@ -10,6 +10,7 @@ from dagster import (
     BackfillPolicy,
     Backoff,
     DataVersion,
+    FreshnessPolicy,
     Jitter,
     Output,
     RetryPolicy,
@@ -75,10 +76,8 @@ def daily_air_quality_data(
     compute_kind="duckdb",
     description="Luchtmeetnet API stations",
     partitions_def=stations_partition,
-    # freshness_policy=FreshnessPolicy(maximum_lag_minutes=30, cron_schedule="0 0 1 * *"),
-    auto_materialize_policy=AutoMaterializePolicy.eager().with_rules(
-        AutoMaterializeRule.materialize_on_missing()
-    ),
+    # Setting max_materializations_per_minute disables the rate limiter
+    auto_materialize_policy=AutoMaterializePolicy.eager(max_materializations_per_minute=None),
 )
 def station_names(
     context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
@@ -95,7 +94,13 @@ def station_names(
     description="Copy station names from ingestion to bronze",
     compute_kind="duckdb",
     auto_materialize_policy=AutoMaterializePolicy.eager().with_rules(
-        AutoMaterializeRule.materialize_on_missing()
+        AutoMaterializeRule.materialize_on_missing(),
+        AutoMaterializeRule.materialize_on_parent_updated(),
+        AutoMaterializeRule.materialize_on_required_for_freshness(),
+    ),
+    freshness_policy=FreshnessPolicy(
+        maximum_lag_minutes=60 * 24,
+        cron_schedule="0 0 1 * *",
     ),
 )
 def air_quality_station_names(
