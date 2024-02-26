@@ -84,17 +84,33 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
         )
         def _sensor(context: SensorEvaluationContext):
             run_requests = 0
-            time_window_start = pendulum.now() - pendulum.duration(seconds=120)  # Make configurable
+            run_key_requests_this_sensor = []
+            time_window_now = pendulum.now(tz="UTC")
+            time_window_start = time_window_now - pendulum.duration(
+                seconds=120
+            )  # Make configurable
+            job_name = self.monitored_job.name
+            context.log.debug(f"Job name: {job_name}")
+            context.log.debug(f"Checking for events after {time_window_start}")
+            cursor = float(context.cursor) if context.cursor else 0
             run_records = context.instance.get_run_records(
                 filters=RunsFilter(
-                    job_name=self.monitored_job,
+                    job_name=job_name,
                     statuses=[DagsterRunStatus.SUCCESS],
                     updated_after=time_window_start,
                 ),
                 order_by="update_timestamp",
                 ascending=False,
             )
+            context.log.debug(f"Number of records: {len(run_records)}")
+            ts = cursor - 2  # margin
+            unfinished_downstream_partitions = {}
             for run_record in run_records:
+                if run_record.end_time <= ts:
+                    context.log.debug(
+                        f"Run skipped because run record {run_record.end_time} lies before cursor {ts}"
+                    )
+                    continue
                 partition_key = run_record.dagster_run.tags.get("dagster/partition")
                 # From the partition key, get the upstream partition key
                 downstream_partition_key = (
@@ -102,6 +118,7 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
                         partition_key
                     ]
                 )
+                context.log.debug(f"Downstream partition key: {downstream_partition_key}")
                 # Now, map the upstream key back to all downstream partitions
                 all_upstream_partitions = (
                     self.partition_mapper.map_downstream_to_upstream_partitions(
@@ -128,15 +145,36 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
                         for partition in backfill.partition_names
                         if partition in all_upstream_partitions
                     ]
-                    context.log.debug(f"Backfill: {backfill.backfill_id}")
                     group_name = run_record.dagster_run.tags.get("dagster/backfill")
                     context.log.debug(f"Backfill: {group_name}")
                 else:
                     group_name = run_record.dagster_run.tags.get("dagster/schedule_name")
                     context.log.debug(f"Schedule: {group_name}")
                 run_key = f"{downstream_partition_key}_{group_name}"
+                # If already know that run_key is unfinished (still require materializations), then continue
+                # until the skip number is 15, then remove from the list and try again
+                # this keeps us from doing expensive computations and timing out the sensor
+                if run_key in unfinished_downstream_partitions:
+                    context.log.debug(
+                        "Run key has recentely been reported as unfinished. Skipping this partition ..."
+                    )
+                    skip_number = unfinished_downstream_partitions[run_key]
+                    if skip_number == 15:
+                        del unfinished_downstream_partitions[run_key]
+                    else:
+                        unfinished_downstream_partitions[run_key] += 1
+                    continue
+                # If this run key has already been requested during this evaluation, skip
+                if run_key in run_key_requests_this_sensor:
+                    context.log.debug(f"Run key {run_key} already requested. Skipping . . .")
+                    continue
+                # If this run key has already been completed previously, skip
                 run_key_completed = context.instance.get_runs(
                     filters=RunsFilter(tags={"dagster/run_key": run_key})
+                )
+                context.log.debug(f"Run key: {run_key}")
+                context.log.debug(
+                    f"Run key completed: {False if len(run_key_completed) == 0 else True}"
                 )
                 if len(run_key_completed) > 0:
                     context.log.debug(
@@ -163,10 +201,13 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
                     filter_events_failed = context.instance.get_event_records(
                         filter_failed_pipelines
                     )
-                    filter_runs_failed = RunsFilter(
-                        [event.run_id for event in filter_events_failed]
-                    )
-                    runs_failed = context.instance.get_runs(filters=filter_runs_failed)
+                    if len(filter_events_failed) > 0:
+                        filter_runs_failed = RunsFilter(
+                            [event.run_id for event in filter_events_failed]
+                        )
+                        runs_failed = context.instance.get_runs(filters=filter_runs_failed)
+                    else:
+                        runs_failed = []
                     if is_backfill:
                         runs_failed_run_key = [
                             run
@@ -188,6 +229,7 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
                     context.log.debug(
                         f"Only {num_done} out of {num_total} partitions have been materialized for partition {downstream_partition_key}. Skipping . . ."
                     )
+                    unfinished_downstream_partitions[run_key] = 0
                     continue
                 else:
                     if num_failed > 0:
@@ -195,7 +237,16 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
                             f"{num_failed} partitions failed to materialize for partition {downstream_partition_key}. Will still run downstream task."
                         )
                     yield RunRequest(run_key=run_key, partition_key=downstream_partition_key)
+                    run_key_requests_this_sensor.append(run_key)
                     run_requests += 1
+
+            if run_requests > 0:
+                new_ts = max(pendulum.now(tz="UTC").timestamp(), cursor)
+                context.log.debug(f"Setting cursor to {new_ts}")
+            else:
+                new_ts = cursor
+
+            context.update_cursor(str(new_ts))
 
             if run_requests == 0:
                 yield SkipReason("No runs requested")
