@@ -37,6 +37,7 @@ from requests import HTTPError
     ),
     backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=10),
     code_version="v1",
+    group_name="measurements",
 )
 def air_quality_data(
     context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
@@ -78,6 +79,7 @@ def air_quality_data(
         )
     },
     code_version="v1",
+    group_name="measurements",
 )
 def daily_air_quality_data(
     context: AssetExecutionContext, ingested_data: pd.DataFrame
@@ -92,6 +94,7 @@ def daily_air_quality_data(
     partitions_def=stations_partition,
     # Setting max_materializations_per_minute disables the rate limiter
     auto_materialize_policy=AutoMaterializePolicy.eager(max_materializations_per_minute=None),
+    group_name="stations",
 )
 def station_names(
     context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
@@ -116,6 +119,7 @@ def station_names(
         maximum_lag_minutes=60 * 24,
         cron_schedule="0 0 1 * *",
     ),
+    group_name="stations",
 )
 def air_quality_station_names(
     context: AssetExecutionContext, station_names: pd.DataFrame
