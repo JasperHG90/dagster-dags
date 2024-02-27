@@ -6,6 +6,17 @@ alias l := logs
 alias del := delete
 alias po := pods
 
+venv:
+  python -m venv .venv
+
+venv_activate:
+  . .venv/bin/activate
+
+pip: venv_activate
+  pip install -r requirements.txt --upgrade pip
+
+setup: venv pip
+
 parse command job_config:
     python jobs_cli.py parse \
         {{job_config}} \
