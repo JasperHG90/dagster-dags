@@ -21,6 +21,9 @@ from dagster_utils.factories.sensors.utils import PartitionResolver
 
 
 # TODO: add timeout for jobs in which partitions don't resolve in time, add tests
+# TODO: add base class from which this class inherits that has all the private functions
+#  to do partition mapping, checking of assets etc. so that logic becomes reusable and
+#  testable
 class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
     def __init__(
         self,
