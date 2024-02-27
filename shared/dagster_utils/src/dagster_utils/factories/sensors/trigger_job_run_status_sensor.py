@@ -8,6 +8,7 @@ from dagster import (
     DefaultSensorStatus,
     EventRecordsFilter,
     JobDefinition,
+    MultiPartitionsDefinition,
     PartitionsDefinition,
     RunRequest,
     RunsFilter,
@@ -31,7 +32,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
         monitored_asset: str,
         monitored_job: JobDefinition,
         downstream_job: JobDefinition,
-        partitions_def_monitored_asset: PartitionsDefinition,
+        partitions_def_monitored_asset: MultiPartitionsDefinition,
         partitions_def_downstream_asset: PartitionsDefinition,
         run_status: typing.List[DagsterRunStatus] = [DagsterRunStatus.SUCCESS],
         minimum_interval_seconds: typing.Optional[int] = None,
@@ -43,17 +44,21 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
         """A sensor that monitors a partitioned asset in a job and triggers another job when the assets are materialized.
 
         This works for when the upstream partition has more partitions than the downstream asset. This sensor
-        always triggers downstream jobs even when some upstream partitions have failed.
+        always triggers downstream jobs even when some upstream partitions have failed. This sensor does not trigger
+        on reported asset materializations (e.g. registered from existing data).
 
         Args:
             name (str): name of the sensor
             monitored_asset (str): name of the asset in the job that is monitored
             monitored_job (JobDefinition): name of the job that is monitored
             downstream_job (JobDefinition): name of the downstream job that should be monitored
-            partitions_def_monitored_asset (PartitionsDefinition): Partitions definition of the monitored asset.
+            partitions_def_monitored_asset (MultiPartitionsDefinition): Partitions definition of the monitored asset. Should be multipartitioned.
+            partitions_def_downstream_asset (PartitionsDefinition): Partitions definition of the downstream asset. Should be single partitioned.
+            run_status (DagsterRunStatus): the condition that triggers the sensor
             minimum_interval_seconds (typing.Optional[int], optional): The minimum number of seconds that will elapse between sensor evaluations. Defaults to None.
             default_status (DefaultSensorStatus, optional): Default status of the sensor. Defaults to DefaultSensorStatus.STOPPED.
-            run_status (DagsterRunStatus): the condition that triggers the sensor
+            event_window_seconds (int, optional): The window (in seconds) that is used to monitor events. Defaults to 120.
+            skip_when_unfinished_count (int, optional): The number of times we skip evaluating a run record if we know that only x/n upstream partitions have been processed. Defaults to 15.
             description (typing.Optional[str], optional): Description of this sensor. Defaults to None.
         """
         super().__init__(name, description)
