@@ -20,7 +20,7 @@ from dagster_utils.factories.base import DagsterObjectFactory
 from dagster_utils.factories.sensors.utils import PartitionResolver
 
 
-class PartitionedJobSensorFactory(DagsterObjectFactory):
+class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
     def __init__(
         self,
         name: str,
