@@ -83,7 +83,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
 
             job_name = self.monitored_job.name
             context.log.debug(f"Job name: {job_name}")
-            cursor = float(context.cursor) if context.cursor else 0
+            cursor = float(context.cursor) if context.cursor else float(0)
             time_window_now = pendulum.now(tz="UTC")
             time_window_start = time_window_now - pendulum.duration(
                 seconds=self.time_window_seconds
