@@ -1,7 +1,7 @@
 import typing
 
 import pendulum
-from dagster import (  # RunStatusSensorContext,; RunStatusSensorDefinition,; run_status_sensor,
+from dagster import (
     AssetKey,
     DagsterEventType,
     DagsterRunStatus,
@@ -32,6 +32,8 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
         run_status: typing.List[DagsterRunStatus] = [DagsterRunStatus.SUCCESS],
         minimum_interval_seconds: typing.Optional[int] = None,
         default_status: DefaultSensorStatus = DefaultSensorStatus.STOPPED,
+        event_window_seconds: int = 120,
+        skip_when_unfinished_count: int = 15,
         description: typing.Optional[str] = None,
     ):
         """A sensor that monitors a partitioned asset in a job and triggers another job when the assets are materialized.
@@ -57,6 +59,8 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
         self.partitions_def_monitored_asset = partitions_def_monitored_asset
         self.partitions_def_downstream_asset = partitions_def_downstream_asset
         self.run_status = run_status
+        self.time_window_seconds = event_window_seconds
+        self.skip_when_unfinished_count = skip_when_unfinished_count
         self.minimum_interval_seconds = minimum_interval_seconds
         self.default_status = default_status
         self.partition_mapper = PartitionResolver(
@@ -65,16 +69,6 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
         )
 
     def __call__(self) -> SensorDefinition:
-        # @run_status_sensor(
-        #     name=self.name,
-        #     description=self.description,
-        #     run_status=self.run_status,
-        #     monitored_jobs=[self.monitored_job],
-        #     request_job=self.downstream_job,
-        #     minimum_interval_seconds=self.minimum_interval_seconds,
-        #     default_status=self.default_status,
-        # )
-
         @sensor(
             name=self.name,
             description=self.description,
@@ -85,14 +79,15 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
         def _sensor(context: SensorEvaluationContext):
             run_requests = 0
             run_key_requests_this_sensor = []
-            time_window_now = pendulum.now(tz="UTC")
-            time_window_start = time_window_now - pendulum.duration(
-                seconds=120
-            )  # Make configurable
+
             job_name = self.monitored_job.name
             context.log.debug(f"Job name: {job_name}")
-            context.log.debug(f"Checking for events after {time_window_start}")
             cursor = float(context.cursor) if context.cursor else 0
+            time_window_now = pendulum.now(tz="UTC")
+            time_window_start = time_window_now - pendulum.duration(
+                seconds=self.time_window_seconds
+            )  # Make configurable
+            context.log.debug(f"Checking for events after {time_window_start}")
             run_records = context.instance.get_run_records(
                 filters=RunsFilter(
                     job_name=job_name,
@@ -152,14 +147,14 @@ class PartitionedJobSensorFactory(DagsterObjectFactory):
                     context.log.debug(f"Schedule: {group_name}")
                 run_key = f"{downstream_partition_key}_{group_name}"
                 # If already know that run_key is unfinished (still require materializations), then continue
-                # until the skip number is 15, then remove from the list and try again
+                # until the skip number is self.skip_when_unfinished_count, then remove from the list and try again
                 # this keeps us from doing expensive computations and timing out the sensor
                 if run_key in unfinished_downstream_partitions:
                     context.log.debug(
                         "Run key has recentely been reported as unfinished. Skipping this partition ..."
                     )
                     skip_number = unfinished_downstream_partitions[run_key]
-                    if skip_number == 15:
+                    if skip_number == self.skip_when_unfinished_count:
                         del unfinished_downstream_partitions[run_key]
                     else:
                         unfinished_downstream_partitions[run_key] += 1
