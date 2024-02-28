@@ -1,3 +1,4 @@
+import logging
 import typing
 
 import pendulum
@@ -18,18 +19,17 @@ from dagster import (
     sensor,
 )
 from dagster_utils.factories.base import DagsterObjectFactory
-from dagster_utils.factories.sensors.utils import PartitionResolver
-
-
-class JobTriggerSensorMixin:
-    ...
+from dagster_utils.factories.sensors.utils import (
+    MonitoredJobSensorMixin,
+    PartitionResolver,
+)
 
 
 # TODO: add timeout for jobs in which partitions don't resolve in time, add tests
 # TODO: add base class from which this class inherits that has all the private functions
 #  to do partition mapping, checking of assets etc. so that logic becomes reusable and
 #  testable
-class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
+class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, MonitoredJobSensorMixin):
     def __init__(
         self,
         name: str,
@@ -41,7 +41,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
         run_status: typing.List[DagsterRunStatus] = [DagsterRunStatus.SUCCESS],
         minimum_interval_seconds: typing.Optional[int] = None,
         default_status: DefaultSensorStatus = DefaultSensorStatus.STOPPED,
-        event_window_seconds: int = 120,
+        time_window_seconds: int = 120,
         skip_when_unfinished_count: int = 15,
         description: typing.Optional[str] = None,
     ):
@@ -61,7 +61,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
             run_status (DagsterRunStatus): the condition that triggers the sensor
             minimum_interval_seconds (typing.Optional[int], optional): The minimum number of seconds that will elapse between sensor evaluations. Defaults to None.
             default_status (DefaultSensorStatus, optional): Default status of the sensor. Defaults to DefaultSensorStatus.STOPPED.
-            event_window_seconds (int, optional): The window (in seconds) that is used to monitor events. Defaults to 120.
+            time_window_seconds (int, optional): The window (in seconds) that is used to monitor events. Defaults to 120.
             skip_when_unfinished_count (int, optional): The number of times we skip evaluating a run record if we know that only x/n upstream partitions have been processed. Defaults to 15.
             description (typing.Optional[str], optional): Description of this sensor. Defaults to None.
         """
@@ -72,7 +72,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
         self.partitions_def_monitored_asset = partitions_def_monitored_asset
         self.partitions_def_downstream_asset = partitions_def_downstream_asset
         self.run_status = run_status
-        self.time_window_seconds = event_window_seconds
+        self.time_window_seconds = time_window_seconds
         self.skip_when_unfinished_count = skip_when_unfinished_count
         self.minimum_interval_seconds = minimum_interval_seconds
         self.default_status = default_status
@@ -80,6 +80,23 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
             upstream_partition=partitions_def_monitored_asset,
             downstream_partition=partitions_def_downstream_asset,
         )
+        self._logger: logging.Logger = logging.getLogger(
+            "dagster_utils.factories.sensors.MultiToSinglePartitionJobTriggerSensorFactory"
+        )
+
+    def _get_mapped_downstream_partition_key_from_upstream_partition_key(
+        self, upstream_partition_key: str
+    ) -> str:
+        return self.partition_mapper.map_upstream_to_downstream_partitions(
+            [upstream_partition_key]
+        )[upstream_partition_key]
+
+    def _get_mapped_upstream_partition_key_from_downstream_partition_key(
+        self, downstream_partition_key: str
+    ) -> typing.List[str]:
+        return self.partition_mapper.map_downstream_to_upstream_partitions(
+            [downstream_partition_key]
+        )[downstream_partition_key]
 
     def __call__(self) -> SensorDefinition:
         @sensor(
@@ -92,73 +109,40 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
         def _sensor(context: SensorEvaluationContext):
             run_requests = 0
             run_key_requests_this_sensor = []
-
             job_name = self.monitored_job.name
             context.log.debug(f"Job name: {job_name}")
+            run_records = self._get_run_records_for_job(context.instance)
             cursor = float(context.cursor) if context.cursor else float(0)
-            time_window_now = pendulum.now(tz="UTC")
-            time_window_start = time_window_now - pendulum.duration(
-                seconds=self.time_window_seconds
-            )  # Make configurable
-            context.log.debug(f"Checking for events after {time_window_start}")
-            run_records = context.instance.get_run_records(
-                filters=RunsFilter(
-                    job_name=job_name,
-                    statuses=self.run_status,
-                    updated_after=time_window_start,
-                ),
-                order_by="update_timestamp",
-                ascending=False,
-            )
-            context.log.debug(f"Number of records: {len(run_records)}")
             ts = cursor - 2  # margin
             unfinished_downstream_partitions = {}
             for run_record in run_records:
-                if run_record.end_time <= ts:
-                    context.log.debug(
-                        f"Run skipped because run record {run_record.end_time} lies before cursor {ts}"
-                    )
+                if self._run_record_end_before_cursor_ts(run_record.end_time, ts):
+                    context.log.debug(f"Skipping run for record {run_record.dagster_run.run_id}")
                     continue
-                partition_key = run_record.dagster_run.tags.get("dagster/partition")
                 # From the partition key, get the upstream partition key
                 downstream_partition_key = (
-                    self.partition_mapper.map_upstream_to_downstream_partitions([partition_key])[
-                        partition_key
-                    ]
+                    self._get_mapped_downstream_partition_key_from_upstream_partition_key(
+                        run_record.dagster_run.tags.get("dagster/partition")
+                    )
                 )
                 context.log.debug(f"Downstream partition key: {downstream_partition_key}")
                 # Now, map the upstream key back to all downstream partitions
                 all_upstream_partitions = (
-                    self.partition_mapper.map_downstream_to_upstream_partitions(
-                        [downstream_partition_key]
-                    )[downstream_partition_key]
-                )
-                is_backfill = (
-                    False if run_record.dagster_run.tags.get("dagster/backfill") is None else True
-                )
-                is_scheduled_runs = (
-                    False
-                    if run_record.dagster_run.tags.get("dagster/schedule_name") is None
-                    else True
-                )
-                context.log.debug(f"Is backfill: {is_backfill}")
-                context.log.debug(f"Is scheduled run: {is_scheduled_runs}")
-                if is_backfill:
-                    backfill = context.instance.get_backfill(
-                        run_record.dagster_run.tags.get("dagster/backfill")
+                    self._get_mapped_upstream_partition_key_from_downstream_partition_key(
+                        downstream_partition_key
                     )
-                    # Backfill partitions for all upstream partitions of this run
-                    all_upstream_partitions = [
-                        partition
-                        for partition in backfill.partition_names
-                        if partition in all_upstream_partitions
-                    ]
-                    group_name = run_record.dagster_run.tags.get("dagster/backfill")
-                    context.log.debug(f"Backfill: {group_name}")
+                )
+                backfill_name = self._get_backfill_name(run_record.dagster_run.tags)
+                scheduled_run_name = self._get_backfill_name(run_record.dagster_run.tags)
+                if backfill_name is not None:
+                    all_upstream_partitions = self._get_backfill_partitions(
+                        context.instance, backfill_name, all_upstream_partitions
+                    )
                 else:
-                    group_name = run_record.dagster_run.tags.get("dagster/schedule_name")
-                    context.log.debug(f"Schedule: {group_name}")
-                run_key = f"{downstream_partition_key}_{group_name}"
+                    raise ValueError(
+                        "Run record does not have a backfill or schedule name tag. But we require exactly one of these tags to be present."
+                    )
+                run_key = f"{downstream_partition_key}_{backfill_name if backfill_name is not None else scheduled_run_name}"
                 # If already know that run_key is unfinished (still require materializations), then continue
                 # until the skip number is self.skip_when_unfinished_count, then remove from the list and try again
                 # this keeps us from doing expensive computations and timing out the sensor
@@ -216,17 +200,17 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory):
                         runs_failed = context.instance.get_runs(filters=filter_runs_failed)
                     else:
                         runs_failed = []
-                    if is_backfill:
+                    if backfill_name is not None:
                         runs_failed_run_key = [
                             run
                             for run in runs_failed
-                            if run.tags.get("dagster/backfill") == group_name
+                            if run.tags.get("dagster/backfill") == backfill_name
                         ]
                     else:
                         runs_failed_run_key = [
                             run
                             for run in runs_failed
-                            if run.tags.get("dagster/schedule_name") == group_name
+                            if run.tags.get("dagster/schedule_name") == scheduled_run_name
                         ]
                     num_total = len(all_upstream_partitions)
                     num_successful = len(events_successful_materializations)
