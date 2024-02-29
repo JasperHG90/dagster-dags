@@ -127,15 +127,15 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                 )
                 backfill_name = self._get_backfill_name(run_record.dagster_run.tags)
                 scheduled_run_name = self._get_backfill_name(run_record.dagster_run.tags)
+                if (scheduled_run_name is None and backfill_name is None) and (
+                    scheduled_run_name is not None and backfill_name is not None
+                ):
+                    raise ValueError(
+                        "Exactly one of 'dagster/backfill' or 'dagster/schedule_name' tags must be present in the run record."
+                    )
                 if backfill_name is not None:
                     all_upstream_partitions = self._get_backfill_partitions(
                         context.instance, backfill_name, all_upstream_partitions
-                    )
-                if scheduled_run_name is not None:
-                    ...
-                else:
-                    raise ValueError(
-                        "Run record does not have a backfill or schedule name tag. But we require exactly one of these tags to be present."
                     )
                 run_key = f"{downstream_partition_key}_{backfill_name if backfill_name is not None else scheduled_run_name}"
                 if self._increment_unfinished_downstream_partitions(
