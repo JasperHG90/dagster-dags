@@ -41,6 +41,16 @@ def my_multipartitioned_asset(my_multi_partition: MultiPartitionsDefinition) -> 
 
 
 @pytest.fixture()
+def my_multipartitioned_asset_with_failures(my_multi_partition: MultiPartitionsDefinition) -> AssetsDefinition:
+    @asset(partitions_def=my_multi_partition)
+    def my_asset(context) -> str:
+        if context.partition_key == "2021-01-02|NL01345":
+            raise ValueError("This partition failed")
+        return "my_asset"
+    return my_asset
+
+
+@pytest.fixture()
 def my_single_partitioned_asset(my_daily_partition: DailyPartitionsDefinition) -> AssetsDefinition:
     @asset(partitions_def=my_daily_partition)
     def my_asset() -> str:
@@ -56,6 +66,11 @@ def my_unpartitioned_job(my_unpartitioned_asset: AssetsDefinition) -> JobDefinit
 @pytest.fixture()
 def my_multipartitioned_job(my_multipartitioned_asset: AssetsDefinition, my_multi_partition: MultiPartitionsDefinition) -> JobDefinition:
     return define_asset_job("my_multipartitioned_job", [my_multipartitioned_asset], partitions_def=my_multi_partition)
+
+
+@pytest.fixture()
+def my_multipartitioned_job_with_failures(my_multipartitioned_asset_with_failures: AssetsDefinition, my_multi_partition: MultiPartitionsDefinition) -> JobDefinition:
+    return define_asset_job("my_multipartitioned_job", [my_multipartitioned_asset_with_failures], partitions_def=my_multi_partition)
 
 
 @pytest.fixture()
@@ -75,6 +90,13 @@ def my_definition_single_multipartitioned_job(my_multipartitioned_asset: AssetsD
     return Definitions(
         assets=[my_multipartitioned_asset],
         jobs=[my_multipartitioned_job]
+    )
+
+@pytest.fixture()
+def my_definition_single_multipartitioned_job_with_failing_assets(my_multipartitioned_asset_with_failures: AssetsDefinition, my_multipartitioned_job_with_failures: JobDefinition) -> Definitions:
+    return Definitions(
+        assets=[my_multipartitioned_asset_with_failures],
+        jobs=[my_multipartitioned_job_with_failures]
     )
 
 @pytest.fixture()

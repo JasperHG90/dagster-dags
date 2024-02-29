@@ -49,7 +49,7 @@ def test_class_single_unpartitioned_job(
 ):
     request.instance._test_cls = TestClassForMonitoredJobSensorMixin(
         name="test",
-        monitored_asset="my_unpartitioned_asset",
+        monitored_asset="my_asset",
         monitored_job=my_unpartitioned_job,
     )
 
@@ -60,8 +60,19 @@ def test_class_single_multipartitioned_job(
 ):
     request.instance._test_cls = TestClassForMonitoredJobSensorMixin(
         name="test",
-        monitored_asset="my_multipartitioned_asset",
+        monitored_asset="my_asset",
         monitored_job=my_multipartitioned_job,
+    )
+
+
+@pytest.fixture(scope="function")
+def test_class_single_multipartitioned_job_with_failing_assets(
+    my_multipartitioned_job_with_failures: JobDefinition, request: pytest.FixtureRequest
+):
+    request.instance._test_cls = TestClassForMonitoredJobSensorMixin(
+        name="test",
+        monitored_asset="my_asset",
+        monitored_job=my_multipartitioned_job_with_failures,
     )
 
 
@@ -139,6 +150,52 @@ class TestMonitoredJobSensorMixin:
                 tags={"dagster/run_key": "test_run_key"},
             )
             assert self._test_cls._run_key_already_completed("test_run_key", instance)
+
+    @pytest.mark.usefixtures("test_class_single_multipartitioned_job")
+    def test_get_successful_materializations_for_monitored_asset_partitions(
+        self,
+        my_definition_single_multipartitioned_job: Definitions,
+        my_multi_partition: MultiPartitionsDefinition,
+    ):
+        with DagsterInstance.ephemeral() as instance:
+            my_definition_single_multipartitioned_job.get_job_def(
+                "my_multipartitioned_job"
+            ).execute_in_process(
+                instance=instance,
+                partition_key=my_multi_partition.get_partition_keys()[0],
+            )
+            materializations = (
+                self._test_cls._get_successful_materializations_for_monitored_asset_partitions(
+                    instance, my_multi_partition.get_partition_keys()
+                )
+            )
+            assert len(materializations) == 1
+
+    @pytest.mark.usefixtures("test_class_single_multipartitioned_job_with_failing_assets")
+    def test_get_failed_pipeline_events_for_monitored_asset_partitions(
+        self,
+        my_definition_single_multipartitioned_job_with_failing_assets: Definitions,
+        my_multi_partition: MultiPartitionsDefinition,
+    ):
+        with DagsterInstance.ephemeral() as instance:
+            for partition_key in my_multi_partition.get_partition_keys():
+                try:
+                    my_definition_single_multipartitioned_job_with_failing_assets.get_job_def(
+                        "my_multipartitioned_job"
+                    ).execute_in_process(
+                        instance=instance,
+                        partition_key=partition_key,
+                        tags={"dagster/backfill": "test"},
+                    )
+                except ValueError:
+                    continue
+            failed_materializations = (
+                self._test_cls._get_failed_pipeline_events_for_monitored_asset_partitions(
+                    instance, backfill_name="test"
+                )
+            )
+            assert len(failed_materializations) == 1
+            assert failed_materializations[0].tags["dagster/partition"] == "2021-01-02|NL01345"
 
 
 @pytest.fixture(scope="function")
