@@ -2,7 +2,17 @@ import logging
 import typing
 
 import pendulum
-from dagster import DagsterInstance, PartitionsDefinition, RunRecord, RunsFilter
+from dagster import (
+    AssetKey,
+    DagsterEventType,
+    DagsterInstance,
+    DagsterRun,
+    EventLogRecord,
+    EventRecordsFilter,
+    PartitionsDefinition,
+    RunRecord,
+    RunsFilter,
+)
 
 
 class PartitionResolver:
@@ -129,3 +139,97 @@ class MonitoredJobSensorMixin:
             for partition in backfill.partition_names
             if partition in all_upstream_partitions
         ]
+
+    def _increment_unfinished_downstream_partitions(self, run_key: str) -> bool:
+        # If already know that run_key is unfinished (still require materializations), then continue
+        # until the skip number is self.skip_when_unfinished_count, then remove from the list and try again
+        # this keeps us from doing expensive computations and timing out the sensor
+        if run_key in self.unfinished_downstream_partitions:
+            self._logger.debug(
+                "Run key has recentely been reported as unfinished. Skipping this partition ..."
+            )
+            skip_number = self.unfinished_downstream_partitions[run_key]
+            if skip_number == self.skip_when_unfinished_count:
+                del self.unfinished_downstream_partitions[run_key]
+            else:
+                self.unfinished_downstream_partitions[run_key] += 1
+            return True
+        else:
+            return False
+
+    def _sensor_already_triggered_with_run_key(self, run_key: str) -> bool:
+        # If this run key has already been requested during this evaluation, skip
+        if run_key in self.run_key_requests_this_sensor:
+            self._logger.debug(f"Run key {run_key} already requested. Skipping . . .")
+            return True
+        else:
+            return False
+
+    def _run_key_already_completed(self, run_key: str, instance: DagsterInstance) -> bool:
+        # If this run key has already been completed previously, skip
+        run_key_completed = instance.get_runs(filters=RunsFilter(tags={"dagster/run_key": run_key}))
+        self._logger.debug(f"Run key: {run_key}")
+        self._logger.debug(f"Run key completed: {False if len(run_key_completed) == 0 else True}")
+        if len(run_key_completed) > 0:
+            self._logger.debug(f"Run with run_key='{run_key}' already exists. Skipping . . .")
+            return True
+        else:
+            return False
+
+    def _get_successful_materializations_for_monitored_asset_partitions(
+        self, instance: DagsterInstance, partitions: typing.List[str]
+    ) -> typing.Sequence[EventLogRecord]:
+        # Retrieve materialization & failed runs information for partitions
+        self._logger.debug(
+            f"Retrieving materialization events for asset {self.monitored_asset} . . ."
+        )
+        filter_materialized_assets = EventRecordsFilter(
+            event_type=DagsterEventType.ASSET_MATERIALIZATION,
+            asset_key=AssetKey(self.monitored_asset),
+            asset_partitions=partitions,
+        )
+        events_successful_materializations = instance.get_event_records(filter_materialized_assets)
+        self._logger.debug(
+            f"Number of successful materializations: {len(events_successful_materializations)}"
+        )
+        return events_successful_materializations
+
+    def _get_failed_pipeline_events_for_monitored_asset_partitions(
+        self,
+        instance: DagsterInstance,
+        partitions: typing.List[str],
+        backfill_name: typing.Optional[str] = None,
+        schedule_name: typing.Optional[str] = None,
+    ) -> typing.Sequence[DagsterRun]:
+        # NB: cannot filter for asset on these events :/
+        if (backfill_name is None and schedule_name is None) or (
+            backfill_name is not None and schedule_name is not None
+        ):
+            raise ValueError("Exactly one of backfill_name or schedule_name must be provided")
+        self._logger.debug("Retrieving failed pipeline events for time window T-60 minutes . . .")
+        filter_failed_pipelines = EventRecordsFilter(
+            event_type=DagsterEventType.PIPELINE_FAILURE,
+            after_timestamp=(
+                pendulum.now() - pendulum.duration(minutes=60)
+            ).timestamp(),  # Make configurable
+        )
+        filter_events_failed = instance.get_event_records(filter_failed_pipelines)
+        self._logger.debug(
+            f"Number of failed pipeline events for time window T-60 minutes: {len(filter_events_failed)}"
+        )
+        if len(filter_events_failed) > 0:
+            self._logger.debug("Retrieving failed runs for failed pipeline events . . .")
+            filter_runs_failed = RunsFilter([event.run_id for event in filter_events_failed])
+            runs_failed = instance.get_runs(filters=filter_runs_failed)
+        else:
+            runs_failed = []
+        tag_key = "dagster/backfill" if backfill_name is not None else "dagster/schedule_name"
+        tag_value = backfill_name if backfill_name is not None else schedule_name
+        self._logger.debug(
+            f"Filtering failed runs for tag '{tag_key}' with value '{tag_value}' . . ."
+        )
+        runs_failed = [run for run in runs_failed if run.tags.get(tag_key) == tag_value]
+        self._logger.debug(
+            f"Number of failed runs for tag '{tag_key}' with value '{tag_value}': {len(runs_failed)}"
+        )
+        return runs_failed
