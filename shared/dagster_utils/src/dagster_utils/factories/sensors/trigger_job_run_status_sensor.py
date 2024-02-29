@@ -17,7 +17,7 @@ from dagster import (
 from dagster_utils.factories.base import DagsterObjectFactory
 from dagster_utils.factories.sensors.utils import (
     MonitoredJobSensorMixin,
-    PartitionResolver,
+    MultiToSinglePartitionResolver,
 )
 
 
@@ -69,7 +69,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
         self.skip_when_unfinished_count = skip_when_unfinished_count
         self.minimum_interval_seconds = minimum_interval_seconds
         self.default_status = default_status
-        self.partition_mapper = PartitionResolver(
+        self.partition_mapper = MultiToSinglePartitionResolver(
             upstream_partition=partitions_def_monitored_asset,
             downstream_partition=partitions_def_downstream_asset,
         )

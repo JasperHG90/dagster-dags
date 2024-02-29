@@ -8,8 +8,12 @@ from dagster import (
     Definitions,
     JobDefinition,
     MultiPartitionsDefinition,
+    PartitionsDefinition,
 )
-from dagster_utils.factories.sensors.utils import MonitoredJobSensorMixin
+from dagster_utils.factories.sensors.utils import (
+    MonitoredJobSensorMixin,
+    MultiToSinglePartitionResolver,
+)
 
 
 class TestClassForMonitoredJobSensorMixin(MonitoredJobSensorMixin):
@@ -103,3 +107,21 @@ class TestMonitoredJobSensorMixin:
                 instance=instance, backfill_name="test", all_upstream_partitions=all_partition_keys
             )
         assert backfill_partitions == all_partition_keys[:-1]
+
+
+@pytest.fixture(scope="function")
+def partition_resolver(
+    my_multi_partition: MultiPartitionsDefinition,
+    my_daily_partition: PartitionsDefinition,
+    request: pytest.FixtureRequest,
+):
+    request.instance._test_cls = MultiToSinglePartitionResolver(
+        upstream_partition_definition=my_multi_partition,
+        downstream_partition_definition=my_daily_partition,
+    )
+
+
+class TestPartitionResolver:
+    @pytest.mark.usefixtures("partition_resolver")
+    def test_map_upstream_to_downstream_partition(self):
+        ...

@@ -9,15 +9,18 @@ from dagster import (
     DagsterRun,
     EventLogRecord,
     EventRecordsFilter,
+    MultiPartitionsDefinition,
     PartitionsDefinition,
     RunRecord,
     RunsFilter,
 )
 
 
-class PartitionResolver:
+class MultiToSinglePartitionResolver:
     def __init__(
-        self, upstream_partition: PartitionsDefinition, downstream_partition: PartitionsDefinition
+        self,
+        upstream_partition: MultiPartitionsDefinition,
+        downstream_partition: PartitionsDefinition,
     ):
         self.upstream_partition = upstream_partition
         self.downstream_partition = downstream_partition
