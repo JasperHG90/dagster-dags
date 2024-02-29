@@ -197,7 +197,6 @@ class MonitoredJobSensorMixin:
     def _get_failed_pipeline_events_for_monitored_asset_partitions(
         self,
         instance: DagsterInstance,
-        partitions: typing.List[str],
         backfill_name: typing.Optional[str] = None,
         schedule_name: typing.Optional[str] = None,
     ) -> typing.Sequence[DagsterRun]:
@@ -233,3 +232,31 @@ class MonitoredJobSensorMixin:
             f"Number of failed runs for tag '{tag_key}' with value '{tag_value}': {len(runs_failed)}"
         )
         return runs_failed
+
+    def _get_job_statistics(
+        self,
+        instance: DagsterInstance,
+        partitions: typing.List[str],
+        backfill_name: typing.Optional[str] = None,
+        schedule_name: typing.Optional[str] = None,
+    ) -> typing.Tuple[int, int, int, int, int]:
+        events_successful_materializations = (
+            self._get_successful_materializations_for_monitored_asset_partitions(
+                instance=instance, partitions=partitions
+            )
+        )
+        runs_failed = self._get_failed_pipeline_events_for_monitored_asset_partitions(
+            instance=instance, backfill_name=backfill_name, schedule_name=schedule_name
+        )
+        num_total = len(partitions)
+        num_successful = len(events_successful_materializations)
+        num_failed = len(runs_failed)
+        num_done = num_successful + num_failed
+        num_unfinished = num_total - num_done
+        return (
+            num_total,
+            num_successful,
+            num_failed,
+            num_done,
+            num_unfinished,
+        )
