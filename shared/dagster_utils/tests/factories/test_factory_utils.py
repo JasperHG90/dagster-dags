@@ -5,10 +5,11 @@ import pytest
 from dagster import (
     DagsterInstance,
     DagsterRunStatus,
+    DailyPartitionsDefinition,
     Definitions,
     JobDefinition,
     MultiPartitionsDefinition,
-    PartitionsDefinition,
+    StaticPartitionsDefinition,
 )
 from dagster_utils.factories.sensors.utils import (
     MonitoredJobSensorMixin,
@@ -112,16 +113,58 @@ class TestMonitoredJobSensorMixin:
 @pytest.fixture(scope="function")
 def partition_resolver(
     my_multi_partition: MultiPartitionsDefinition,
-    my_daily_partition: PartitionsDefinition,
+    my_daily_partition: DailyPartitionsDefinition,
     request: pytest.FixtureRequest,
 ):
     request.instance._test_cls = MultiToSinglePartitionResolver(
-        upstream_partition_definition=my_multi_partition,
-        downstream_partition_definition=my_daily_partition,
+        upstream_partition=my_multi_partition,
+        downstream_partition=my_daily_partition,
     )
 
 
 class TestPartitionResolver:
     @pytest.mark.usefixtures("partition_resolver")
     def test_map_upstream_to_downstream_partition(self):
-        ...
+        self._test_cls._map_upstream_to_downstream_partition()
+        assert self._test_cls.mapped_downstream_partition_dimension == "daily"
+
+    @pytest.mark.usefixtures("partition_resolver")
+    def test_get_dimension_idx_pre(self):
+        idx = self._test_cls._get_dimension_idx()
+        assert idx == 0
+
+    def test_get_dimension_idx_post(
+        self,
+        my_static_partition: StaticPartitionsDefinition,
+        my_daily_partition: DailyPartitionsDefinition,
+    ):
+        # Primary dimension is always date, not alphabetical. But partition keys are alphabetical.
+        multi_partition = MultiPartitionsDefinition(
+            {"astations": my_static_partition, "daily": my_daily_partition}
+        )
+        resolver = MultiToSinglePartitionResolver(
+            upstream_partition=multi_partition,
+            downstream_partition=my_daily_partition,
+        )
+        idx = resolver._get_dimension_idx()
+        assert idx == 0
+
+    @pytest.mark.usefixtures("partition_resolver")
+    def test_map_downstream_to_upstream_partitions(
+        self, my_daily_partition: DailyPartitionsDefinition
+    ):
+        upstream_partitions = self._test_cls.map_downstream_to_upstream_partitions(
+            partition_keys=my_daily_partition.get_partition_keys()
+        )
+        assert len(upstream_partitions) == 4
+        assert upstream_partitions["2021-01-01"] == ["2021-01-01|NL01345", "2021-01-01|NL05432"]
+
+    @pytest.mark.usefixtures("partition_resolver")
+    def test_map_upstream_to_downstream_partitions(
+        self, my_multi_partition: MultiPartitionsDefinition
+    ):
+        downstream_partitions = self._test_cls.map_upstream_to_downstream_partitions(
+            partition_keys=my_multi_partition.get_partition_keys()
+        )
+        assert len(downstream_partitions) == 8
+        assert downstream_partitions["2021-01-01|NL01345"] == "2021-01-01"
