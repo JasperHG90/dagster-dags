@@ -24,6 +24,7 @@ class TestClassForMonitoredJobSensorMixin(MonitoredJobSensorMixin):
         monitored_asset: str,
         monitored_job: JobDefinition,
         run_status: typing.List[DagsterRunStatus] = [DagsterRunStatus.SUCCESS],
+        skip_when_unfinished_count: int = 15,
         time_window_seconds: int = 120,
     ):
         self.name = name
@@ -31,7 +32,10 @@ class TestClassForMonitoredJobSensorMixin(MonitoredJobSensorMixin):
         self.monitored_job = monitored_job
         self.run_status = run_status
         self.time_window_seconds = time_window_seconds
-        self.logger = logging.getLogger("test")
+        self.skip_when_unfinished_count = skip_when_unfinished_count
+        self.run_key_requests_this_sensor: typing.List[str] = []
+        self.unfinished_downstream_partitions: typing.Dict[str, int] = {}
+        self._logger = logging.getLogger("test")
 
 
 class BackfillMock:
@@ -108,6 +112,33 @@ class TestMonitoredJobSensorMixin:
                 instance=instance, backfill_name="test", all_upstream_partitions=all_partition_keys
             )
         assert backfill_partitions == all_partition_keys[:-1]
+
+    @pytest.mark.usefixtures("test_class_single_multipartitioned_job")
+    def test_increment_unfinished_downstream_partitions_known_key(self):
+        self._test_cls.unfinished_downstream_partitions["test_run_key"] = 0
+        self._test_cls._increment_unfinished_downstream_partitions("test_run_key")
+        assert self._test_cls.unfinished_downstream_partitions["test_run_key"] == 1
+
+    @pytest.mark.usefixtures("test_class_single_multipartitioned_job")
+    def test_sensor_already_triggered_with_run_key(self):
+        self._test_cls.run_key_requests_this_sensor.append("test_run_key")
+        assert self._test_cls._sensor_already_triggered_with_run_key("test_run_key")
+
+    @pytest.mark.usefixtures("test_class_single_multipartitioned_job")
+    def test_run_key_already_completed(
+        self,
+        my_definition_single_multipartitioned_job: Definitions,
+        my_multi_partition: MultiPartitionsDefinition,
+    ):
+        with DagsterInstance.ephemeral() as instance:
+            my_definition_single_multipartitioned_job.get_job_def(
+                "my_multipartitioned_job"
+            ).execute_in_process(
+                instance=instance,
+                partition_key=my_multi_partition.get_partition_keys()[0],
+                tags={"dagster/run_key": "test_run_key"},
+            )
+            assert self._test_cls._run_key_already_completed("test_run_key", instance)
 
 
 @pytest.fixture(scope="function")
