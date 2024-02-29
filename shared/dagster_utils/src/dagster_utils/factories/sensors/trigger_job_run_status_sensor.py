@@ -83,6 +83,8 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
         self._logger: logging.Logger = logging.getLogger(
             "dagster_utils.factories.sensors.MultiToSinglePartitionJobTriggerSensorFactory"
         )
+        self.run_key_requests_this_sensor: typing.List[str] = []
+        self.unfinished_downstream_partitions: typing.Dict[str, int] = {}
 
     def _get_mapped_downstream_partition_key_from_upstream_partition_key(
         self, upstream_partition_key: str
@@ -108,13 +110,11 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
         )
         def _sensor(context: SensorEvaluationContext):
             run_requests = 0
-            run_key_requests_this_sensor = []
             job_name = self.monitored_job.name
             context.log.debug(f"Job name: {job_name}")
             run_records = self._get_run_records_for_job(context.instance)
             cursor = float(context.cursor) if context.cursor else float(0)
             ts = cursor - 2  # margin
-            unfinished_downstream_partitions = {}
             for run_record in run_records:
                 if self._run_record_end_before_cursor_ts(run_record.end_time, ts):
                     context.log.debug(f"Skipping run for record {run_record.dagster_run.run_id}")
@@ -138,40 +138,20 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                     all_upstream_partitions = self._get_backfill_partitions(
                         context.instance, backfill_name, all_upstream_partitions
                     )
+                if scheduled_run_name is not None:
+                    ...
                 else:
                     raise ValueError(
                         "Run record does not have a backfill or schedule name tag. But we require exactly one of these tags to be present."
                     )
                 run_key = f"{downstream_partition_key}_{backfill_name if backfill_name is not None else scheduled_run_name}"
-                # If already know that run_key is unfinished (still require materializations), then continue
-                # until the skip number is self.skip_when_unfinished_count, then remove from the list and try again
-                # this keeps us from doing expensive computations and timing out the sensor
-                if run_key in unfinished_downstream_partitions:
-                    context.log.debug(
-                        "Run key has recentely been reported as unfinished. Skipping this partition ..."
-                    )
-                    skip_number = unfinished_downstream_partitions[run_key]
-                    if skip_number == self.skip_when_unfinished_count:
-                        del unfinished_downstream_partitions[run_key]
-                    else:
-                        unfinished_downstream_partitions[run_key] += 1
+                if self._increment_unfinished_downstream_partitions(
+                    run_key
+                ) or self._sensor_already_triggered_with_run_key(run_key):
                     continue
-                # If this run key has already been requested during this evaluation, skip
-                if run_key in run_key_requests_this_sensor:
-                    context.log.debug(f"Run key {run_key} already requested. Skipping . . .")
-                    continue
-                # If this run key has already been completed previously, skip
-                run_key_completed = context.instance.get_runs(
-                    filters=RunsFilter(tags={"dagster/run_key": run_key})
-                )
-                context.log.debug(f"Run key: {run_key}")
-                context.log.debug(
-                    f"Run key completed: {False if len(run_key_completed) == 0 else True}"
-                )
-                if len(run_key_completed) > 0:
-                    context.log.debug(
-                        f"Run for partition {downstream_partition_key} already exists. Skipping . . ."
-                    )
+                # NB: this calls the postgres db, so don't want to call it in above lines since these are just lookups and
+                #  as such much faster
+                if self._run_key_already_completed(context, run_key, context.instance):
                     continue
                 else:
                     # Retrieve materialization & failed runs information for partitions
@@ -221,7 +201,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                     context.log.debug(
                         f"Only {num_done} out of {num_total} partitions have been materialized for partition {downstream_partition_key}. Skipping . . ."
                     )
-                    unfinished_downstream_partitions[run_key] = 0
+                    self.unfinished_downstream_partitions[run_key] = 0
                     continue
                 else:
                     if num_failed > 0:
@@ -229,7 +209,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                             f"{num_failed} partitions failed to materialize for partition {downstream_partition_key}. Will still run downstream task."
                         )
                     yield RunRequest(run_key=run_key, partition_key=downstream_partition_key)
-                    run_key_requests_this_sensor.append(run_key)
+                    self.run_key_requests_this_sensor.append(run_key)
                     run_requests += 1
 
             if run_requests > 0:
