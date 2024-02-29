@@ -3,16 +3,12 @@ import typing
 
 import pendulum
 from dagster import (
-    AssetKey,
-    DagsterEventType,
     DagsterRunStatus,
     DefaultSensorStatus,
-    EventRecordsFilter,
     JobDefinition,
     MultiPartitionsDefinition,
     PartitionsDefinition,
     RunRequest,
-    RunsFilter,
     SensorDefinition,
     SensorEvaluationContext,
     SkipReason,
@@ -26,9 +22,6 @@ from dagster_utils.factories.sensors.utils import (
 
 
 # TODO: add timeout for jobs in which partitions don't resolve in time, add tests
-# TODO: add base class from which this class inherits that has all the private functions
-#  to do partition mapping, checking of assets etc. so that logic becomes reusable and
-#  testable
 class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, MonitoredJobSensorMixin):
     def __init__(
         self,
@@ -154,49 +147,21 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                 if self._run_key_already_completed(context, run_key, context.instance):
                     continue
                 else:
-                    # Retrieve materialization & failed runs information for partitions
-                    filter_materialized_assets = EventRecordsFilter(
-                        event_type=DagsterEventType.ASSET_MATERIALIZATION,
-                        asset_key=AssetKey(self.monitored_asset),
-                        asset_partitions=all_upstream_partitions,
+                    (
+                        num_total,
+                        num_successful,
+                        num_failed,
+                        num_done,
+                        num_unfinished,
+                    ) = self._get_job_statistics(
+                        instance=context.instance,
+                        partitions=all_upstream_partitions,
+                        backfill_name=backfill_name,
+                        scheduled_run_name=scheduled_run_name,
                     )
-                    events_successful_materializations = context.instance.get_event_records(
-                        filter_materialized_assets
+                    context.log.debug(
+                        f"Total: {num_total}, Successful: {num_successful}, Failed: {num_failed}, Done: {num_done}, Unfinished: {num_unfinished}"
                     )
-                    # NB: cannot filter for asset
-                    filter_failed_pipelines = EventRecordsFilter(
-                        event_type=DagsterEventType.PIPELINE_FAILURE,
-                        after_timestamp=(
-                            pendulum.now() - pendulum.duration(minutes=60)
-                        ).timestamp(),  # Make configurable
-                    )
-                    filter_events_failed = context.instance.get_event_records(
-                        filter_failed_pipelines
-                    )
-                    if len(filter_events_failed) > 0:
-                        filter_runs_failed = RunsFilter(
-                            [event.run_id for event in filter_events_failed]
-                        )
-                        runs_failed = context.instance.get_runs(filters=filter_runs_failed)
-                    else:
-                        runs_failed = []
-                    if backfill_name is not None:
-                        runs_failed_run_key = [
-                            run
-                            for run in runs_failed
-                            if run.tags.get("dagster/backfill") == backfill_name
-                        ]
-                    else:
-                        runs_failed_run_key = [
-                            run
-                            for run in runs_failed
-                            if run.tags.get("dagster/schedule_name") == scheduled_run_name
-                        ]
-                    num_total = len(all_upstream_partitions)
-                    num_successful = len(events_successful_materializations)
-                    num_failed = len(runs_failed_run_key)
-                    num_done = num_successful + num_failed
-                    num_unfinished = num_total - num_done
                 if num_unfinished > 0:
                     context.log.debug(
                         f"Only {num_done} out of {num_total} partitions have been materialized for partition {downstream_partition_key}. Skipping . . ."
