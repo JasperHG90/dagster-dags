@@ -96,6 +96,7 @@ def daily_air_quality_data(
     auto_materialize_policy=AutoMaterializePolicy.eager(
         max_materializations_per_minute=None
     ).with_rules(
+        AutoMaterializeRule.materialize_on_missing(),
         AutoMaterializeRule.materialize_on_cron("0 0 1 * *", all_partitions=True),
     ),
     group_name="stations",
