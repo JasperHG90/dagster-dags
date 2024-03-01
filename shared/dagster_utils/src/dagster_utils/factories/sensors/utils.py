@@ -92,7 +92,7 @@ class MonitoredJobSensorMixin:
         time_window_start = time_window_now - pendulum.duration(
             seconds=self.time_window_seconds
         )  # Make configurable
-        self.logger.debug(f"Checking for events after {time_window_start}")
+        self._logger.debug(f"Checking for events after {time_window_start}")
         run_records = instance.get_run_records(
             filters=RunsFilter(
                 job_name=self.monitored_job.name,
@@ -102,13 +102,13 @@ class MonitoredJobSensorMixin:
             order_by="update_timestamp",
             ascending=False,
         )
-        self.logger.debug(f"Number of records: {len(run_records)}")
+        self._logger.debug(f"Number of records: {len(run_records)}")
         return run_records
 
     def _run_record_end_before_cursor_ts(self, run_record_end_ts: float, cursor_ts: float) -> bool:
         is_late = run_record_end_ts <= cursor_ts
         if is_late:
-            self.logger.debug(
+            self._logger.debug(
                 f"Run record timestamp {run_record_end_ts} lies before cursor {cursor_ts}"
             )
         return is_late
@@ -118,7 +118,7 @@ class MonitoredJobSensorMixin:
         is_backfill = False if tags.get("dagster/backfill") is None else True
         if is_backfill:
             _backfill_name = tags.get("dagster/backfill")
-            self.logger.debug(f"This is a backfill with name '{_backfill_name}'")
+            self._logger.debug(f"This is a backfill with name '{_backfill_name}'")
         return _backfill_name
 
     def _get_scheduled_run_name(self, tags: typing.Mapping[str, str]) -> typing.Union[None, str]:
@@ -126,7 +126,7 @@ class MonitoredJobSensorMixin:
         is_scheduled_run = False if tags.get("dagster/schedule_name") is None else True
         if is_scheduled_run:
             _scheduled_run_name = tags.get("dagster/schedule_name")
-            self.logger.debug(f"This is a scheduled run with name '{_scheduled_run_name}'")
+            self._logger.debug(f"This is a scheduled run with name '{_scheduled_run_name}'")
         return _scheduled_run_name
 
     def _get_backfill_partitions(
@@ -180,16 +180,24 @@ class MonitoredJobSensorMixin:
             return False
 
     def _get_successful_materializations_for_monitored_asset_partitions(
-        self, instance: DagsterInstance, partitions: typing.List[str]
+        self,
+        instance: DagsterInstance,
+        partitions: typing.List[str],
+        backfill_name: typing.Optional[str] = None,
+        schedule_name: typing.Optional[str] = None,
     ) -> typing.Sequence[EventLogRecord]:
         # Retrieve materialization & failed runs information for partitions
         self._logger.debug(
             f"Retrieving materialization events for asset {self.monitored_asset} . . ."
         )
+        tag_key = "dagster/backfill" if backfill_name is not None else "dagster/schedule_name"
+        tag_value = backfill_name if backfill_name is not None else schedule_name
         filter_materialized_assets = EventRecordsFilter(
             event_type=DagsterEventType.ASSET_MATERIALIZATION,
             asset_key=AssetKey(self.monitored_asset),
             asset_partitions=partitions,
+            tags={tag_key: tag_value},
+            after_timestamp=pendulum.now(tz="UTC").subtract(minutes=60).timestamp(),
         )
         events_successful_materializations = instance.get_event_records(filter_materialized_assets)
         self._logger.debug(
@@ -245,7 +253,10 @@ class MonitoredJobSensorMixin:
     ) -> typing.Tuple[int, int, int, int, int]:
         events_successful_materializations = (
             self._get_successful_materializations_for_monitored_asset_partitions(
-                instance=instance, partitions=partitions
+                instance=instance,
+                partitions=partitions,
+                backfill_name=backfill_name,
+                schedule_name=schedule_name,
             )
         )
         runs_failed = self._get_failed_pipeline_events_for_monitored_asset_partitions(
