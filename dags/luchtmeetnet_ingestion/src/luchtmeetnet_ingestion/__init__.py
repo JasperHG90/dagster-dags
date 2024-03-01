@@ -10,11 +10,7 @@ from luchtmeetnet_ingestion.assets import (
 from luchtmeetnet_ingestion.jobs import copy_to_data_lake_job, ingestion_job
 from luchtmeetnet_ingestion.resource_definitions import env_resources, environment
 from luchtmeetnet_ingestion.schedules import daily_schedule
-from luchtmeetnet_ingestion.sensors import (
-    run_copy_to_data_lake_after_ingestion,
-    slack_message_on_failure,
-    slack_message_on_success,
-)
+from luchtmeetnet_ingestion.sensors import run_copy_to_data_lake_after_ingestion
 
 try:
     __version__ = metadata.version("luchtmeetnet_ingestion")
@@ -27,8 +23,6 @@ definition = Definitions(
     resources=env_resources[environment],
     jobs=[ingestion_job, copy_to_data_lake_job],
     sensors=[
-        slack_message_on_failure,
-        slack_message_on_success,
         run_copy_to_data_lake_after_ingestion,
     ],
     schedules=[daily_schedule],
