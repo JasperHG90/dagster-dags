@@ -7,6 +7,7 @@ from dagster import (
     DagsterEventType,
     DagsterInstance,
     DagsterRun,
+    DagsterRunStatus,
     EventLogRecord,
     EventRecordsFilter,
     MultiPartitionsDefinition,
@@ -217,28 +218,27 @@ class MonitoredJobSensorMixin:
         ):
             raise ValueError("Exactly one of backfill_name or schedule_name must be provided")
         self._logger.debug("Retrieving failed pipeline events for time window T-60 minutes . . .")
-        filter_failed_pipelines = EventRecordsFilter(
-            event_type=DagsterEventType.PIPELINE_FAILURE,
-            after_timestamp=(
-                pendulum.now() - pendulum.duration(minutes=60)
-            ).timestamp(),  # Make configurable
-        )
-        filter_events_failed = instance.get_event_records(filter_failed_pipelines)
-        self._logger.debug(
-            f"Number of failed pipeline events for time window T-60 minutes: {len(filter_events_failed)}"
-        )
-        if len(filter_events_failed) > 0:
-            self._logger.debug("Retrieving failed runs for failed pipeline events . . .")
-            filter_runs_failed = RunsFilter([event.run_id for event in filter_events_failed])
-            runs_failed = instance.get_runs(filters=filter_runs_failed)
-        else:
-            runs_failed = []
+        # filter_failed_pipelines = EventRecordsFilter(
+        #     event_type=DagsterEventType.PIPELINE_FAILURE,
+        #     after_timestamp=(
+        #         pendulum.now() - pendulum.duration(minutes=60)
+        #     ).timestamp(),  # Make configurable
+        # )
+        # filter_events_failed = instance.get_event_records(filter_failed_pipelines)
+        # self._logger.debug(
+        #     f"Number of failed pipeline events for time window T-60 minutes: {len(filter_events_failed)}"
+        # )
         tag_key = "dagster/backfill" if backfill_name is not None else "dagster/schedule_name"
         tag_value = backfill_name if backfill_name is not None else schedule_name
-        self._logger.debug(
-            f"Filtering failed runs for tag '{tag_key}' with value '{tag_value}' . . ."
+        filter_failed_runs = RunsFilter(
+            job_name=self.monitored_job.name,
+            statuses=[DagsterRunStatus.FAILURE],
+            # updated_after=(
+            #     pendulum.now() - pendulum.duration(minutes=60)
+            # ).timestamp(),
+            tags={tag_key: tag_value},
         )
-        runs_failed = [run for run in runs_failed if run.tags.get(tag_key) == tag_value]
+        runs_failed = instance.get_run_records(filter_failed_runs)
         self._logger.debug(
             f"Number of failed runs for tag '{tag_key}' with value '{tag_value}': {len(runs_failed)}"
         )

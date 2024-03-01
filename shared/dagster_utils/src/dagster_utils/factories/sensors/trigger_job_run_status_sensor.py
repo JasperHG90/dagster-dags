@@ -244,6 +244,9 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                     self.run_key_requests_this_sensor.append(run_key)
                     run_requests += 1
                     if self.callback_fn is not None:
+                        context.log.debug(
+                            f"Calling callback function '{self.callback_fn.__name__}'"
+                        )
                         self.callback_fn(
                             context=context,
                             run_key=run_key,
