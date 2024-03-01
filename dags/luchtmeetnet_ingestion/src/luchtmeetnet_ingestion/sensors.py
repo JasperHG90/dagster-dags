@@ -36,13 +36,15 @@ with partition key "{kwargs.get('downstream_partition_key')}".
 
 run_copy_to_data_lake_after_ingestion = multi_to_single_partition_job_trigger_sensor(
     name="run_copy_to_data_lake_after_ingestion",
-    description="Copy ingested data from landing zone to data lake. NB: Aggregated by date",
+    description="""Sensor that monitors the completion of the ingestion job and triggers the copy to data lake job.
+This sensor only triggers after *all* partitions of the upstream job have finished, and sends a slack message
+upon completion.""",
     monitored_asset="air_quality_data",
     monitored_job=ingestion_job,
     downstream_job=copy_to_data_lake_job,
     partitions_def_monitored_asset=daily_station_partition,
     partitions_def_downstream_asset=daily_partition,
-    run_status=[DagsterRunStatus.SUCCESS],
+    run_status=[DagsterRunStatus.SUCCESS, DagsterRunStatus.FAILURE],
     default_status=DefaultSensorStatus.RUNNING,
     required_resource_keys={"slack"},
     time_window_seconds=90,
