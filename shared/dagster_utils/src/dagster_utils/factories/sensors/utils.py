@@ -218,24 +218,11 @@ class MonitoredJobSensorMixin:
         ):
             raise ValueError("Exactly one of backfill_name or schedule_name must be provided")
         self._logger.debug("Retrieving failed pipeline events for time window T-60 minutes . . .")
-        # filter_failed_pipelines = EventRecordsFilter(
-        #     event_type=DagsterEventType.PIPELINE_FAILURE,
-        #     after_timestamp=(
-        #         pendulum.now() - pendulum.duration(minutes=60)
-        #     ).timestamp(),  # Make configurable
-        # )
-        # filter_events_failed = instance.get_event_records(filter_failed_pipelines)
-        # self._logger.debug(
-        #     f"Number of failed pipeline events for time window T-60 minutes: {len(filter_events_failed)}"
-        # )
         tag_key = "dagster/backfill" if backfill_name is not None else "dagster/schedule_name"
         tag_value = backfill_name if backfill_name is not None else schedule_name
         filter_failed_runs = RunsFilter(
             job_name=self.monitored_job.name,
             statuses=[DagsterRunStatus.FAILURE],
-            # updated_after=(
-            #     pendulum.now() - pendulum.duration(minutes=60)
-            # ).timestamp(),
             tags={tag_key: tag_value},
         )
         runs_failed = instance.get_run_records(filter_failed_runs)
