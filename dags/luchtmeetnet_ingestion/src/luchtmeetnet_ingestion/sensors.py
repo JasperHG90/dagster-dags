@@ -20,10 +20,10 @@ def slack_message(context: SensorEvaluationContext, **kwargs):
     Job "{kwargs.get('monitored_job_name')}" in repository "luchtmeetnet_ingestion", environment "{environment}"
 and run key "{kwargs.get('run_key')}" has completed for {kwargs.get('partitions_total')} partitions:
 
-    Successful partitions       => {kwargs.get('partitions_successful')}
-    Failed partitions           => {kwargs.get('partitions_failed')}
-    Upstream partition keys     => {kwargs.get('all_upstream_partitions')[:5]}... (truncated)
-    Downstream partition key    => {kwargs.get('downstream_partition_key')}
+    Successful partitions\t\t=>\t{kwargs.get('partitions_successful')}
+    Failed partitions\t\t\t=>\t{kwargs.get('partitions_failed')}
+    Upstream partition keys\t\t=>\t{kwargs.get('all_upstream_partitions')[:5]}... (truncated)
+    Downstream partition key\t=>\t{kwargs.get('downstream_partition_key')}
 
 Sensor "{context.sensor_name}" triggered downstream job "{kwargs.get('downstream_job_name')}"
 with partition key "{kwargs.get('downstream_partition_key')}".
