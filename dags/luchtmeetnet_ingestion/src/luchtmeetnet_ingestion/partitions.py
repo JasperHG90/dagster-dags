@@ -2,14 +2,12 @@ import datetime
 import json
 from importlib import resources as impresources
 
-from dagster import (  # DynamicPartitionsDefinition,
+from dagster import (
     DailyPartitionsDefinition,
     MultiPartitionsDefinition,
     StaticPartitionsDefinition,
 )
 from luchtmeetnet_ingestion import static
-
-# stations_partition = DynamicPartitionsDefinition(name="stations")
 
 with (impresources.files(static) / "stations.json").open("r") as f:
     stations = [sd["number"] for sd in json.load(f)]
