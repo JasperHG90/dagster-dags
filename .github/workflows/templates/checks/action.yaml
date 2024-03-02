@@ -5,8 +5,14 @@ runs:
   steps:
     - uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.9'
         cache: 'pip'
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        # To work with pants --changed-since we need an adequate number
+        #  of commits in the checkout
+        fetch-depth: 0
     - uses: extractions/setup-just@v1
       name: Setup just
     - name: Initialize Pants
@@ -15,13 +21,10 @@ runs:
         # cache0 makes it easy to bust the cache if needed
         gha-cache-key: cache0-py310
         named-caches-hash: ${{ hashFiles('python-default.lock') }}
-    - name: Git fetch
-      run: git fetch
-      shell: bash
     - name: format
       run: |
         pants \
-          --changed-since=main \
+          --changed-since=origin/main \
           tailor --check \
           update-build-files --check \
           fmt
@@ -29,7 +32,7 @@ runs:
     - name: lint
       run: |
         pants \
-          --changed-since=main \
+          --changed-since=origin/main \
           lint
       shell: bash
     # - name: type checks
@@ -42,14 +45,14 @@ runs:
     - name: test
       run: |
         pants \
-          --changed-since=main \
+          --changed-since=origin/main \
           --changed-dependents=transitive \
           test
       shell: bash
     - name: package
       run: |
         pants \
-          --changed-since=main \
+          --changed-since=origin/main \
           package
       shell: bash
     - name: Upload pants log
