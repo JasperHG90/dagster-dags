@@ -17,6 +17,7 @@ runs:
         named-caches-hash: ${{ hashFiles('python-default.lock') }}
     - name: Git fetch
       run: git fetch
+      shell: bash
     - name: format
       run: |
         pants \
