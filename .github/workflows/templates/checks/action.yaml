@@ -15,6 +15,8 @@ runs:
         # cache0 makes it easy to bust the cache if needed
         gha-cache-key: cache0-py310
         named-caches-hash: ${{ hashFiles('python-default.lock') }}
+    - name: Git fetch
+      run: git fetch
     - name: format
       run: |
         pants \
