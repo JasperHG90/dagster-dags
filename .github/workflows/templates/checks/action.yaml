@@ -18,7 +18,7 @@ runs:
     - name: format
       run: |
         pants \
-          --changed-since=origin/main \
+          --changed-since=main \
           tailor --check \
           update-build-files --check \
           fmt
@@ -26,7 +26,7 @@ runs:
     - name: lint
       run: |
         pants \
-          --changed-since=origin/main \
+          --changed-since=main \
           lint
       shell: bash
     # - name: type checks
@@ -39,14 +39,14 @@ runs:
     - name: test
       run: |
         pants \
-          --changed-since=origin/main \
+          --changed-since=main \
           --changed-dependents=transitive \
           test
       shell: bash
     - name: package
       run: |
         pants \
-          --changed-since=origin/main \
+          --changed-since=main \
           package
       shell: bash
     - name: Upload pants log
