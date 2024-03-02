@@ -15,14 +15,15 @@
 //     "coolname==2.2.0",
 //     "dagit<1.7.0,>=1.6",
 //     "dagster-celery-k8s<0.23.0,>=0.22.1",
+//     "dagster-gcp<0.22.8",
 //     "dagster-graphql<2.0.0,>=1.6.5",
 //     "dagster-k8s<0.23.0,>=0.22.1",
+//     "dagster-postgres<0.22.8",
 //     "dagster-postgres<0.23.0,>=0.22.5",
-//     "dagster-postgres<1.0.0,>=0",
-//     "dagster-slack<1.0.0,>=0",
-//     "dagster<1.7.0,>=1.6",
+//     "dagster-slack<0.22.8",
 //     "dagster<2.0.0,>=1.5.8",
 //     "dagster<2.0.0,>=1.6.5",
+//     "dagster==1.6.5",
 //     "duckdb<0.10.0,>=0.9.2",
 //     "google-cloud-storage<3.0.0,>=2.14.0",
 //     "ipykernel<7.0.0,>=6.26.0",
@@ -1134,35 +1135,35 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "51163e94e0dc80cf1404fea45d2aa0240c97a76db24e700893edde0baadfb423",
-              "url": "https://files.pythonhosted.org/packages/39/be/f8222abbfc901bb91428ccc5867aff3c23fe73a976b8e7dd02410c952269/dagit-1.6.8-py3-none-any.whl"
+              "hash": "c1b738ba9140650cd2517d54fdf737d45002f9db0b2216bde9fb10b190a97835",
+              "url": "https://files.pythonhosted.org/packages/b4/d4/002b622ac19f1974869a63dfffd7cdc477a41f7dad4813f221b236dd2f35/dagit-1.6.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "7f58a916db95ddd5faee36d2fbf4bd116f9ef44e622570c3e4e4d7561af3538b",
-              "url": "https://files.pythonhosted.org/packages/84/1b/fcdc51aba227cce21096acb920e86f4278eda95f8d80a228ba6cd07fac84/dagit-1.6.8.tar.gz"
+              "hash": "64d3b054f64f86c5460a3c257ed869dcd852857d7a4aa57af5208215a887cd4b",
+              "url": "https://files.pythonhosted.org/packages/ad/f0/fca3490acb3d3d3c7b2ed283c86e1f5feb3ac046f3387ec2912d5b3638f1/dagit-1.6.5.tar.gz"
             }
           ],
           "project_name": "dagit",
           "requires_dists": [
-            "dagster-webserver==1.6.8",
-            "dagster-webserver[notebook]==1.6.8; extra == \"notebook\"",
-            "dagster-webserver[test]==1.6.8; extra == \"test\""
+            "dagster-webserver==1.6.5",
+            "dagster-webserver[notebook]==1.6.5; extra == \"notebook\"",
+            "dagster-webserver[test]==1.6.5; extra == \"test\""
           ],
-          "requires_python": "<3.13,>=3.8",
-          "version": "1.6.8"
+          "requires_python": null,
+          "version": "1.6.5"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "1c01c5d0ff7e47e042d52f3758579c5b9ffa9a554a02713788fb084b286c9a2c",
-              "url": "https://files.pythonhosted.org/packages/30/7b/9186c911bdae6e90dc08bedb1cedbfc93f824bc57ad22a02b33aa302ee02/dagster-1.6.8-py3-none-any.whl"
+              "hash": "6432277d74218993f2e0f4ade88e6d46e6533ad975b884afea4e306fe6e3b44c",
+              "url": "https://files.pythonhosted.org/packages/61/f1/430b2d270ac07bd8ff4acd74cb1e3173ad5ab5e9526e3e94410a08cb61b9/dagster-1.6.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "a5cc4251ba928fafd9f237b013431b951260fe0b223be3a805deb34599300ea8",
-              "url": "https://files.pythonhosted.org/packages/16/70/afdf94833042ae18fd1a814579dad8277441af719c8a421e297989e07730/dagster-1.6.8.tar.gz"
+              "hash": "1e0fff0ddf29a2f01a0147d4a8ab119774d6e4fc88f3c3087c17827cac2ea380",
+              "url": "https://files.pythonhosted.org/packages/de/0a/5ba6b028ba4ec94ec160cfdb86c910c7a64256e1b7c024e02c68ea56276d/dagster-1.6.5.tar.gz"
             }
           ],
           "project_name": "dagster",
@@ -1174,7 +1175,7 @@
             "click>=5.0",
             "coloredlogs<=14.0,>=6.1",
             "croniter>=0.3.34",
-            "dagster-pipes==1.6.8",
+            "dagster-pipes==1.6.5",
             "docker; extra == \"docker\"",
             "docker; extra == \"test\"",
             "docstring-parser",
@@ -1189,10 +1190,8 @@
             "packaging>=20.9",
             "pandas-stubs; extra == \"pyright\"",
             "pendulum<3,>=0.7.0; python_version < \"3.9\"",
-            "pendulum<4,>=0.7.0; python_version >= \"3.9\" and python_version < \"3.12\"",
-            "pendulum<4,>=3; python_version >= \"3.12\"",
-            "protobuf<5,>=3.20.0; python_version < \"3.11\"",
-            "protobuf<5,>=4; python_version >= \"3.11\"",
+            "pendulum<4,>=0.7.0; python_version >= \"3.9\"",
+            "protobuf<5,>=3.20.0",
             "psutil>=1.0; platform_system == \"Windows\"",
             "pydantic!=1.10.7,<3,>1.10.0",
             "pyright==1.1.349; extra == \"pyright\"",
@@ -1214,7 +1213,7 @@
             "setuptools",
             "sqlalchemy<3,>=1.0",
             "structlog",
-            "syrupy>=4.0.0; extra == \"test\"",
+            "syrupy<4; extra == \"test\"",
             "tabulate",
             "tomli<3",
             "toposort>=1.0",
@@ -1240,193 +1239,263 @@
             "types-toml; extra == \"pyright\"",
             "types-tzlocal; extra == \"pyright\"",
             "typing-extensions<5,>=4.4.0",
-            "universal-pathlib; python_version < \"3.12\"",
-            "universal-pathlib>=0.2.0; python_version >= \"3.12\"",
+            "universal-pathlib",
             "watchdog>=0.8.3"
           ],
-          "requires_python": "<3.13,>=3.8",
-          "version": "1.6.8"
+          "requires_python": null,
+          "version": "1.6.5"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "9610665992faddf66e4928352a6d47df8eac3d33ead67f27a50727aa9a3e64ab",
-              "url": "https://files.pythonhosted.org/packages/de/eb/933bc1a46e6c0c172a0a29ea5c5b7dedc67509e0d46f32baeadb8a82d41b/dagster_celery-0.22.8-py3-none-any.whl"
+              "hash": "09395e8bb39a0b20b5d22f6c4954b8504ed698d8c4ea806cd54f343cf7d9a392",
+              "url": "https://files.pythonhosted.org/packages/9a/fa/ae0016b7e22bbb44af239112cc9566c14c33bee94e9c6405cbfa82f00e1f/dagster_celery-0.22.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "e2fd39cadb5291ba024da8063295df42fbc2875f15d233ec8115541585e9520c",
-              "url": "https://files.pythonhosted.org/packages/3c/4f/22c0a8f3bcc5fa4bc07569ab36c16419b027d4e3dc9c3af2a9f35f6241e1/dagster-celery-0.22.8.tar.gz"
+              "hash": "efc8b10c845e647466cc1ce7d8af023956e68320f26489aae503e6104ad91ebb",
+              "url": "https://files.pythonhosted.org/packages/2c/13/6dc9c96ad4c652138ff1c80a843d4b0299128e0f356fe665c62986e785ce/dagster-celery-0.22.5.tar.gz"
             }
           ],
           "project_name": "dagster-celery",
           "requires_dists": [
             "celery>=4.3.0",
             "click<9.0,>=5.0",
-            "dagster==1.6.8",
+            "dagster==1.6.5",
             "docker; extra == \"test\"",
             "flower; extra == \"flower\"",
             "importlib-metadata<5.0.0; python_version < \"3.8\"",
             "kubernetes; extra == \"kubernetes\"",
             "redis; extra == \"redis\""
           ],
-          "requires_python": "<3.13,>=3.8",
-          "version": "0.22.8"
+          "requires_python": null,
+          "version": "0.22.5"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "d69ff627a1f60965da301b0eea3db0be1a0ba6eb90eb10768854169fb0876410",
-              "url": "https://files.pythonhosted.org/packages/28/ba/24d94a8ec88de5973d56a30ae06a92a13315fb5514fc93c1b452a96d6cdb/dagster_celery_k8s-0.22.8-py3-none-any.whl"
+              "hash": "2af694ed527b499d28c6e1120f5ef2375b5e5015034591a352e0f88e0f477059",
+              "url": "https://files.pythonhosted.org/packages/01/36/ce8279dca32d80cd209a493fb8f98c1cabcd1709548e1978fb11132cb919/dagster_celery_k8s-0.22.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "86935c41813771ff2df6636262b951a4cd29ee01841bfe203e65cfc835df3cda",
-              "url": "https://files.pythonhosted.org/packages/ba/75/2fed682df84717d2e0c97dae5d579f3278ef7dd4ce1bf2f7ee2b420e5c58/dagster-celery-k8s-0.22.8.tar.gz"
+              "hash": "dfbcb7a104dde52cfd0ef45c69dd539b83701a14d07099bcdb729bff7f114ca3",
+              "url": "https://files.pythonhosted.org/packages/79/5e/2f56cfab7dc3f3c36f92adbfbfbc1a55bf76fbbb5121bf1fe36f6b5c4b2d/dagster-celery-k8s-0.22.5.tar.gz"
             }
           ],
           "project_name": "dagster-celery-k8s",
           "requires_dists": [
-            "dagster-celery==0.22.8",
-            "dagster-k8s==0.22.8",
-            "dagster==1.6.8"
+            "dagster-celery==0.22.5",
+            "dagster-k8s==0.22.5",
+            "dagster==1.6.5"
           ],
-          "requires_python": "<3.13,>=3.8",
-          "version": "0.22.8"
+          "requires_python": null,
+          "version": "0.22.5"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "76687738d2d2f82cab7d9cca1b57aaffb7b230fc578f98281cf6bcc223742095",
-              "url": "https://files.pythonhosted.org/packages/dc/a7/be2b039febe891b9842be645ff854acc8a0829ba07961be5773ecce1c5c6/dagster_graphql-1.6.8-py3-none-any.whl"
+              "hash": "fe3f45f5feef3f3c18ed6ebb432047422a5b870cb67fa06f36bf965ad53c2d54",
+              "url": "https://files.pythonhosted.org/packages/fa/bc/ff61895701fddc983af3c8a4b6ffddf324a7fb85be29f6de9e1ab2edc7be/dagster_gcp-0.22.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "bb757ed905d17ea31f5e761169e92d6ed9277c1001d3c312916c38ee2c7260e4",
-              "url": "https://files.pythonhosted.org/packages/68/a8/19101fb15dc2bff6b9d2ad43f179b1db55ad2caf074c075b09e9137b188c/dagster-graphql-1.6.8.tar.gz"
+              "hash": "d943d652778e0b7aba3fd678e3b958a5b2a0d76c411283e3768ddacaefb4b744",
+              "url": "https://files.pythonhosted.org/packages/c9/f6/c5c4af993249841349683135c888d4175e46a03a12a6f968595be6dc04dd/dagster-gcp-0.22.5.tar.gz"
+            }
+          ],
+          "project_name": "dagster-gcp",
+          "requires_dists": [
+            "dagster-pandas==0.22.5",
+            "dagster==1.6.5",
+            "db-dtypes",
+            "google-api-python-client",
+            "google-cloud-bigquery",
+            "google-cloud-storage",
+            "oauth2client",
+            "pyarrow; extra == \"pyarrow\""
+          ],
+          "requires_python": null,
+          "version": "0.22.5"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
+              "hash": "c940300751f6c18a02959dea229545b8f75e49c558bca773c09f2af7cd3afcb3",
+              "url": "https://files.pythonhosted.org/packages/2e/e4/69de2fb4c95a255fbaa8cecb64518eb71e2ec4a48cdab7c8af5ad78c458f/dagster_graphql-1.6.5-py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "5cf12212032677183d58bf46be49fd1d1cebb10456daa0f16be2bb216ab774a8",
+              "url": "https://files.pythonhosted.org/packages/a8/85/9cc65c273e3de3f07a529e41b4cb4fa4554f35ba22a47ddf670e607d0f05/dagster-graphql-1.6.5.tar.gz"
             }
           ],
           "project_name": "dagster-graphql",
           "requires_dists": [
-            "dagster==1.6.8",
+            "dagster==1.6.5",
             "gql[requests]<4,>=3",
             "graphene<4,>=3",
             "requests",
             "starlette"
           ],
-          "requires_python": "<3.13,>=3.8",
-          "version": "1.6.8"
+          "requires_python": null,
+          "version": "1.6.5"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "1d4eef9d57827c3e1cfa31315829bfad73f783c8d6c311b93dae48aa81fbfd80",
-              "url": "https://files.pythonhosted.org/packages/7f/7b/e6059d543f09091c6c828985146b56c280643fa3d7119e556f1453a47195/dagster_k8s-0.22.8-py3-none-any.whl"
+              "hash": "1da3f0363509e2df474748fc05f80f1bd1f4367487bfdc1e4acaf25cb55f4af1",
+              "url": "https://files.pythonhosted.org/packages/e9/96/399d9b496ce59a85c7198b139660ff2258c2d038873bbc6dd762eb768153/dagster_k8s-0.22.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "470e2d2677e91fb3e8aa486d793c99949b911695afa7573ea4ae7d252ed45c92",
-              "url": "https://files.pythonhosted.org/packages/1c/e2/95c6d7b0541d847e6ecd2d81ca3fb58359d93fbd1ec0aafa3dc8e000e1e5/dagster-k8s-0.22.8.tar.gz"
+              "hash": "7b74c8bf188f374bc3b268dd058429e7a9c91b790d4dc38821e44e83ceef9619",
+              "url": "https://files.pythonhosted.org/packages/9e/54/fb652db5eeffd3a6951eac80685d634b5abf7a1347d542f98dffa9713973/dagster-k8s-0.22.5.tar.gz"
             }
           ],
           "project_name": "dagster-k8s",
           "requires_dists": [
-            "dagster==1.6.8",
+            "dagster==1.6.5",
             "google-auth!=2.23.1",
             "kubernetes"
           ],
-          "requires_python": "<3.13,>=3.8",
-          "version": "0.22.8"
+          "requires_python": null,
+          "version": "0.22.5"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "1323f2c2a84cf18600d9effab8a612921491b6c86333434fd9b0df9ba4e8236e",
-              "url": "https://files.pythonhosted.org/packages/c2/bc/3f8e8d06e51f35a454c252697c3fb626f16c01569d201ce7f493f6018d52/dagster_pipes-1.6.8-py3-none-any.whl"
+              "hash": "120c0155cd97790c9ce3ad119c9442443578aed20369d464b4df424750dd2d5b",
+              "url": "https://files.pythonhosted.org/packages/f2/26/317813c6ae446eda5d1b6050040a1a19cc590c3ef772085ed3ff0f0e35f6/dagster_pandas-0.22.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "3de268695ebe3744451db784fdcc6186ef451c0b1bdcb5b9470e084d2f90acbb",
-              "url": "https://files.pythonhosted.org/packages/e5/3f/3520311afc902bbbacf24ff696549b4d9b6c070d8832045b277bbd2dff02/dagster-pipes-1.6.8.tar.gz"
+              "hash": "33104c2d3abfb815d17ab2417372669447af669d071611c1e8263185835257e7",
+              "url": "https://files.pythonhosted.org/packages/dd/3f/cc9ae331760bc545cc6a5ebbca36b22e628fe6b40881f1a15b9f4da709a7/dagster-pandas-0.22.5.tar.gz"
+            }
+          ],
+          "project_name": "dagster-pandas",
+          "requires_dists": [
+            "dagster==1.6.5",
+            "pandas"
+          ],
+          "requires_python": null,
+          "version": "0.22.5"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
+              "hash": "c529a1df2a5ee8bdf0f42e657f72177ce5706500598cfec235121cc97a45e005",
+              "url": "https://files.pythonhosted.org/packages/de/3c/dfe543565626a2b2e762d82a787a6e813eb9dcd56b8ee2f23bb2cde93c44/dagster_pipes-1.6.5-py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "36d8c35adb7fe95136c56b38280275476632a87864c3daa5473d82eaf5033766",
+              "url": "https://files.pythonhosted.org/packages/03/17/b1e52ff87eb5c5db1284ac753f579a647ca6df6be7eb9dbf2b41b1bd9507/dagster-pipes-1.6.5.tar.gz"
             }
           ],
           "project_name": "dagster-pipes",
           "requires_dists": [],
-          "requires_python": "<3.13,>=3.8",
-          "version": "1.6.8"
+          "requires_python": null,
+          "version": "1.6.5"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "ee82d765b077c2ccbc7a51b2bf63f6f4705a97a80c75c7ddac202182b72cd5fa",
-              "url": "https://files.pythonhosted.org/packages/e2/9e/3576717e9b3f516acc1f7753e75e742ae58f1a990238b1f3fb546fc707f6/dagster_postgres-0.22.8-py3-none-any.whl"
+              "hash": "0efdb9aec712aaf4bad8c6a973644c6c2435ac678862273c1f8db044674280b8",
+              "url": "https://files.pythonhosted.org/packages/d8/cf/42c44bef9f0151d9148158732711c9bb0c7ec55347e51bb34c3fab392dde/dagster_postgres-0.22.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "92dd1dd4ed8f6430f103a9a4ab56eb4cab0a4b20102f3dc768c71a9da23ffede",
-              "url": "https://files.pythonhosted.org/packages/48/1c/42584e4ac0d814173a3dbebb5da467f8e183e26a3887e3fd92b602ca50d6/dagster-postgres-0.22.8.tar.gz"
+              "hash": "777e6d9a0f1552b83826e23979e5f40fb2ea2992e937415ba1f8cdafaa7e2792",
+              "url": "https://files.pythonhosted.org/packages/79/81/d37ff5cfbc9a54d734d0d54bb4b871fee362de83bc0a7dac60e63a1bab43/dagster-postgres-0.22.5.tar.gz"
             }
           ],
           "project_name": "dagster-postgres",
           "requires_dists": [
-            "dagster==1.6.8",
+            "dagster==1.6.5",
             "psycopg2-binary"
           ],
-          "requires_python": "<3.13,>=3.8",
-          "version": "0.22.8"
+          "requires_python": null,
+          "version": "0.22.5"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "faaafc88092fe2dec3ee7d9ca9b847b377992572b1f089c8a39bceb22ddf05ac",
-              "url": "https://files.pythonhosted.org/packages/c1/bc/f1c314663bcdde1482585f63da803f08e6ec12e36122ee4c942cca535b8b/dagster_slack-0.22.8-py3-none-any.whl"
+              "hash": "ed33bce7f867e9afce7dc937da46e1bb147f8c50c9154cf8d7b3c81bf2a7a127",
+              "url": "https://files.pythonhosted.org/packages/61/d6/29e552537a670b62fdc7ea0b4ee4c22c6668f317b59706dc34b973a94f04/dagster_slack-0.22.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "06e902041b2476151fe525df85a9580e24d71058a4561bd0f3926527d71f9928",
-              "url": "https://files.pythonhosted.org/packages/aa/4c/19744548955773ec9e237bf20492b266c45c6a80096b8943aa97a8c7336e/dagster-slack-0.22.8.tar.gz"
+              "hash": "dc192fdcc5b0825fc35263517a93cd17f92ea7d43fcd52e281829720a2e30e37",
+              "url": "https://files.pythonhosted.org/packages/d2/69/caffcb3fec3c7ca6264881cb5e5c8848e2b6ac6e5b3146666c7a838205c9/dagster-slack-0.22.5.tar.gz"
             }
           ],
           "project_name": "dagster-slack",
           "requires_dists": [
-            "dagster==1.6.8",
+            "dagster==1.6.5",
             "slack-sdk"
           ],
-          "requires_python": "<3.13,>=3.8",
-          "version": "0.22.8"
+          "requires_python": null,
+          "version": "0.22.5"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "2c5b79ab13373257633f6c082b5d0ef39c20fb95f2af3f124367b1e82b03722e",
-              "url": "https://files.pythonhosted.org/packages/69/96/c4a094721429d1bb9d8369b1f34309b268473fb52b0a83a27eba33a3c9ee/dagster_webserver-1.6.8-py3-none-any.whl"
+              "hash": "1a15ae3f64f0565a8b079e8c8c4f552b2a2824d00093eb45ad395a5e24440076",
+              "url": "https://files.pythonhosted.org/packages/5f/cf/9b0c26f67ae93a8c793b59d55eb7b9aab06e2a4afc4e2f12be601f475d2b/dagster_webserver-1.6.5-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "b34d103818c578a7f4ef0b87177cb7c3834de9c5fe445f38a71247728691db44",
-              "url": "https://files.pythonhosted.org/packages/4a/6a/8cc4b5744268d229f7565c09a48c7f3bd264f0e6ddddb007501b57203ee7/dagster-webserver-1.6.8.tar.gz"
+              "hash": "8c560d45d9ece4d42aa3e8bc4686dfe5211635db694013ec1578cc36e0dd81b2",
+              "url": "https://files.pythonhosted.org/packages/5f/21/2a9555195bcb62b7a5e88569831a76a402e22b8dd2990b2d2e12afc68176/dagster-webserver-1.6.5.tar.gz"
             }
           ],
           "project_name": "dagster-webserver",
           "requires_dists": [
             "click<9.0,>=7.0",
-            "dagster-graphql==1.6.8",
-            "dagster==1.6.8",
+            "dagster-graphql==1.6.5",
+            "dagster==1.6.5",
             "nbconvert; extra == \"notebook\"",
             "starlette!=0.36.0",
             "starlette[full]; extra == \"test\"",
             "uvicorn[standard]"
           ],
-          "requires_python": "<3.13,>=3.8",
-          "version": "1.6.8"
+          "requires_python": null,
+          "version": "1.6.5"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
+              "hash": "6320bddd31d096447ef749224d64aab00972ed20e4392d86f7d8b81ad79f7ff0",
+              "url": "https://files.pythonhosted.org/packages/4e/5c/72b74daf6655db6f6afc2b3bc44359c7953004ef4630325a3ae0efc50872/db_dtypes-1.2.0-py2.py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "3531bb1fb8b5fbab33121fe243ccc2ade16ab2524f4c113b05cc702a1908e6ea",
+              "url": "https://files.pythonhosted.org/packages/31/c3/9dc7790d181a6b1bafa03deabf3ebd58bd5cb280f718dca14833f830d43e/db-dtypes-1.2.0.tar.gz"
+            }
+          ],
+          "project_name": "db-dtypes",
+          "requires_dists": [
+            "numpy>=1.16.6",
+            "packaging>=17.0",
+            "pandas>=0.24.2",
+            "pyarrow>=3.0.0"
+          ],
+          "requires_python": ">=3.7",
+          "version": "1.2.0"
         },
         {
           "artifacts": [
@@ -1877,6 +1946,30 @@
           "artifacts": [
             {
               "algorithm": "sha256",
+              "hash": "e2cdf4497bfc758fb44a4b487920cc1ca0571c2428187697a8e43e3b9feba1c9",
+              "url": "https://files.pythonhosted.org/packages/9a/3d/1709ca24b093d37aa3233b78161a6d96d190922408041a6fea9df9c78646/google_api_python_client-2.120.0-py2.py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "a0c8769cad9576768bcb3191cb1f550f6ab3290cba042badb0fb17bba03f70cc",
+              "url": "https://files.pythonhosted.org/packages/18/56/f49df62e4a221dbd93d8b8c303f7360f41d3e6c210f6905b0f90c1cdfdb9/google-api-python-client-2.120.0.tar.gz"
+            }
+          ],
+          "project_name": "google-api-python-client",
+          "requires_dists": [
+            "google-api-core!=2.0.*,!=2.1.*,!=2.2.*,!=2.3.0,<3.0.0.dev0,>=1.31.5",
+            "google-auth-httplib2>=0.1.0",
+            "google-auth<3.0.0.dev0,>=1.19.0",
+            "httplib2<1.dev0,>=0.15.0",
+            "uritemplate<5,>=3.0.1"
+          ],
+          "requires_python": ">=3.7",
+          "version": "2.120.0"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
               "hash": "25141e2d7a14bfcba945f5e9827f98092716e99482562f15306e5b026e21aa72",
               "url": "https://files.pythonhosted.org/packages/b7/1d/f152a5f6d243b6acbb2a710ed19aa47154d678359bed995abdd9daf0cff0/google_auth-2.28.1-py2.py3-none-any.whl"
             },
@@ -1890,10 +1983,10 @@
           "requires_dists": [
             "aiohttp<4.0.0.dev0,>=3.6.2; extra == \"aiohttp\"",
             "cachetools<6.0,>=2.0.0",
-            "cryptography==36.0.2; extra == \"enterprise_cert\"",
+            "cryptography==36.0.2; extra == \"enterprise-cert\"",
             "cryptography>=38.0.3; extra == \"pyopenssl\"",
             "pyasn1-modules>=0.2.1",
-            "pyopenssl==22.0.0; extra == \"enterprise_cert\"",
+            "pyopenssl==22.0.0; extra == \"enterprise-cert\"",
             "pyopenssl>=20.0.0; extra == \"pyopenssl\"",
             "pyu2f>=0.1.5; extra == \"reauth\"",
             "requests<3.0.0.dev0,>=2.20.0; extra == \"aiohttp\"",
@@ -1902,6 +1995,90 @@
           ],
           "requires_python": ">=3.7",
           "version": "2.28.1"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
+              "hash": "b65a0a2123300dd71281a7bf6e64d65a0759287df52729bdd1ae2e47dc311a3d",
+              "url": "https://files.pythonhosted.org/packages/be/8a/fe34d2f3f9470a27b01c9e76226965863f153d5fbe276f83608562e49c04/google_auth_httplib2-0.2.0-py2.py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "38aa7badf48f974f1eb9861794e9c0cb2a0511a4ec0679b1f886d108f5640e05",
+              "url": "https://files.pythonhosted.org/packages/56/be/217a598a818567b28e859ff087f347475c807a5649296fb5a817c58dacef/google-auth-httplib2-0.2.0.tar.gz"
+            }
+          ],
+          "project_name": "google-auth-httplib2",
+          "requires_dists": [
+            "google-auth",
+            "httplib2>=0.19.0"
+          ],
+          "requires_python": null,
+          "version": "0.2.0"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
+              "hash": "cdadf5283dca55a1a350bacf8c8a7466169d3cf46c5a0a3abc5e9aa0b0a51dee",
+              "url": "https://files.pythonhosted.org/packages/49/dc/df04020251473cacbb0001bc8c1c065ea46d6ce4d4dd218b3bfa246bdb5a/google_cloud_bigquery-3.17.2-py2.py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "6e1cf669a40e567ab3289c7b5f2056363da9fcb85d9a4736ee90240d4a7d84ea",
+              "url": "https://files.pythonhosted.org/packages/58/72/a7be39e6d368f108b60e62db92e75effbdc2cbe0f9a06b3a243f4af22fb9/google-cloud-bigquery-3.17.2.tar.gz"
+            }
+          ],
+          "project_name": "google-cloud-bigquery",
+          "requires_dists": [
+            "Shapely<3.0.0dev,>=1.8.4; extra == \"all\"",
+            "Shapely<3.0.0dev,>=1.8.4; extra == \"geopandas\"",
+            "db-dtypes<2.0.0dev,>=0.3.0; extra == \"all\"",
+            "db-dtypes<2.0.0dev,>=0.3.0; extra == \"pandas\"",
+            "geopandas<1.0dev,>=0.9.0; extra == \"all\"",
+            "geopandas<1.0dev,>=0.9.0; extra == \"geopandas\"",
+            "google-api-core!=2.0.*,!=2.1.*,!=2.2.*,!=2.3.0,<3.0.0dev,>=1.31.5",
+            "google-cloud-bigquery-storage<3.0.0dev,>=2.6.0; extra == \"all\"",
+            "google-cloud-bigquery-storage<3.0.0dev,>=2.6.0; extra == \"bqstorage\"",
+            "google-cloud-core<3.0.0dev,>=1.6.0",
+            "google-resumable-media<3.0dev,>=0.6.0",
+            "grpcio<2.0dev,>=1.47.0; extra == \"all\"",
+            "grpcio<2.0dev,>=1.47.0; extra == \"bqstorage\"",
+            "grpcio<2.0dev,>=1.49.1; python_version >= \"3.11\" and extra == \"all\"",
+            "grpcio<2.0dev,>=1.49.1; python_version >= \"3.11\" and extra == \"bqstorage\"",
+            "importlib-metadata>=1.0.0; python_version < \"3.8\" and extra == \"all\"",
+            "importlib-metadata>=1.0.0; python_version < \"3.8\" and extra == \"pandas\"",
+            "ipykernel>=6.0.0; extra == \"all\"",
+            "ipykernel>=6.0.0; extra == \"ipython\"",
+            "ipykernel>=6.0.0; extra == \"ipywidgets\"",
+            "ipython!=8.1.0,>=7.23.1; extra == \"all\"",
+            "ipython!=8.1.0,>=7.23.1; extra == \"ipython\"",
+            "ipywidgets>=7.7.0; extra == \"all\"",
+            "ipywidgets>=7.7.0; extra == \"ipywidgets\"",
+            "opentelemetry-api>=1.1.0; extra == \"all\"",
+            "opentelemetry-api>=1.1.0; extra == \"opentelemetry\"",
+            "opentelemetry-instrumentation>=0.20b0; extra == \"all\"",
+            "opentelemetry-instrumentation>=0.20b0; extra == \"opentelemetry\"",
+            "opentelemetry-sdk>=1.1.0; extra == \"all\"",
+            "opentelemetry-sdk>=1.1.0; extra == \"opentelemetry\"",
+            "packaging>=20.0.0",
+            "pandas>=1.1.0; extra == \"all\"",
+            "pandas>=1.1.0; extra == \"pandas\"",
+            "proto-plus<2.0.0dev,>=1.15.0; extra == \"all\"",
+            "proto-plus<2.0.0dev,>=1.15.0; extra == \"bigquery-v2\"",
+            "protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0dev,>=3.19.5; extra == \"all\"",
+            "protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0dev,>=3.19.5; extra == \"bigquery-v2\"",
+            "pyarrow>=3.0.0; extra == \"all\"",
+            "pyarrow>=3.0.0; extra == \"bqstorage\"",
+            "pyarrow>=3.0.0; extra == \"pandas\"",
+            "python-dateutil<3.0dev,>=2.7.2",
+            "requests<3.0.0dev,>=2.21.0",
+            "tqdm<5.0.0dev,>=4.7.4; extra == \"all\"",
+            "tqdm<5.0.0dev,>=4.7.4; extra == \"tqdm\""
+          ],
+          "requires_python": ">=3.7",
+          "version": "3.17.2"
         },
         {
           "artifacts": [
@@ -2174,7 +2351,7 @@
           "requires_dists": [
             "aiofiles; extra == \"dev\"",
             "aiofiles; extra == \"test\"",
-            "aiofiles; extra == \"test_no_transport\"",
+            "aiofiles; extra == \"test-no-transport\"",
             "aiohttp<4,>=3.8.0; python_version <= \"3.11\" and extra == \"aiohttp\"",
             "aiohttp<4,>=3.8.0; python_version <= \"3.11\" and extra == \"all\"",
             "aiohttp<4,>=3.8.0; python_version <= \"3.11\" and extra == \"dev\"",
@@ -2200,23 +2377,23 @@
             "isort==4.3.21; extra == \"dev\"",
             "mock==4.0.2; extra == \"dev\"",
             "mock==4.0.2; extra == \"test\"",
-            "mock==4.0.2; extra == \"test_no_transport\"",
+            "mock==4.0.2; extra == \"test-no-transport\"",
             "mypy==0.910; extra == \"dev\"",
             "parse==1.15.0; extra == \"dev\"",
             "parse==1.15.0; extra == \"test\"",
-            "parse==1.15.0; extra == \"test_no_transport\"",
+            "parse==1.15.0; extra == \"test-no-transport\"",
             "pytest-asyncio==0.21.1; extra == \"dev\"",
             "pytest-asyncio==0.21.1; extra == \"test\"",
-            "pytest-asyncio==0.21.1; extra == \"test_no_transport\"",
+            "pytest-asyncio==0.21.1; extra == \"test-no-transport\"",
             "pytest-console-scripts==1.3.1; extra == \"dev\"",
             "pytest-console-scripts==1.3.1; extra == \"test\"",
-            "pytest-console-scripts==1.3.1; extra == \"test_no_transport\"",
+            "pytest-console-scripts==1.3.1; extra == \"test-no-transport\"",
             "pytest-cov==3.0.0; extra == \"dev\"",
             "pytest-cov==3.0.0; extra == \"test\"",
-            "pytest-cov==3.0.0; extra == \"test_no_transport\"",
+            "pytest-cov==3.0.0; extra == \"test-no-transport\"",
             "pytest==7.4.2; extra == \"dev\"",
             "pytest==7.4.2; extra == \"test\"",
-            "pytest==7.4.2; extra == \"test_no_transport\"",
+            "pytest==7.4.2; extra == \"test-no-transport\"",
             "requests-toolbelt<2,>=1.0.0; extra == \"all\"",
             "requests-toolbelt<2,>=1.0.0; extra == \"dev\"",
             "requests-toolbelt<2,>=1.0.0; extra == \"requests\"",
@@ -2233,7 +2410,7 @@
             "types-requests; extra == \"dev\"",
             "vcrpy==4.4.0; extra == \"dev\"",
             "vcrpy==4.4.0; extra == \"test\"",
-            "vcrpy==4.4.0; extra == \"test_no_transport\"",
+            "vcrpy==4.4.0; extra == \"test-no-transport\"",
             "websockets<12,>=10; extra == \"all\"",
             "websockets<12,>=10; extra == \"dev\"",
             "websockets<12,>=10; extra == \"test\"",
@@ -2631,6 +2808,27 @@
           "artifacts": [
             {
               "algorithm": "sha256",
+              "hash": "14ae0a53c1ba8f3d37e9e27cf37eabb0fb9980f435ba405d546948b009dd64dc",
+              "url": "https://files.pythonhosted.org/packages/a8/6c/d2fbdaaa5959339d53ba38e94c123e4e84b8fbc4b84beb0e70d7c1608486/httplib2-0.22.0-py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "d7a10bc5ef5ab08322488bde8c726eeee5c8618723fdb399597ec58f3d82df81",
+              "url": "https://files.pythonhosted.org/packages/3d/ad/2371116b22d616c194aa25ec410c9c6c37f23599dcd590502b74db197584/httplib2-0.22.0.tar.gz"
+            }
+          ],
+          "project_name": "httplib2",
+          "requires_dists": [
+            "pyparsing!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,<4,>=2.4.2; python_version > \"3.0\"",
+            "pyparsing<3,>=2.4.2; python_version < \"3.0\""
+          ],
+          "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7",
+          "version": "0.22.0"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
               "hash": "95658c342529bba4e1d3d2b1a874db16c7cca435e8827422154c9da76ac4e13a",
               "url": "https://files.pythonhosted.org/packages/8c/0f/ac82bdc14f5e4bff59a3c3c35fa7a9b7a2f8d983c4d5a33b20e4848b3f14/httptools-0.6.1-cp39-cp39-musllinux_1_1_x86_64.whl"
             },
@@ -2923,7 +3121,7 @@
             "black; extra == \"black\"",
             "colorama; sys_platform == \"win32\"",
             "curio; extra == \"all\"",
-            "curio; extra == \"test_extra\"",
+            "curio; extra == \"test-extra\"",
             "decorator",
             "docrepr; extra == \"all\"",
             "docrepr; extra == \"doc\"",
@@ -2939,7 +3137,7 @@
             "ipywidgets; extra == \"notebook\"",
             "jedi>=0.16",
             "matplotlib!=3.2.0; extra == \"all\"",
-            "matplotlib!=3.2.0; extra == \"test_extra\"",
+            "matplotlib!=3.2.0; extra == \"test-extra\"",
             "matplotlib-inline",
             "matplotlib; extra == \"all\"",
             "matplotlib; extra == \"doc\"",
@@ -2947,28 +3145,28 @@
             "nbconvert; extra == \"nbconvert\"",
             "nbformat; extra == \"all\"",
             "nbformat; extra == \"nbformat\"",
-            "nbformat; extra == \"test_extra\"",
+            "nbformat; extra == \"test-extra\"",
             "notebook; extra == \"all\"",
             "notebook; extra == \"notebook\"",
             "numpy>=1.22; extra == \"all\"",
-            "numpy>=1.22; extra == \"test_extra\"",
+            "numpy>=1.22; extra == \"test-extra\"",
             "pandas; extra == \"all\"",
-            "pandas; extra == \"test_extra\"",
+            "pandas; extra == \"test-extra\"",
             "pexpect>4.3; sys_platform != \"win32\"",
             "pickleshare; extra == \"all\"",
             "pickleshare; extra == \"doc\"",
             "pickleshare; extra == \"test\"",
-            "pickleshare; extra == \"test_extra\"",
+            "pickleshare; extra == \"test-extra\"",
             "prompt-toolkit<3.1.0,>=3.0.41",
             "pygments>=2.4.0",
             "pytest-asyncio<0.22; extra == \"all\"",
             "pytest-asyncio<0.22; extra == \"doc\"",
             "pytest-asyncio<0.22; extra == \"test\"",
-            "pytest-asyncio<0.22; extra == \"test_extra\"",
+            "pytest-asyncio<0.22; extra == \"test-extra\"",
             "pytest<7.1; extra == \"all\"",
             "pytest<7.1; extra == \"doc\"",
             "pytest<7.1; extra == \"test\"",
-            "pytest<7.1; extra == \"test_extra\"",
+            "pytest<7.1; extra == \"test-extra\"",
             "pytest<7; extra == \"all\"",
             "pytest<7; extra == \"doc\"",
             "qtconsole; extra == \"all\"",
@@ -2985,10 +3183,10 @@
             "testpath; extra == \"all\"",
             "testpath; extra == \"doc\"",
             "testpath; extra == \"test\"",
-            "testpath; extra == \"test_extra\"",
+            "testpath; extra == \"test-extra\"",
             "traitlets>=5",
             "trio; extra == \"all\"",
-            "trio; extra == \"test_extra\"",
+            "trio; extra == \"test-extra\"",
             "typing-extensions; extra == \"all\"",
             "typing-extensions; extra == \"doc\"",
             "typing-extensions; python_version < \"3.10\""
@@ -3268,7 +3466,7 @@
             "mistune~=2.0; extra == \"compare\"",
             "myst-parser; extra == \"rtd\"",
             "panflute~=2.3; extra == \"compare\"",
-            "pre-commit~=3.0; extra == \"code_style\"",
+            "pre-commit~=3.0; extra == \"code-style\"",
             "psutil; extra == \"benchmarking\"",
             "pytest-benchmark; extra == \"benchmarking\"",
             "pytest-cov; extra == \"testing\"",
@@ -3843,6 +4041,30 @@
           "requires_dists": [],
           "requires_python": ">=3.9",
           "version": "1.26.4"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
+              "hash": "b8a81cc5d60e2d364f0b1b98f958dbd472887acaf1a5b05e21c28c31a2d6d3ac",
+              "url": "https://files.pythonhosted.org/packages/95/a9/4f25a14d23f0786b64875b91784607c2277eff25d48f915e39ff0cff505a/oauth2client-4.1.3-py2.py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "d486741e451287f69568a4d26d70d9acd73a2bbfa275746c535b4209891cccc6",
+              "url": "https://files.pythonhosted.org/packages/a6/7b/17244b1083e8e604bf154cf9b716aecd6388acd656dd01893d0d244c94d9/oauth2client-4.1.3.tar.gz"
+            }
+          ],
+          "project_name": "oauth2client",
+          "requires_dists": [
+            "httplib2>=0.9.1",
+            "pyasn1-modules>=0.0.5",
+            "pyasn1>=0.1.7",
+            "rsa>=3.1.4",
+            "six>=1.6.1"
+          ],
+          "requires_python": null,
+          "version": "4.1.3"
         },
         {
           "artifacts": [
@@ -5161,6 +5383,27 @@
           "artifacts": [
             {
               "algorithm": "sha256",
+              "hash": "32c7c0b711493c72ff18a981d24f28aaf9c1fb7ed5e9667c9e84e3db623bdbfb",
+              "url": "https://files.pythonhosted.org/packages/39/92/8486ede85fcc088f1b3dba4ce92dd29d126fd96b0008ea213167940a2475/pyparsing-3.1.1-py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "ede28a1a32462f5a9705e07aea48001a08f7cf81a021585011deba701581a0db",
+              "url": "https://files.pythonhosted.org/packages/37/fe/65c989f70bd630b589adfbbcd6ed238af22319e90f059946c26b4835e44b/pyparsing-3.1.1.tar.gz"
+            }
+          ],
+          "project_name": "pyparsing",
+          "requires_dists": [
+            "jinja2; extra == \"diagrams\"",
+            "railroad-diagrams; extra == \"diagrams\""
+          ],
+          "requires_python": ">=3.6.8",
+          "version": "3.1.1"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
               "hash": "0e555a91ca84be8d00b8ea244dea96ce857964a320ed0af10d3116cbfa80a352",
               "url": "https://files.pythonhosted.org/packages/34/b8/06badfb792f80f2740cc97f918dca9e2876716d8a4c90849f00d83e0fe21/pyrate_limiter-3.2.1-py3-none-any.whl"
             },
@@ -5631,7 +5874,7 @@
           "requires_dists": [
             "PySocks!=1.5.7,>=1.5.6; extra == \"socks\"",
             "certifi>=2017.4.17",
-            "chardet<6,>=3.0.2; extra == \"use_chardet_on_py3\"",
+            "chardet<6,>=3.0.2; extra == \"use-chardet-on-py3\"",
             "charset-normalizer<4,>=2",
             "idna<4,>=2.5",
             "urllib3<3,>=1.21.1"
@@ -6086,31 +6329,31 @@
             "aioodbc; extra == \"aioodbc\"",
             "aiosqlite; extra == \"aiosqlite\"",
             "asyncmy!=0.2.4,!=0.2.6,>=0.2.3; extra == \"asyncmy\"",
-            "asyncpg; extra == \"postgresql_asyncpg\"",
+            "asyncpg; extra == \"postgresql-asyncpg\"",
             "cx-oracle>=8; extra == \"oracle\"",
             "greenlet!=0.4.17; extra == \"aiomysql\"",
             "greenlet!=0.4.17; extra == \"aioodbc\"",
             "greenlet!=0.4.17; extra == \"aiosqlite\"",
             "greenlet!=0.4.17; extra == \"asyncio\"",
             "greenlet!=0.4.17; extra == \"asyncmy\"",
-            "greenlet!=0.4.17; extra == \"postgresql_asyncpg\"",
+            "greenlet!=0.4.17; extra == \"postgresql-asyncpg\"",
             "greenlet!=0.4.17; platform_machine == \"aarch64\" or (platform_machine == \"ppc64le\" or (platform_machine == \"x86_64\" or (platform_machine == \"amd64\" or (platform_machine == \"AMD64\" or (platform_machine == \"win32\" or platform_machine == \"WIN32\")))))",
             "importlib-metadata; python_version < \"3.8\"",
-            "mariadb!=1.1.2,!=1.1.5,>=1.0.1; extra == \"mariadb_connector\"",
+            "mariadb!=1.1.2,!=1.1.5,>=1.0.1; extra == \"mariadb-connector\"",
             "mypy>=0.910; extra == \"mypy\"",
-            "mysql-connector-python; extra == \"mysql_connector\"",
+            "mysql-connector-python; extra == \"mysql-connector\"",
             "mysqlclient>=1.4.0; extra == \"mysql\"",
-            "oracledb>=1.0.1; extra == \"oracle_oracledb\"",
-            "pg8000>=1.29.1; extra == \"postgresql_pg8000\"",
-            "psycopg2-binary; extra == \"postgresql_psycopg2binary\"",
+            "oracledb>=1.0.1; extra == \"oracle-oracledb\"",
+            "pg8000>=1.29.1; extra == \"postgresql-pg8000\"",
+            "psycopg2-binary; extra == \"postgresql-psycopg2binary\"",
             "psycopg2>=2.7; extra == \"postgresql\"",
-            "psycopg2cffi; extra == \"postgresql_psycopg2cffi\"",
-            "psycopg>=3.0.7; extra == \"postgresql_psycopg\"",
-            "psycopg[binary]>=3.0.7; extra == \"postgresql_psycopgbinary\"",
-            "pymssql; extra == \"mssql_pymssql\"",
+            "psycopg2cffi; extra == \"postgresql-psycopg2cffi\"",
+            "psycopg>=3.0.7; extra == \"postgresql-psycopg\"",
+            "psycopg[binary]>=3.0.7; extra == \"postgresql-psycopgbinary\"",
+            "pymssql; extra == \"mssql-pymssql\"",
             "pymysql; extra == \"pymysql\"",
             "pyodbc; extra == \"mssql\"",
-            "pyodbc; extra == \"mssql_pyodbc\"",
+            "pyodbc; extra == \"mssql-pyodbc\"",
             "sqlcipher3-binary; extra == \"sqlcipher\"",
             "typing-extensions!=3.10.0.1; extra == \"aiosqlite\"",
             "typing-extensions>=4.6.0"
@@ -6492,6 +6735,24 @@
           ],
           "requires_python": ">=3.8",
           "version": "0.2.1"
+        },
+        {
+          "artifacts": [
+            {
+              "algorithm": "sha256",
+              "hash": "830c08b8d99bdd312ea4ead05994a38e8936266f84b9a7878232db50b044e02e",
+              "url": "https://files.pythonhosted.org/packages/81/c0/7461b49cd25aeece13766f02ee576d1db528f1c37ce69aee300e075b485b/uritemplate-4.1.1-py2.py3-none-any.whl"
+            },
+            {
+              "algorithm": "sha256",
+              "hash": "4346edfc5c3b79f694bccd6d6099a322bbeb628dbf2cd86eea55a456ce5124f0",
+              "url": "https://files.pythonhosted.org/packages/d2/5a/4742fdba39cd02a56226815abfa72fe0aa81c33bed16ed045647d6000eba/uritemplate-4.1.1.tar.gz"
+            }
+          ],
+          "project_name": "uritemplate",
+          "requires_dists": [],
+          "requires_python": ">=3.6",
+          "version": "4.1.1"
         },
         {
           "artifacts": [
@@ -7534,7 +7795,7 @@
     }
   ],
   "path_mappings": {},
-  "pex_version": "2.1.137",
+  "pex_version": "2.1.148",
   "pip_version": "23.1.2",
   "prefer_older_binary": false,
   "requirements": [
@@ -7544,14 +7805,15 @@
     "coolname==2.2.0",
     "dagit<1.7.0,>=1.6",
     "dagster-celery-k8s<0.23.0,>=0.22.1",
+    "dagster-gcp<0.22.8",
     "dagster-graphql<2.0.0,>=1.6.5",
     "dagster-k8s<0.23.0,>=0.22.1",
+    "dagster-postgres<0.22.8",
     "dagster-postgres<0.23.0,>=0.22.5",
-    "dagster-postgres<1.0.0,>=0",
-    "dagster-slack<1.0.0,>=0",
-    "dagster<1.7.0,>=1.6",
+    "dagster-slack<0.22.8",
     "dagster<2.0.0,>=1.5.8",
     "dagster<2.0.0,>=1.6.5",
+    "dagster==1.6.5",
     "duckdb<0.10.0,>=0.9.2",
     "google-cloud-storage<3.0.0,>=2.14.0",
     "ipykernel<7.0.0,>=6.26.0",
