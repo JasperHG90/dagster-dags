@@ -11,6 +11,7 @@
 //   "generated_with_requirements": [
 //     "PyYAML==6.0.1",
 //     "appengine-python-standard<2.0.0,>=1.1.5",
+//     "coolname<3.0.0,>=2.2.0",
 //     "coolname==2.2.0",
 //     "dagit<1.7.0,>=1.6",
 //     "dagster-celery-k8s<0.23.0,>=0.22.1",
@@ -339,19 +340,19 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "861f35a13a451f94e301ce2bec7cac63e881232ccce7ed67fab9b5df4d3beaa1",
-              "url": "https://files.pythonhosted.org/packages/a2/91/2d843adb9fbd911e0da45fbf6f18ca89d07a087c3daa23e955584f90ebf4/cachetools-5.3.2-py3-none-any.whl"
+              "hash": "0abad1021d3f8325b2fc1d2e9c8b9c9d57b04c3932657a72465447332c24d945",
+              "url": "https://files.pythonhosted.org/packages/fb/2b/a64c2d25a37aeb921fddb929111413049fc5f8b9a4c1aefaffaafe768d54/cachetools-5.3.3-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "086ee420196f7b2ab9ca2db2520aca326318b68fe5ba8bc4d49cca91add450f2",
-              "url": "https://files.pythonhosted.org/packages/10/21/1b6880557742c49d5b0c4dcf0cf544b441509246cdd71182e0847ac859d5/cachetools-5.3.2.tar.gz"
+              "hash": "ba29e2dfa0b8b556606f097407ed1aa62080ee108ab0dc5ec9d6a723a007d105",
+              "url": "https://files.pythonhosted.org/packages/b3/4d/27a3e6dd09011649ad5210bdf963765bc8fa81a0827a4fc01bafd2705c5b/cachetools-5.3.3.tar.gz"
             }
           ],
           "project_name": "cachetools",
           "requires_dists": [],
           "requires_python": ">=3.7",
-          "version": "5.3.2"
+          "version": "5.3.3"
         },
         {
           "artifacts": [
@@ -1112,13 +1113,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "4cb064ce2d8f695b3b078be36ff50115cf8ac306c10a7e8653ee2a5b534673d7",
-              "url": "https://files.pythonhosted.org/packages/27/86/c1ce37af79385a106aacdd40b6e25ff25b2d888f2e64a05ee4e5b05f5768/croniter-2.0.1-py2.py3-none-any.whl"
+              "hash": "78bf110a2c7dbbfdd98b926318ae6c64a731a4c637c7befe3685755110834746",
+              "url": "https://files.pythonhosted.org/packages/32/92/b8cbafea73dba32ed348ff696ff5f2122c8e4fe92fcc33ca75e600d7ce75/croniter-2.0.2-py2.py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "d199b2ec3ea5e82988d1f72022433c5f9302b3b3ea9e6bfd6a1518f6ea5e700a",
-              "url": "https://files.pythonhosted.org/packages/13/5e/659de55a2c07a314ec1ec3b32acbb8839246d6ead49e4cb3743425f63fb6/croniter-2.0.1.tar.gz"
+              "hash": "8bff16c9af4ef1fb6f05416973b8f7cb54997c02f2f8365251f9bf1dded91866",
+              "url": "https://files.pythonhosted.org/packages/c2/88/dcce3660b8b820871117ad0bc2b41282c36f2f61654c5776151916395469/croniter-2.0.2.tar.gz"
             }
           ],
           "project_name": "croniter",
@@ -1127,41 +1128,41 @@
             "pytz>2021.1"
           ],
           "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.6",
-          "version": "2.0.1"
+          "version": "2.0.2"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "d5791083eda0e8c588a55cb8458694dddac1d5cbd8797a997e3a5aa250445cad",
-              "url": "https://files.pythonhosted.org/packages/b2/56/14cd074c9a21c73a567598de54779764b86ad6a7db3c0a09d982bceb95e1/dagit-1.6.6-py3-none-any.whl"
+              "hash": "51163e94e0dc80cf1404fea45d2aa0240c97a76db24e700893edde0baadfb423",
+              "url": "https://files.pythonhosted.org/packages/39/be/f8222abbfc901bb91428ccc5867aff3c23fe73a976b8e7dd02410c952269/dagit-1.6.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "5b725d324334bec0d7f6738af2fac48f1d540074f09003ed623900cc2cadd37f",
-              "url": "https://files.pythonhosted.org/packages/72/31/dcd5ea7bd0eacec7e4f843fe52fc19a3edf45eac344507c041c693a00f6c/dagit-1.6.6.tar.gz"
+              "hash": "7f58a916db95ddd5faee36d2fbf4bd116f9ef44e622570c3e4e4d7561af3538b",
+              "url": "https://files.pythonhosted.org/packages/84/1b/fcdc51aba227cce21096acb920e86f4278eda95f8d80a228ba6cd07fac84/dagit-1.6.8.tar.gz"
             }
           ],
           "project_name": "dagit",
           "requires_dists": [
-            "dagster-webserver==1.6.6",
-            "dagster-webserver[notebook]==1.6.6; extra == \"notebook\"",
-            "dagster-webserver[test]==1.6.6; extra == \"test\""
+            "dagster-webserver==1.6.8",
+            "dagster-webserver[notebook]==1.6.8; extra == \"notebook\"",
+            "dagster-webserver[test]==1.6.8; extra == \"test\""
           ],
-          "requires_python": null,
-          "version": "1.6.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "1.6.8"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "973c32647d2bf9c7181741e57915ac972d358417814de844acf7cd4a351dee93",
-              "url": "https://files.pythonhosted.org/packages/0a/f8/be9fc5b6129bd2e05872fd7f347e6dade23b1291db24790e7da2918714b5/dagster-1.6.6-py3-none-any.whl"
+              "hash": "1c01c5d0ff7e47e042d52f3758579c5b9ffa9a554a02713788fb084b286c9a2c",
+              "url": "https://files.pythonhosted.org/packages/30/7b/9186c911bdae6e90dc08bedb1cedbfc93f824bc57ad22a02b33aa302ee02/dagster-1.6.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "295a6646eafc6360eea328194d224a27a39d4697da7c8495468ea215ee80c975",
-              "url": "https://files.pythonhosted.org/packages/0a/ac/f8300274c235badc04eb5266fdb3ad561b98fbd7c29fb8d92d6099fe3e6b/dagster-1.6.6.tar.gz"
+              "hash": "a5cc4251ba928fafd9f237b013431b951260fe0b223be3a805deb34599300ea8",
+              "url": "https://files.pythonhosted.org/packages/16/70/afdf94833042ae18fd1a814579dad8277441af719c8a421e297989e07730/dagster-1.6.8.tar.gz"
             }
           ],
           "project_name": "dagster",
@@ -1173,7 +1174,7 @@
             "click>=5.0",
             "coloredlogs<=14.0,>=6.1",
             "croniter>=0.3.34",
-            "dagster-pipes==1.6.6",
+            "dagster-pipes==1.6.8",
             "docker; extra == \"docker\"",
             "docker; extra == \"test\"",
             "docstring-parser",
@@ -1213,7 +1214,7 @@
             "setuptools",
             "sqlalchemy<3,>=1.0",
             "structlog",
-            "syrupy<4; extra == \"test\"",
+            "syrupy>=4.0.0; extra == \"test\"",
             "tabulate",
             "tomli<3",
             "toposort>=1.0",
@@ -1243,189 +1244,189 @@
             "universal-pathlib>=0.2.0; python_version >= \"3.12\"",
             "watchdog>=0.8.3"
           ],
-          "requires_python": null,
-          "version": "1.6.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "1.6.8"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "8c021010c9bc7a21520bfd5df7ec7dd018784ec668346bbeb53847e74dd6cb1a",
-              "url": "https://files.pythonhosted.org/packages/1e/f1/b45bb017b993fc8390d4598d712647255ae3e2602d087b87b0e9e01041f6/dagster_celery-0.22.6-py3-none-any.whl"
+              "hash": "9610665992faddf66e4928352a6d47df8eac3d33ead67f27a50727aa9a3e64ab",
+              "url": "https://files.pythonhosted.org/packages/de/eb/933bc1a46e6c0c172a0a29ea5c5b7dedc67509e0d46f32baeadb8a82d41b/dagster_celery-0.22.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "751fae350ffdfae4be9c746cfd3e59d4b74a5370acb8bf7354e3b2310188c9c8",
-              "url": "https://files.pythonhosted.org/packages/62/48/eed1572ce58e1496ddb72671eb8fe4271e42b98170a13cfbcad370669bcd/dagster-celery-0.22.6.tar.gz"
+              "hash": "e2fd39cadb5291ba024da8063295df42fbc2875f15d233ec8115541585e9520c",
+              "url": "https://files.pythonhosted.org/packages/3c/4f/22c0a8f3bcc5fa4bc07569ab36c16419b027d4e3dc9c3af2a9f35f6241e1/dagster-celery-0.22.8.tar.gz"
             }
           ],
           "project_name": "dagster-celery",
           "requires_dists": [
             "celery>=4.3.0",
             "click<9.0,>=5.0",
-            "dagster==1.6.6",
+            "dagster==1.6.8",
             "docker; extra == \"test\"",
             "flower; extra == \"flower\"",
             "importlib-metadata<5.0.0; python_version < \"3.8\"",
             "kubernetes; extra == \"kubernetes\"",
             "redis; extra == \"redis\""
           ],
-          "requires_python": null,
-          "version": "0.22.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "0.22.8"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "7ca80feb0c0fcd85978d11c49c078f6d0764c99e6f3ff4c36b7aab635c1d6024",
-              "url": "https://files.pythonhosted.org/packages/be/a7/6d4d743b808ee7d3dda82289d8df104d24ec135f72c829c90313da797c8e/dagster_celery_k8s-0.22.6-py3-none-any.whl"
+              "hash": "d69ff627a1f60965da301b0eea3db0be1a0ba6eb90eb10768854169fb0876410",
+              "url": "https://files.pythonhosted.org/packages/28/ba/24d94a8ec88de5973d56a30ae06a92a13315fb5514fc93c1b452a96d6cdb/dagster_celery_k8s-0.22.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "304e96be25dde5da2e6df9e8fb5c100c1402aefc278a97862d83eaab81fbee9d",
-              "url": "https://files.pythonhosted.org/packages/f4/85/e4dca07b625adf47fb6333ec00e2b5077d16d9e5e523897565b5a0f30817/dagster-celery-k8s-0.22.6.tar.gz"
+              "hash": "86935c41813771ff2df6636262b951a4cd29ee01841bfe203e65cfc835df3cda",
+              "url": "https://files.pythonhosted.org/packages/ba/75/2fed682df84717d2e0c97dae5d579f3278ef7dd4ce1bf2f7ee2b420e5c58/dagster-celery-k8s-0.22.8.tar.gz"
             }
           ],
           "project_name": "dagster-celery-k8s",
           "requires_dists": [
-            "dagster-celery==0.22.6",
-            "dagster-k8s==0.22.6",
-            "dagster==1.6.6"
+            "dagster-celery==0.22.8",
+            "dagster-k8s==0.22.8",
+            "dagster==1.6.8"
           ],
-          "requires_python": null,
-          "version": "0.22.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "0.22.8"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "f36b48ff6b95513574d77069e3934e67830702dea99baed39d95ef0d12dde7d3",
-              "url": "https://files.pythonhosted.org/packages/4b/92/c7f6eed59f6412a665f48c371ea53f73be5d02a2bcad229bd631a4ab6af8/dagster_graphql-1.6.6-py3-none-any.whl"
+              "hash": "76687738d2d2f82cab7d9cca1b57aaffb7b230fc578f98281cf6bcc223742095",
+              "url": "https://files.pythonhosted.org/packages/dc/a7/be2b039febe891b9842be645ff854acc8a0829ba07961be5773ecce1c5c6/dagster_graphql-1.6.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "abf1df81961c74443586b9ed1dd62c8aecb1e2df1b68f63238425cd786a200dd",
-              "url": "https://files.pythonhosted.org/packages/50/ad/63a49c41c9b164b9d03ac4983afd311b19a9e4eee85b6c0996892a9344a3/dagster-graphql-1.6.6.tar.gz"
+              "hash": "bb757ed905d17ea31f5e761169e92d6ed9277c1001d3c312916c38ee2c7260e4",
+              "url": "https://files.pythonhosted.org/packages/68/a8/19101fb15dc2bff6b9d2ad43f179b1db55ad2caf074c075b09e9137b188c/dagster-graphql-1.6.8.tar.gz"
             }
           ],
           "project_name": "dagster-graphql",
           "requires_dists": [
-            "dagster==1.6.6",
+            "dagster==1.6.8",
             "gql[requests]<4,>=3",
             "graphene<4,>=3",
             "requests",
             "starlette"
           ],
-          "requires_python": null,
-          "version": "1.6.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "1.6.8"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "2a1096df2767388c6adb37198726be90e91971c392c21d5a520a624b9394c9d0",
-              "url": "https://files.pythonhosted.org/packages/7f/49/41a5114a9e884bb58d29362b5b2d32e096f71cb678faabf4f60954b7450b/dagster_k8s-0.22.6-py3-none-any.whl"
+              "hash": "1d4eef9d57827c3e1cfa31315829bfad73f783c8d6c311b93dae48aa81fbfd80",
+              "url": "https://files.pythonhosted.org/packages/7f/7b/e6059d543f09091c6c828985146b56c280643fa3d7119e556f1453a47195/dagster_k8s-0.22.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "1223fdf2b5ddeb0d4345fb1db0dbd595f0dc23b90343d14ec91990c6d8dbe579",
-              "url": "https://files.pythonhosted.org/packages/51/73/72a6e4e5e5b4a91d58c3d3dec8e3cd781e93ae01f6a79ac66d7872fb8fd0/dagster-k8s-0.22.6.tar.gz"
+              "hash": "470e2d2677e91fb3e8aa486d793c99949b911695afa7573ea4ae7d252ed45c92",
+              "url": "https://files.pythonhosted.org/packages/1c/e2/95c6d7b0541d847e6ecd2d81ca3fb58359d93fbd1ec0aafa3dc8e000e1e5/dagster-k8s-0.22.8.tar.gz"
             }
           ],
           "project_name": "dagster-k8s",
           "requires_dists": [
-            "dagster==1.6.6",
+            "dagster==1.6.8",
             "google-auth!=2.23.1",
             "kubernetes"
           ],
-          "requires_python": null,
-          "version": "0.22.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "0.22.8"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "e2ef924390e53c49db2b2f4ec49e243c4b4c12fb75b41fa5b555cbe4745a5908",
-              "url": "https://files.pythonhosted.org/packages/79/05/e0e37264ed95dd2e9ba79db7f1e574c31ad58757535985c9c3cbab9d56ad/dagster_pipes-1.6.6-py3-none-any.whl"
+              "hash": "1323f2c2a84cf18600d9effab8a612921491b6c86333434fd9b0df9ba4e8236e",
+              "url": "https://files.pythonhosted.org/packages/c2/bc/3f8e8d06e51f35a454c252697c3fb626f16c01569d201ce7f493f6018d52/dagster_pipes-1.6.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "67467f11b10ce441ba8b3f0ce7e3ed203991c614f4a7fd0642befe625d50434e",
-              "url": "https://files.pythonhosted.org/packages/b6/9b/aca7532f43aa689da1f32d4726a2e9c0d03d9bb0c2eab6ef913393656dcc/dagster-pipes-1.6.6.tar.gz"
+              "hash": "3de268695ebe3744451db784fdcc6186ef451c0b1bdcb5b9470e084d2f90acbb",
+              "url": "https://files.pythonhosted.org/packages/e5/3f/3520311afc902bbbacf24ff696549b4d9b6c070d8832045b277bbd2dff02/dagster-pipes-1.6.8.tar.gz"
             }
           ],
           "project_name": "dagster-pipes",
           "requires_dists": [],
-          "requires_python": null,
-          "version": "1.6.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "1.6.8"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "90d874a940f3f5232d0f80388872b8519375ca63e21a06600b97786eb61dc5ae",
-              "url": "https://files.pythonhosted.org/packages/26/03/4558d1a107a57877d6d72c3e37d506123d2d9e37c32fd83146e7a50f1c6b/dagster_postgres-0.22.6-py3-none-any.whl"
+              "hash": "ee82d765b077c2ccbc7a51b2bf63f6f4705a97a80c75c7ddac202182b72cd5fa",
+              "url": "https://files.pythonhosted.org/packages/e2/9e/3576717e9b3f516acc1f7753e75e742ae58f1a990238b1f3fb546fc707f6/dagster_postgres-0.22.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "0379af769b25bb2e400122770043ec3fce129037899aa8279434c921c503c189",
-              "url": "https://files.pythonhosted.org/packages/13/53/aaf76eb9d38fd2383069ee2234b689a8f6c9fdd93e45666444797d68e498/dagster-postgres-0.22.6.tar.gz"
+              "hash": "92dd1dd4ed8f6430f103a9a4ab56eb4cab0a4b20102f3dc768c71a9da23ffede",
+              "url": "https://files.pythonhosted.org/packages/48/1c/42584e4ac0d814173a3dbebb5da467f8e183e26a3887e3fd92b602ca50d6/dagster-postgres-0.22.8.tar.gz"
             }
           ],
           "project_name": "dagster-postgres",
           "requires_dists": [
-            "dagster==1.6.6",
+            "dagster==1.6.8",
             "psycopg2-binary"
           ],
-          "requires_python": null,
-          "version": "0.22.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "0.22.8"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "47513acc313b734bb8ca6322f048b047bf53702ddbdbaea8ae4fc993e1997d68",
-              "url": "https://files.pythonhosted.org/packages/8a/1d/c2a6f964c29ff50f73d5b927141e9231739ec5c72b899e9cf125888a84a0/dagster_slack-0.22.6-py3-none-any.whl"
+              "hash": "faaafc88092fe2dec3ee7d9ca9b847b377992572b1f089c8a39bceb22ddf05ac",
+              "url": "https://files.pythonhosted.org/packages/c1/bc/f1c314663bcdde1482585f63da803f08e6ec12e36122ee4c942cca535b8b/dagster_slack-0.22.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "b96426338539854c18d480f9b10412d205a99962c7a622e1a1274b21cc90e55a",
-              "url": "https://files.pythonhosted.org/packages/60/23/440e80a35664626171ff2e84d464fa43b40c4a236933b3fc7bc9a149f747/dagster-slack-0.22.6.tar.gz"
+              "hash": "06e902041b2476151fe525df85a9580e24d71058a4561bd0f3926527d71f9928",
+              "url": "https://files.pythonhosted.org/packages/aa/4c/19744548955773ec9e237bf20492b266c45c6a80096b8943aa97a8c7336e/dagster-slack-0.22.8.tar.gz"
             }
           ],
           "project_name": "dagster-slack",
           "requires_dists": [
-            "dagster==1.6.6",
+            "dagster==1.6.8",
             "slack-sdk"
           ],
-          "requires_python": null,
-          "version": "0.22.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "0.22.8"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "27a994d9b864e5fc1c0930aa96cc03b2023837a0f108f4cee0a6f7c54c5fb95a",
-              "url": "https://files.pythonhosted.org/packages/6a/ae/34271172f089c47febebff9d8bf348ca2ccadbd0e8cf28dd313ecd8b80ad/dagster_webserver-1.6.6-py3-none-any.whl"
+              "hash": "2c5b79ab13373257633f6c082b5d0ef39c20fb95f2af3f124367b1e82b03722e",
+              "url": "https://files.pythonhosted.org/packages/69/96/c4a094721429d1bb9d8369b1f34309b268473fb52b0a83a27eba33a3c9ee/dagster_webserver-1.6.8-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "b3ed08ac55a4700e8190b7f552b152e6d7e055b4d5d54f9f3eb123faeb8e5151",
-              "url": "https://files.pythonhosted.org/packages/33/f5/71b19dbcbeb1bcde261502bc688eae65b0832f9ea40b36d529f2fe77de98/dagster-webserver-1.6.6.tar.gz"
+              "hash": "b34d103818c578a7f4ef0b87177cb7c3834de9c5fe445f38a71247728691db44",
+              "url": "https://files.pythonhosted.org/packages/4a/6a/8cc4b5744268d229f7565c09a48c7f3bd264f0e6ddddb007501b57203ee7/dagster-webserver-1.6.8.tar.gz"
             }
           ],
           "project_name": "dagster-webserver",
           "requires_dists": [
             "click<9.0,>=7.0",
-            "dagster-graphql==1.6.6",
-            "dagster==1.6.6",
+            "dagster-graphql==1.6.8",
+            "dagster==1.6.8",
             "nbconvert; extra == \"notebook\"",
             "starlette!=0.36.0",
             "starlette[full]; extra == \"test\"",
             "uvicorn[standard]"
           ],
-          "requires_python": null,
-          "version": "1.6.6"
+          "requires_python": "<3.13,>=3.8",
+          "version": "1.6.8"
         },
         {
           "artifacts": [
@@ -2854,13 +2855,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "50384f5c577a260a1d53f1f59a828c7266d321c9b7d00d345693783f66616055",
-              "url": "https://files.pythonhosted.org/packages/16/9a/0c7b514c73b42cf4ce516ee26c8940a0b23a9754dafaa459a939220240fd/ipykernel-6.29.2-py3-none-any.whl"
+              "hash": "5aa086a4175b0229d4eca211e181fb473ea78ffd9869af36ba7694c947302a21",
+              "url": "https://files.pythonhosted.org/packages/4b/45/00ceed1948457b6e469e4d44e5ecadc5b0f24fd4f610dd9e7b89f1993128/ipykernel-6.29.3-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "3bade28004e3ff624ed57974948116670604ac5f676d12339693f3142176d3f0",
-              "url": "https://files.pythonhosted.org/packages/87/e4/6f1b4ab7d7fb9268d67a6c7c4520a7d76a5bbafd7abb716ed43b006153e0/ipykernel-6.29.2.tar.gz"
+              "hash": "e14c250d1f9ea3989490225cc1a542781b095a18a19447fcf2b5eaf7d0ac5bd2",
+              "url": "https://files.pythonhosted.org/packages/ab/37/ddef2ece768f4d457d8f7ac067d2857ff39f7e74f61568c6e9d7f6da79c3/ipykernel-6.29.3.tar.gz"
             }
           ],
           "project_name": "ipykernel",
@@ -2885,7 +2886,7 @@
             "pydata-sphinx-theme; extra == \"docs\"",
             "pyqt5; extra == \"pyqt5\"",
             "pyside6; extra == \"pyside6\"",
-            "pytest-asyncio==0.23.4; extra == \"test\"",
+            "pytest-asyncio>=0.23.5; extra == \"test\"",
             "pytest-cov; extra == \"cov\"",
             "pytest-cov; extra == \"test\"",
             "pytest-timeout; extra == \"test\"",
@@ -2901,7 +2902,7 @@
             "trio; extra == \"docs\""
           ],
           "requires_python": ">=3.8",
-          "version": "6.29.2"
+          "version": "6.29.3"
         },
         {
           "artifacts": [
@@ -4881,13 +4882,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "37a5432e54b12fecaa1049c5195f3d860a10e01bdfd24f1840ef14bd0d3aeab3",
-              "url": "https://files.pythonhosted.org/packages/42/28/f19be8d493c59a8ddf32c15d69765c6423ad712da1c6255b418df2fc1443/pydantic-2.6.2-py3-none-any.whl"
+              "hash": "72c6034df47f46ccdf81869fddb81aade68056003900a8724a4f160700016a2a",
+              "url": "https://files.pythonhosted.org/packages/ac/86/c98520827f58c8753783be4bf2286b4f73a18ac71c93ab597ae1aeb26fc8/pydantic-2.6.3-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "a09be1c3d28f3abe37f8a78af58284b236a92ce520105ddc91a6d29ea1176ba7",
-              "url": "https://files.pythonhosted.org/packages/a7/2d/6308c04382ebdf15f1add7f0ec5e518ab23a0958363a8b3399f09c314fc0/pydantic-2.6.2.tar.gz"
+              "hash": "e07805c4c7f5c6826e33a1d4c9d47950d7eaf34868e2690f8594d2e30241f11f",
+              "url": "https://files.pythonhosted.org/packages/3c/6c/5d3b1c9615726a69a9a1f992e63f8fd0a2d19ae726c15eb9154fdce48217/pydantic-2.6.3.tar.gz"
             }
           ],
           "project_name": "pydantic",
@@ -4898,7 +4899,7 @@
             "typing-extensions>=4.6.1"
           ],
           "requires_python": ">=3.8",
-          "version": "2.6.2"
+          "version": "2.6.3"
         },
         {
           "artifacts": [
@@ -5248,13 +5249,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9",
-              "url": "https://files.pythonhosted.org/packages/36/7a/87837f39d0296e723bb9b62bbb257d0355c7f6128853c78955f57342a56d/python_dateutil-2.8.2-py2.py3-none-any.whl"
+              "hash": "a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427",
+              "url": "https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86",
-              "url": "https://files.pythonhosted.org/packages/4c/c4/13b4776ea2d76c115c1d1b84579f3764ee6d57204f6be27119f13a61d0a9/python-dateutil-2.8.2.tar.gz"
+              "hash": "37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3",
+              "url": "https://files.pythonhosted.org/packages/66/c0/0c8b6ad9f17a802ee498c46e004a0eb49bc148f2fd230864601a86dcf6db/python-dateutil-2.9.0.post0.tar.gz"
             }
           ],
           "project_name": "python-dateutil",
@@ -5262,7 +5263,7 @@
             "six>=1.5"
           ],
           "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
-          "version": "2.8.2"
+          "version": "2.9.0.post0"
         },
         {
           "artifacts": [
@@ -5684,13 +5685,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "6da14c108c4866ee9520bbffa71f6fe3962e193b7da68720583850cd4548e235",
-              "url": "https://files.pythonhosted.org/packages/be/be/1520178fa01eabe014b16e72a952b9f900631142ccd03dc36cf93e30c1ce/rich-13.7.0-py3-none-any.whl"
+              "hash": "4edbae314f59eb482f54e9e30bf00d33350aaa94f4bfcd4e9e3110e64d0d7222",
+              "url": "https://files.pythonhosted.org/packages/87/67/a37f6214d0e9fe57f6ae54b2956d550ca8365857f42a1ce0392bb21d9410/rich-13.7.1-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "5cb5123b5cf9ee70584244246816e9114227e0b98ad9176eede6ad54bf5403fa",
-              "url": "https://files.pythonhosted.org/packages/a7/ec/4a7d80728bd429f7c0d4d51245287158a1516315cadbb146012439403a9d/rich-13.7.0.tar.gz"
+              "hash": "9be308cb1fe2f1f57d67ce99e95af38a1e2bc71ad9813b0e247cf7ffbcc3a432",
+              "url": "https://files.pythonhosted.org/packages/b3/01/c954e134dc440ab5f96952fe52b4fdc64225530320a910473c1fe270d9aa/rich-13.7.1.tar.gz"
             }
           ],
           "project_name": "rich",
@@ -5701,7 +5702,7 @@
             "typing-extensions<5.0,>=4.0.0; python_version < \"3.9\""
           ],
           "requires_python": ">=3.7.0",
-          "version": "13.7.0"
+          "version": "13.7.1"
         },
         {
           "artifacts": [
@@ -5936,13 +5937,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "a901c68cb5547d5459cdefd81343d116db56d65f6b33f4081ddf1cdd243bf07e",
-              "url": "https://files.pythonhosted.org/packages/da/db/ee0340f739b87590c65cba4c6889358b78c01d8ec04fc94b29076057e190/slack_sdk-3.27.0-py2.py3-none-any.whl"
+              "hash": "c108e509160cf1324c5c8b1f47ca52fb5e287021b8caf9f4ec78ad737ab7b1d9",
+              "url": "https://files.pythonhosted.org/packages/7e/3b/a044a57dd755d03944e35f9bc570606d6053c031e94ab485c9ddac8facbc/slack_sdk-3.27.1-py2.py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "811472ce598db855ab3c02f098fa430323ccb253cfe17ba20c7b05ab206d984d",
-              "url": "https://files.pythonhosted.org/packages/86/a7/02d529d734891be08b34398950ec9a855ab03f8b565d916d498a45db124f/slack_sdk-3.27.0.tar.gz"
+              "hash": "85d86b34d807c26c8bb33c1569ec0985876f06ae4a2692afba765b7a5490d28c",
+              "url": "https://files.pythonhosted.org/packages/f8/77/e567bfc892a352ea2c6bc7e29830bed763b4a14681e7fefaf82974a9f775/slack_sdk-3.27.1.tar.gz"
             }
           ],
           "project_name": "slack-sdk",
@@ -5956,25 +5957,25 @@
             "websockets<11,>=10; python_version > \"3.6\" and extra == \"optional\""
           ],
           "requires_python": ">=3.6",
-          "version": "3.27.0"
+          "version": "3.27.1"
         },
         {
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "eecefdce1e5bbfb7ad2eeaabf7c1eeb404d7757c379bd1f7e5cce9d8bf425384",
-              "url": "https://files.pythonhosted.org/packages/c3/a0/5dba8ed157b0136607c7f2151db695885606968d1fae123dc3391e0cfdbf/sniffio-1.3.0-py3-none-any.whl"
+              "hash": "2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2",
+              "url": "https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "e60305c5e5d314f5389259b7f22aaa33d8f7dee49763119234af3755c55b9101",
-              "url": "https://files.pythonhosted.org/packages/cd/50/d49c388cae4ec10e8109b1b833fd265511840706808576df3ada99ecb0ac/sniffio-1.3.0.tar.gz"
+              "hash": "f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc",
+              "url": "https://files.pythonhosted.org/packages/a2/87/a6771e1546d97e7e041b6ae58d80074f81b7d5121207425c964ddf5cfdbd/sniffio-1.3.1.tar.gz"
             }
           ],
           "project_name": "sniffio",
           "requires_dists": [],
           "requires_python": ">=3.7",
-          "version": "1.3.0"
+          "version": "1.3.1"
         },
         {
           "artifacts": [
@@ -7539,6 +7540,7 @@
   "requirements": [
     "PyYAML==6.0.1",
     "appengine-python-standard<2.0.0,>=1.1.5",
+    "coolname<3.0.0,>=2.2.0",
     "coolname==2.2.0",
     "dagit<1.7.0,>=1.6",
     "dagster-celery-k8s<0.23.0,>=0.22.1",
