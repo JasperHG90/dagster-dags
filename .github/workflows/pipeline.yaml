@@ -21,7 +21,7 @@ jobs:
         with:
           # To work with pants --changed-since we need an adequate number
           #  of commits in the checkout
-          fetch-depth: 100
+          fetch-depth: 0
       - name: 'checks'
         uses: ./.github/workflows/templates/checks
   build:
