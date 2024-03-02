@@ -1,1 +1,5 @@
-python_sources()
+python_sources(
+    dependencies=[
+        'shared/dagster_scripts:poetry#pyyaml',
+    ]
+)

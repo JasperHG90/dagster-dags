@@ -1,5 +1,6 @@
-python_tests(name="tests")
-
-python_sources(
-    name="tests0",
+python_tests(
+    name="tests",
+    dependencies=[
+         "dags/luchtmeetnet_ingestion:poetry#pandas",
+    ]
 )
