@@ -3,13 +3,9 @@ import typing
 
 import pendulum
 from dagster import (
-    AssetKey,
-    DagsterEventType,
     DagsterInstance,
-    DagsterRun,
     DagsterRunStatus,
     EventLogRecord,
-    EventRecordsFilter,
     MultiPartitionsDefinition,
     PartitionsDefinition,
     RunRecord,
@@ -180,56 +176,37 @@ class MonitoredJobSensorMixin:
         else:
             return False
 
-    def _get_successful_materializations_for_monitored_asset_partitions(
+    def _get_runs_by_status_and_backfill_or_schedule(
         self,
         instance: DagsterInstance,
+        statuses: typing.List[DagsterRunStatus],
         partitions: typing.List[str],
         backfill_name: typing.Optional[str] = None,
         schedule_name: typing.Optional[str] = None,
     ) -> typing.Sequence[EventLogRecord]:
         # Retrieve materialization & failed runs information for partitions
-        self._logger.debug(
-            f"Retrieving materialization events for asset {self.monitored_asset} . . ."
-        )
-        tag_key = "dagster/backfill" if backfill_name is not None else "dagster/schedule_name"
-        tag_value = backfill_name if backfill_name is not None else schedule_name
-        filter_materialized_assets = EventRecordsFilter(
-            event_type=DagsterEventType.ASSET_MATERIALIZATION,
-            asset_key=AssetKey(self.monitored_asset),
-            asset_partitions=partitions,
-            tags={tag_key: tag_value},
-            after_timestamp=pendulum.now(tz="UTC").subtract(minutes=60).timestamp(),
-        )
-        events_successful_materializations = instance.get_event_records(filter_materialized_assets)
-        self._logger.debug(
-            f"Number of successful materializations: {len(events_successful_materializations)}"
-        )
-        return events_successful_materializations
-
-    def _get_failed_pipeline_events_for_monitored_asset_partitions(
-        self,
-        instance: DagsterInstance,
-        backfill_name: typing.Optional[str] = None,
-        schedule_name: typing.Optional[str] = None,
-    ) -> typing.Sequence[DagsterRun]:
-        # NB: cannot filter for asset on these events :/
         if (backfill_name is None and schedule_name is None) or (
             backfill_name is not None and schedule_name is not None
         ):
             raise ValueError("Exactly one of backfill_name or schedule_name must be provided")
-        self._logger.debug("Retrieving failed pipeline events for time window T-60 minutes . . .")
+        self._logger.debug(f"Retrieving runs for asset {self.monitored_asset} . . .")
         tag_key = "dagster/backfill" if backfill_name is not None else "dagster/schedule_name"
         tag_value = backfill_name if backfill_name is not None else schedule_name
-        filter_failed_runs = RunsFilter(
+        runs_filter = RunsFilter(
             job_name=self.monitored_job.name,
-            statuses=[DagsterRunStatus.FAILURE],
+            statuses=statuses,
             tags={tag_key: tag_value},
+            updated_after=(pendulum.now() - pendulum.duration(minutes=180)),  # Arbitrary
         )
-        runs_failed = instance.get_run_records(filter_failed_runs)
+        runs_for_statuses = [
+            run
+            for run in instance.get_run_records(runs_filter)
+            if run.dagster_run.tags["dagster/partition"] in partitions
+        ]
         self._logger.debug(
-            f"Number of failed runs for tag '{tag_key}' with value '{tag_value}': {len(runs_failed)}"
+            f"Number of runs retrieved for statuses {', '.join([status.value for status in statuses])}: {len(runs_for_statuses)}"
         )
-        return runs_failed
+        return runs_for_statuses
 
     def _get_job_statistics(
         self,
@@ -238,20 +215,18 @@ class MonitoredJobSensorMixin:
         backfill_name: typing.Optional[str] = None,
         schedule_name: typing.Optional[str] = None,
     ) -> typing.Tuple[int, int, int, int, int]:
-        events_successful_materializations = (
-            self._get_successful_materializations_for_monitored_asset_partitions(
-                instance=instance,
-                partitions=partitions,
-                backfill_name=backfill_name,
-                schedule_name=schedule_name,
-            )
+        runs = self._get_runs_by_status_and_backfill_or_schedule(
+            instance=instance,
+            statuses=[DagsterRunStatus.SUCCESS, DagsterRunStatus.FAILURE],
+            partitions=partitions,
+            backfill_name=backfill_name,
+            schedule_name=schedule_name,
         )
-        runs_failed = self._get_failed_pipeline_events_for_monitored_asset_partitions(
-            instance=instance, backfill_name=backfill_name, schedule_name=schedule_name
-        )
+        successful_runs = [run for run in runs if run.dagster_run.status.value == "SUCCESS"]
+        failed_runs = [run for run in runs if run.dagster_run.status.value == "FAILURE"]
         num_total = len(partitions)
-        num_successful = len(events_successful_materializations)
-        num_failed = len(runs_failed)
+        num_successful = len(successful_runs)
+        num_failed = len(failed_runs)
         num_done = num_successful + num_failed
         num_unfinished = num_total - num_done
         return (

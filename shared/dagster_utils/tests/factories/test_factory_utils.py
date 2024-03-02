@@ -151,29 +151,11 @@ class TestMonitoredJobSensorMixin:
             )
             assert self._test_cls._run_key_already_completed("test_run_key", instance)
 
-    @pytest.mark.usefixtures("test_class_single_multipartitioned_job")
-    def test_get_successful_materializations_for_monitored_asset_partitions(
-        self,
-        my_definition_single_multipartitioned_job: Definitions,
-        my_multi_partition: MultiPartitionsDefinition,
-    ):
-        with DagsterInstance.ephemeral() as instance:
-            my_definition_single_multipartitioned_job.get_job_def(
-                "my_multipartitioned_job"
-            ).execute_in_process(
-                instance=instance,
-                partition_key=my_multi_partition.get_partition_keys()[0],
-            )
-            materializations = (
-                self._test_cls._get_successful_materializations_for_monitored_asset_partitions(
-                    instance, my_multi_partition.get_partition_keys()
-                )
-            )
-            assert len(materializations) == 1
-
+    @pytest.mark.parametrize("tag_key", ["dagster/backfill", "dagster/schedule_name"])
     @pytest.mark.usefixtures("test_class_single_multipartitioned_job_with_failing_assets")
-    def test_get_failed_pipeline_events_for_monitored_asset_partitions(
+    def test_get_runs_by_status_and_backfill_or_schedule(
         self,
+        tag_key: str,
         my_definition_single_multipartitioned_job_with_failing_assets: Definitions,
         my_multi_partition: MultiPartitionsDefinition,
     ):
@@ -185,17 +167,57 @@ class TestMonitoredJobSensorMixin:
                     ).execute_in_process(
                         instance=instance,
                         partition_key=partition_key,
-                        tags={"dagster/backfill": "test"},
+                        tags={tag_key: "test"},
                     )
                 except ValueError:
                     continue
-            failed_materializations = (
-                self._test_cls._get_failed_pipeline_events_for_monitored_asset_partitions(
-                    instance, backfill_name="test"
-                )
+            materializations = self._test_cls._get_runs_by_status_and_backfill_or_schedule(
+                instance=instance,
+                statuses=[DagsterRunStatus.SUCCESS, DagsterRunStatus.FAILURE],
+                partitions=my_multi_partition.get_partition_keys(),
+                backfill_name="test" if tag_key == "dagster/backfill" else None,
+                schedule_name="test" if tag_key == "dagster/schedule_name" else None,
             )
-            assert len(failed_materializations) == 1
-            assert failed_materializations[0].tags["dagster/partition"] == "2021-01-02|NL01345"
+        success_runs = sum(
+            [True for run in materializations if run.dagster_run.status.value == "SUCCESS"]
+        )
+        failed_runs = sum(
+            [True for run in materializations if run.dagster_run.status.value == "FAILURE"]
+        )
+        assert success_runs == 7
+        assert failed_runs == 1
+
+    @pytest.mark.parametrize("tag_key", ["dagster/backfill", "dagster/schedule_name"])
+    @pytest.mark.usefixtures("test_class_single_multipartitioned_job_with_failing_assets")
+    def test_get_job_statistics(
+        self,
+        tag_key: str,
+        my_definition_single_multipartitioned_job_with_failing_assets: Definitions,
+        my_multi_partition: MultiPartitionsDefinition,
+    ):
+        with DagsterInstance.ephemeral() as instance:
+            for partition_key in my_multi_partition.get_partition_keys():
+                try:
+                    my_definition_single_multipartitioned_job_with_failing_assets.get_job_def(
+                        "my_multipartitioned_job"
+                    ).execute_in_process(
+                        instance=instance,
+                        partition_key=partition_key,
+                        tags={tag_key: "test"},
+                    )
+                except ValueError:
+                    continue
+            total, successful, failed, done, unfinished = self._test_cls._get_job_statistics(
+                instance=instance,
+                partitions=my_multi_partition.get_partition_keys(),
+                backfill_name="test" if tag_key == "dagster/backfill" else None,
+                schedule_name="test" if tag_key == "dagster/schedule_name" else None,
+            )
+        assert total == 8
+        assert failed == 1
+        assert successful == 7
+        assert done == 8
+        assert unfinished == 0
 
 
 @pytest.fixture(scope="function")
