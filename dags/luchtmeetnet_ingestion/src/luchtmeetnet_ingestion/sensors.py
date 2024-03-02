@@ -23,7 +23,7 @@ and run key "{kwargs.get('run_key')}" has completed for {kwargs.get('partitions_
     Successful partitions\t\t=>\t{kwargs.get('partitions_successful')}
     Failed partitions\t\t\t=>\t{kwargs.get('partitions_failed')}
     Upstream partition keys\t\t=>\t{kwargs.get('all_upstream_partitions')[:5]}... (truncated)
-    Downstream partition key\t=>\t{kwargs.get('downstream_partition_key')}
+    Downstream partition key\t\t=>\t{kwargs.get('downstream_partition_key')}
 
 Sensor "{context.sensor_name}" triggered downstream job "{kwargs.get('downstream_job_name')}"
 with partition key "{kwargs.get('downstream_partition_key')}".
