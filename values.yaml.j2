@@ -90,6 +90,8 @@ deployments:
     env:
       - name: ENVIRONMENT
         value: "prd"
+      - name: GCP_PROJECT
+        value: "jasper-ginn-dagster"
 
     # Additional environment variables can be retrieved and set from ConfigMaps. See:
     # https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables
