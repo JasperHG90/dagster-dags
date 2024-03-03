@@ -3,3 +3,8 @@ run_queue:
   tag_concurrency_limits:
     - key: "dagster/backfill" # When backfilling, we only want one run at a time
       limit: 6
+
+python_logs:
+  managed_python_loggers:
+    - dagster_utils
+  python_log_level: DEBUG

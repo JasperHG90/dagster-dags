@@ -46,8 +46,9 @@ upon completion.""",
     partitions_def_downstream_asset=daily_partition,
     run_status=[DagsterRunStatus.SUCCESS, DagsterRunStatus.FAILURE],
     default_status=DefaultSensorStatus.RUNNING,
+    use_run_key=False,  # Don't use run key because we may want to trigger downstream jobs multiple times
     required_resource_keys={"slack"},
-    time_window_seconds=90,
-    skip_when_unfinished_count=30,
+    time_window_seconds=120,
+    skip_when_unfinished_count=15,
     callable_fn=slack_message,
 )

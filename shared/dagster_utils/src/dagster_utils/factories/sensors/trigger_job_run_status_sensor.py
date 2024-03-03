@@ -33,6 +33,7 @@ def multi_to_single_partition_job_trigger_sensor(
     downstream_job: JobDefinition,
     partitions_def_monitored_asset: MultiPartitionsDefinition,
     partitions_def_downstream_asset: PartitionsDefinition,
+    use_run_key: bool = False,
     run_status: typing.List[DagsterRunStatus] = [DagsterRunStatus.SUCCESS],
     minimum_interval_seconds: typing.Optional[int] = None,
     default_status: DefaultSensorStatus = DefaultSensorStatus.STOPPED,
@@ -74,6 +75,7 @@ def multi_to_single_partition_job_trigger_sensor(
         partitions_def_downstream_asset=partitions_def_downstream_asset,
         run_status=run_status,
         minimum_interval_seconds=minimum_interval_seconds,
+        use_run_key=use_run_key,
         default_status=default_status,
         time_window_seconds=time_window_seconds,
         skip_when_unfinished_count=skip_when_unfinished_count,
@@ -93,6 +95,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
         downstream_job: JobDefinition,
         partitions_def_monitored_asset: MultiPartitionsDefinition,
         partitions_def_downstream_asset: PartitionsDefinition,
+        use_run_key: bool = False,
         run_status: typing.List[DagsterRunStatus] = [DagsterRunStatus.SUCCESS],
         minimum_interval_seconds: typing.Optional[int] = None,
         default_status: DefaultSensorStatus = DefaultSensorStatus.STOPPED,
@@ -130,6 +133,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
         self.partitions_def_downstream_asset = partitions_def_downstream_asset
         self.run_status = run_status
         self.time_window_seconds = time_window_seconds
+        self.use_run_key = use_run_key
         self.skip_when_unfinished_count = skip_when_unfinished_count
         self.minimum_interval_seconds = minimum_interval_seconds
         self.default_status = default_status
@@ -171,13 +175,22 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
         def _sensor(context: SensorEvaluationContext):
             run_requests = 0
             job_name = self.monitored_job.name
+            onetime_logs_emitted: bool = False
             context.log.debug(f"Job name: {job_name}")
             run_records = self._get_run_records_for_job(context.instance)
+            context.log.debug(
+                f"Number of run records for time window of {self.time_window_seconds} seconds: {len(run_records)}"
+            )
             cursor = float(context.cursor) if context.cursor else float(0)
             ts = cursor - 2  # margin
             for run_record in run_records:
+                context.log.debug(
+                    f"Run record: {run_record.dagster_run.run_id} with partition {run_record.dagster_run.tags.get('dagster/partition')} and status {run_record.dagster_run.status}"
+                )
                 if self._run_record_end_before_cursor_ts(run_record.end_time, ts):
-                    context.log.debug(f"Skipping run for record {run_record.dagster_run.run_id}")
+                    context.log.debug(
+                        f"Skipping run for record {run_record.dagster_run.run_id} because it ended before the cursor timestamp."
+                    )
                     continue
                 # From the partition key, get the upstream partition key
                 downstream_partition_key = (
@@ -193,6 +206,10 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                 )
                 backfill_name = self._get_backfill_name(run_record.dagster_run.tags)
                 scheduled_run_name = self._get_scheduled_run_name(run_record.dagster_run.tags)
+                if not onetime_logs_emitted:
+                    context.log.debug(
+                        f"Backfill name: {backfill_name}, Scheduled run name: {scheduled_run_name}"
+                    )
                 if (scheduled_run_name is None and backfill_name is None) and (
                     scheduled_run_name is not None and backfill_name is not None
                 ):
@@ -207,13 +224,15 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                 if self._increment_unfinished_downstream_partitions(
                     run_key
                 ) or self._sensor_already_triggered_with_run_key(run_key):
+                    context.log.debug(f"Skipping run with key {run_key} . . .")
                     continue
                 # NB: this calls the postgres db, so don't want to call it in above lines since these are just lookups and
                 #  as such much faster
                 if self._run_key_already_completed(run_key, context.instance):
                     continue
                 else:
-                    context.log.debug(f"Downstream partition key: {downstream_partition_key}")
+                    if not onetime_logs_emitted:
+                        context.log.debug(f"Downstream partition key: {downstream_partition_key}")
                     (
                         num_total,
                         num_successful,
@@ -240,7 +259,11 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                         context.log.warning(
                             f"{num_failed} partitions failed to materialize for partition {downstream_partition_key}. Will still run downstream task."
                         )
-                    yield RunRequest(run_key=run_key, partition_key=downstream_partition_key)
+                    context.log.debug(f"Argument 'use_run_key' is set to '{self.use_run_key}.")
+                    yield RunRequest(
+                        run_key=run_key if self.use_run_key else None,
+                        partition_key=downstream_partition_key,
+                    )
                     self.run_key_requests_this_sensor.append(run_key)
                     run_requests += 1
                     if self.callback_fn is not None:
@@ -261,6 +284,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                             partitions_done=num_done,
                             partitions_unfinished=num_unfinished,
                         )
+                    onetime_logs_emitted = True
 
             if run_requests > 0:
                 new_ts = max(pendulum.now(tz="UTC").timestamp(), cursor)
