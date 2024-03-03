@@ -145,8 +145,6 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
         self._logger: logging.Logger = logging.getLogger(
             "dagster_utils.factories.sensors.MultiToSinglePartitionJobTriggerSensorFactory"
         )
-        self.run_key_requests_this_sensor: typing.List[str] = []
-        self.unfinished_downstream_partitions: typing.Dict[str, int] = {}
         self.callback_fn = callable_fn
 
     def _get_mapped_downstream_partition_key_from_upstream_partition_key(
@@ -176,6 +174,8 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
             run_requests = 0
             job_name = self.monitored_job.name
             onetime_logs_emitted: bool = False
+            run_key_requests_this_sensor: typing.List[str] = []
+            unfinished_downstream_partitions: typing.Dict[str, int] = {}
             context.log.debug(f"Job name: {job_name}")
             run_records = self._get_run_records_for_job(context.instance)
             context.log.debug(
@@ -222,9 +222,23 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                     )
                 run_key = f"{downstream_partition_key}_{backfill_name if backfill_name is not None else scheduled_run_name}"
                 if self._increment_unfinished_downstream_partitions(
-                    run_key
-                ) or self._sensor_already_triggered_with_run_key(run_key):
-                    context.log.debug(f"Skipping run with key {run_key} . . .")
+                    run_key, unfinished_downstream_partitions=unfinished_downstream_partitions
+                ):
+                    skip_number = unfinished_downstream_partitions[run_key]
+                    if skip_number == self.skip_when_unfinished_count:
+                        del unfinished_downstream_partitions[run_key]
+                    else:
+                        unfinished_downstream_partitions[run_key] += 1
+                    context.log.debug(
+                        f"Skipping run with key {run_key} because it has known unfinished partitions . . ."
+                    )
+                    continue
+                if self._sensor_already_triggered_with_run_key(
+                    run_key, run_key_requests_this_sensor
+                ):
+                    context.log.debug(
+                        f"Skipping run with key {run_key} because the run has already been requested . . ."
+                    )
                     continue
                 # NB: this calls the postgres db, so don't want to call it in above lines since these are just lookups and
                 #  as such much faster
@@ -252,7 +266,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                     context.log.debug(
                         f"Only {num_done} out of {num_total} partitions have been materialized for partition {downstream_partition_key}. Skipping . . ."
                     )
-                    self.unfinished_downstream_partitions[run_key] = 0
+                    unfinished_downstream_partitions[run_key] = 0
                     continue
                 else:
                     if num_failed > 0:
@@ -264,7 +278,7 @@ class MultiToSinglePartitionJobTriggerSensorFactory(DagsterObjectFactory, Monito
                         run_key=run_key if self.use_run_key else None,
                         partition_key=downstream_partition_key,
                     )
-                    self.run_key_requests_this_sensor.append(run_key)
+                    run_key_requests_this_sensor.append(run_key)
                     run_requests += 1
                     if self.callback_fn is not None:
                         context.log.debug(

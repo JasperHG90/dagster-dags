@@ -140,26 +140,25 @@ class MonitoredJobSensorMixin:
             if partition in all_upstream_partitions
         ]
 
-    def _increment_unfinished_downstream_partitions(self, run_key: str) -> bool:
+    def _increment_unfinished_downstream_partitions(
+        self, run_key: str, unfinished_downstream_partitions: typing.Dict[str, str]
+    ) -> bool:
         # If already know that run_key is unfinished (still require materializations), then continue
         # until the skip number is self.skip_when_unfinished_count, then remove from the list and try again
         # this keeps us from doing expensive computations and timing out the sensor
-        if run_key in self.unfinished_downstream_partitions:
+        if run_key in unfinished_downstream_partitions:
             self._logger.debug(
                 "Run key has recentely been reported as unfinished. Skipping this partition ..."
             )
-            skip_number = self.unfinished_downstream_partitions[run_key]
-            if skip_number == self.skip_when_unfinished_count:
-                del self.unfinished_downstream_partitions[run_key]
-            else:
-                self.unfinished_downstream_partitions[run_key] += 1
             return True
         else:
             return False
 
-    def _sensor_already_triggered_with_run_key(self, run_key: str) -> bool:
+    def _sensor_already_triggered_with_run_key(
+        self, run_key: str, run_key_requests_this_sensor: typing.List[str]
+    ) -> bool:
         # If this run key has already been requested during this evaluation, skip
-        if run_key in self.run_key_requests_this_sensor:
+        if run_key in run_key_requests_this_sensor:
             self._logger.debug(f"Run key {run_key} already requested. Skipping . . .")
             return True
         else:
