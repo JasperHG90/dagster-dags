@@ -1,14 +1,16 @@
-import typing
 import pathlib as plb
+import typing
 
-import yaml
-import jinja2
 import coolname
+import jinja2
+import yaml
 
-_path = plb.Path(__file__).resolve().parent
+_project_root_path = plb.Path(__file__).resolve().parent.parent  # Project root
 
 env = jinja2.Environment(
-    loader=jinja2.FileSystemLoader("templates"), # Use PackageLoader("package-name", "templates-folder-name") for package
+    loader=jinja2.FileSystemLoader(
+        "templates"
+    ),  # Use PackageLoader("package-name", "templates-folder-name") for package
     autoescape=jinja2.select_autoescape(),
 )
 # NB: control whitespaces. See <https://ttl255.com/jinja2-tutorial-part-3-whitespace-control/>
@@ -19,7 +21,7 @@ env.keep_trailing_newline = True
 
 def load_config(path: typing.Union[str, plb.Path]) -> dict:
     """Load a YAML configuration file from disk"""
-    path = plb.Path(path).resolve()
+    path = plb.Path(_project_root_path / path).resolve()
     if not path.exists():
         raise FileNotFoundError(f"Config at '{path}' not found")
     with path.resolve().open("r") as inFile:
@@ -37,7 +39,7 @@ def parse_and_write_template(
     debug: bool = False,
 ):
     cnf = load_config(config_path)
-    dagster_config = load_config(_path / "static" / "dagster.yaml")
+    dagster_config = load_config(_project_root_path / "jobs" / "static" / "dagster.yaml")
     template = env.get_template("job.yml.j2")
     template_rendered = template.render(
         job_name_suffix=coolname.generate_slug(2),
@@ -48,7 +50,7 @@ def parse_and_write_template(
         github_actions_url=github_actions_url,
         config_version="v1",
         config=yaml.safe_dump(cnf),
-        dagster_config=yaml.safe_dump(dagster_config)
+        dagster_config=yaml.safe_dump(dagster_config),
     )
     with plb.Path(output_path).open("w") as f:
         f.write(template_rendered)
