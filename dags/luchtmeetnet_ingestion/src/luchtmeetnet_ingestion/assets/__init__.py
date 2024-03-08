@@ -38,6 +38,7 @@ from requests import HTTPError
     backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=10),
     code_version="v1",
     group_name="measurements",
+    owners=["team:operations"],
 )
 def air_quality_data(
     context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
@@ -80,6 +81,7 @@ def air_quality_data(
     },
     code_version="v1",
     group_name="measurements",
+    owners=["team:data"],
 )
 def daily_air_quality_data(
     context: AssetExecutionContext, ingested_data: pd.DataFrame
@@ -100,6 +102,7 @@ def daily_air_quality_data(
         AutoMaterializeRule.materialize_on_cron("0 0 1 * *", all_partitions=True),
     ),
     group_name="stations",
+    owners=["team:operations"],
 )
 def station_names(
     context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
@@ -125,6 +128,7 @@ def station_names(
         cron_schedule="0 0 1 * *",
     ),
     group_name="stations",
+    owners=["team:data"],
 )
 def air_quality_station_names(
     context: AssetExecutionContext, station_names: pd.DataFrame
