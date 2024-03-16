@@ -3,34 +3,10 @@ import time
 import typing
 
 from dagster import ConfigurableResource
+from dagster_utils.IO.utils import retry
 from google.cloud import monitoring_v3
 
 logger = logging.getLogger("luchtmeetnet_ingestion.IO.metrics")
-
-
-class RetryException(Exception):
-    ...
-
-
-def retry(attempts: int, seconds: int):
-    def decorator(func):
-        def wrapper(self, *args, **kwargs):
-            retries = 0
-            if retries < attempts:
-                try:
-                    result = func(self, *args, **kwargs)
-                    return result
-                except Exception as e:
-                    logger.exception(e)
-                    logger.info(f"Retrying {func.__name__} after {seconds} seconds.")
-                    retries += 1
-                    time.sleep(seconds)
-            else:
-                raise RetryException(f"Max retries of function {func} exceeded")
-
-        return wrapper
-
-    return decorator
 
 
 class GcpMetricsResource(ConfigurableResource):

@@ -3,7 +3,7 @@ import os
 from dagster import EnvVar
 from dagster_slack import SlackResource
 from dagster_utils.IO.duckdb_io_manager import duckdb_parquet_io_manager
-from luchtmeetnet_ingestion.IO.metrics import GcpMetricsResource
+from dagster_utils.IO.gcp_metrics import GcpMetricsResource
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
 
 environment = os.getenv("ENVIRONMENT", "dev")

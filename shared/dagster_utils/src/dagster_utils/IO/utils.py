@@ -1,7 +1,12 @@
+import functools
+import logging
+import time
 import typing
 from contextlib import contextmanager
 
 import duckdb
+
+logger = logging.getLogger("dagster_utils.IO.utils")
 
 
 @contextmanager  # type: ignore
@@ -47,3 +52,30 @@ def connect_to_duckdb(  # type: ignore
         yield con
     finally:
         con.close()
+
+
+class RetryException(Exception):
+    ...
+
+
+def retry(attempts: int, seconds: int):
+    def decorator(func):
+        functools.wraps(func)
+
+        def wrapper(self, *args, **kwargs):
+            retries = 0
+            if retries < attempts:
+                try:
+                    result = func(self, *args, **kwargs)
+                    return result
+                except Exception as e:
+                    logger.exception(e)
+                    logger.info(f"Retrying {func.__name__} after {seconds} seconds.")
+                    retries += 1
+                    time.sleep(seconds)
+            else:
+                raise RetryException(f"Max retries of function {func} exceeded")
+
+        return wrapper
+
+    return decorator

@@ -1,46 +1,27 @@
 import os
 
-from dagster import (
-    HookContext,
-    define_asset_job,
-    failure_hook,
-    multiprocess_executor,
-    success_hook,
-)
+from dagster import define_asset_job, multiprocess_executor
+from dagster_utils.factories.hooks import gcp_metric_hook_factory
 from luchtmeetnet_ingestion.assets import air_quality_data, daily_air_quality_data
 from luchtmeetnet_ingestion.partitions import daily_partition, daily_station_partition
 
 environment = os.getenv("ENVIRONMENT", "dev")
 
 
-@success_hook(
-    name="job_success_gcp_metric",
-    required_resource_keys={"gcp_metrics"},
+gcp_metric_on_success = gcp_metric_hook_factory(
+    name="gcp_metric_on_success",
+    description="GCP metric hook for success",
+    on_success=True,
+    gcp_resource_name="gcp_metrics",
 )
-def gcp_metric_on_success(context: HookContext):
-    context.resources.gcp_metrics.post_time_series(
-        series_type="custom.googleapis.com/dagster/job_success",
-        value={"bool_value": 1},
-        metric_labels={
-            "job_name": context.job_name,
-            "run_id": context.run_id,
-        },
-    )
 
 
-@failure_hook(
-    name="job_failure_gcp_metric",
-    required_resource_keys={"gcp_metrics"},
+gcp_metric_on_failure = gcp_metric_hook_factory(
+    name="gcp_metric_on_failure",
+    description="GCP metric hook for failure",
+    on_success=False,
+    gcp_resource_name="gcp_metrics",
 )
-def gcp_metric_on_failure(context: HookContext):
-    context.resources.gcp_metrics.post_time_series(
-        series_type="custom.googleapis.com/dagster/job_success",
-        value={"bool_value": 0},
-        metric_labels={
-            "job_name": context.job_name,
-            "run_id": context.run_id,
-        },
-    )
 
 
 ingestion_job = define_asset_job(
