@@ -32,11 +32,12 @@ class GcpMetricHookFactory(DagsterObjectFactory):
 
             @success_hook(
                 name=self.name,
-                description=self.description,
                 required_resource_keys={self.gcp_resource_name},
             )
             def _function(context: HookContext):
-                context.resources.__getattr__(self.gcp_resource_name).gcp_metrics.post_time_series(
+                context.resources.original_resource_dict.get(
+                    self.gcp_resource_name
+                ).post_time_series(
                     series_type="custom.googleapis.com/dagster/job_success",
                     value={"bool_value": 1},
                     metric_labels={
@@ -49,11 +50,10 @@ class GcpMetricHookFactory(DagsterObjectFactory):
 
             @failure_hook(
                 name="job_failure_gcp_metric",
-                description=self.description,
                 required_resource_keys={self.gcp_resource_name},
             )
             def _function(context: HookContext):
-                context.resources.__getattr__(self.gcp_resource_name).gcp_metrics.post_time_series(
+                context.resources.gcp_metrics.post_time_series(
                     series_type="custom.googleapis.com/dagster/job_success",
                     value={"bool_value": 0},
                     metric_labels={
