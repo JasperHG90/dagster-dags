@@ -1,14 +1,14 @@
 import os
 
 from dagster import define_asset_job, multiprocess_executor
-from dagster_utils.factories.hooks import gcp_metric_hook_factory
+from dagster_utils.factories.hooks import gcp_metric_job_success_hook_factory
 from luchtmeetnet_ingestion.assets import air_quality_data, daily_air_quality_data
 from luchtmeetnet_ingestion.partitions import daily_partition, daily_station_partition
 
 environment = os.getenv("ENVIRONMENT", "dev")
 
 
-gcp_metric_on_success = gcp_metric_hook_factory(
+gcp_metric_on_success = gcp_metric_job_success_hook_factory(
     name="gcp_metric_on_success",
     description="GCP metric hook for success",
     on_success=True,
@@ -16,7 +16,7 @@ gcp_metric_on_success = gcp_metric_hook_factory(
 )
 
 
-gcp_metric_on_failure = gcp_metric_hook_factory(
+gcp_metric_on_failure = gcp_metric_job_success_hook_factory(
     name="gcp_metric_on_failure",
     description="GCP metric hook for failure",
     on_success=False,

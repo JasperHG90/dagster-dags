@@ -4,10 +4,10 @@ from dagster import HookContext, failure_hook, success_hook
 from dagster_utils.factories.base import DagsterObjectFactory
 
 
-def gcp_metric_hook_factory(
+def gcp_metric_job_success_hook_factory(
     name: str, description: str, on_success: bool, gcp_resource_name: typing.Optional[str] = None
 ) -> typing.Callable:
-    return GcpMetricHookFactory(
+    return GcpMetricJobSuccessHookFactory(
         name=name,
         description=description,
         on_success=on_success,
@@ -15,7 +15,7 @@ def gcp_metric_hook_factory(
     )()
 
 
-class GcpMetricHookFactory(DagsterObjectFactory):
+class GcpMetricJobSuccessHookFactory(DagsterObjectFactory):
     def __init__(
         self,
         name: str,
