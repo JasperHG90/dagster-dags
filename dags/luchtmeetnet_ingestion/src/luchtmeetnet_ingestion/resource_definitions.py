@@ -49,5 +49,8 @@ env_resources = {
                 "aws_endpoint": "storage.googleapis.com",
             }
         ),
+        "gcp_metrics": GcpMetricsResource(
+            environment=environment, project_id="jasper-ginn-dagster"
+        ),
     },
 }
