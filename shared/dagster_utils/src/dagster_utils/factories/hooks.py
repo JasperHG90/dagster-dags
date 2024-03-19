@@ -29,12 +29,18 @@ class GcpMetricJobSuccessHookFactory(DagsterObjectFactory):
 
     def __call__(self) -> typing.Callable:
         def post_metric(context: HookContext, value: int):
+            run = context.instance.get_run_by_id(context.run_id)
             labels = {
                 "job_name": context.job_name,
                 "run_id": context.run_id,
+                "location": run.external_job_origin.location_name,
             }
-            for k, v in context.op.tags.items():
-                labels[k] = v
+            tag_list = ["dagster/backfill", "dagster/partition", "dagster/schedule_name"]
+            context.log.debug(run.tags)
+            for tag in tag_list:
+                tag_name = tag.replace("/", "_")
+                if run.tags.get(tag) is not None:
+                    labels[tag_name] = run.tags.get(tag)
             context.resources.gcp_metrics.post_time_series(
                 series_type="custom.googleapis.com/dagster/job_success",
                 value={"bool_value": value},
