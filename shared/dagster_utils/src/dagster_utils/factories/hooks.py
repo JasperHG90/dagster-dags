@@ -28,6 +28,19 @@ class GcpMetricJobSuccessHookFactory(DagsterObjectFactory):
         self.gcp_resource_name = gcp_resource_name
 
     def __call__(self) -> typing.Callable:
+        def post_metric(context: HookContext, value: int):
+            labels = {
+                "job_name": context.job_name,
+                "run_id": context.run_id,
+            }
+            for k, v in context.op.tags.items():
+                labels[k] = v
+            context.resources.gcp_metrics.post_time_series(
+                series_type="custom.googleapis.com/dagster/job_success",
+                value={"bool_value": value},
+                metric_labels=labels,
+            )
+
         if self.on_success:
 
             @success_hook(
@@ -35,16 +48,7 @@ class GcpMetricJobSuccessHookFactory(DagsterObjectFactory):
                 required_resource_keys={self.gcp_resource_name},
             )
             def _function(context: HookContext):
-                context.resources.original_resource_dict.get(
-                    self.gcp_resource_name
-                ).post_time_series(
-                    series_type="custom.googleapis.com/dagster/job_success",
-                    value={"bool_value": 1},
-                    metric_labels={
-                        "job_name": context.job_name,
-                        "run_id": context.run_id,
-                    },
-                )
+                post_metric(context, 1)
 
         else:
 
@@ -53,13 +57,6 @@ class GcpMetricJobSuccessHookFactory(DagsterObjectFactory):
                 required_resource_keys={self.gcp_resource_name},
             )
             def _function(context: HookContext):
-                context.resources.gcp_metrics.post_time_series(
-                    series_type="custom.googleapis.com/dagster/job_success",
-                    value={"bool_value": 0},
-                    metric_labels={
-                        "job_name": context.job_name,
-                        "run_id": context.run_id,
-                    },
-                )
+                post_metric(context, 0)
 
         return _function
