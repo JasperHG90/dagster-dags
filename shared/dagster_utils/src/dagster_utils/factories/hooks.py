@@ -40,7 +40,6 @@ def parse_tags(tags: typing.Mapping[str, str]) -> typing.Iterator[typing.Dict[st
 
 def generate_gcp_metric_labels(context: HookContext, labels: GcpMetricLabels) -> GcpMetricLabels:
     run = context.instance.get_run_by_id(context.run_id)
-    context.log.debug(run.tags)
     labels.add("location", run.external_job_origin.location_name)
     for tag_dict in parse_tags(run.tags):
         for k, v in tag_dict.items():
@@ -52,6 +51,7 @@ def post_metric(context: HookContext, value: int, labels: typing.Dict[str, str])
     _labels = generate_gcp_metric_labels(context, GcpMetricLabels())
     for k, v in labels.items():
         _labels.add(k, v)
+    context.log.debug(_labels.labels)
     context.resources.gcp_metrics.post_time_series(
         series_type="custom.googleapis.com/dagster/job_success",
         value={"bool_value": value},
