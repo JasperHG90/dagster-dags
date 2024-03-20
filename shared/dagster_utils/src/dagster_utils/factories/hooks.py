@@ -15,6 +15,50 @@ def gcp_metric_job_success_hook_factory(
     )()
 
 
+class GcpMetricLabels:
+    def __init__(self):
+        self.__labels = {}
+
+    def add(self, key: str, value: str):
+        self.__labels[key] = value
+        return self
+
+    @property
+    def labels(self):
+        return self.__labels
+
+
+def parse_tags(tags: typing.Mapping[str, str]) -> typing.Iterator[typing.Dict[str, str]]:
+    for k, v in tags.items():
+        if k == "dagster/partition":
+            yield {"partition": v}
+        elif k in ["dagster/schedule_name", "dagster/sensor_name", "dagster/backfill"]:
+            yield {"trigger_type": k.split("/")[-1], "trigger_name": v}
+        else:
+            continue
+
+
+def generate_gcp_metric_labels(context: HookContext, labels: GcpMetricLabels) -> GcpMetricLabels:
+    run = context.instance.get_run_by_id(context.run_id)
+    context.log.debug(run.tags)
+    labels.add("location", run.external_job_origin.location_name)
+    for tag_dict in parse_tags(run.tags):
+        for k, v in tag_dict.items():
+            labels.add(k, v)
+    return labels
+
+
+def post_metric(context: HookContext, value: int, labels: typing.Dict[str, str]):
+    _labels = generate_gcp_metric_labels(context, GcpMetricLabels())
+    for k, v in labels.items():
+        _labels.add(k, v)
+    context.resources.gcp_metrics.post_time_series(
+        series_type="custom.googleapis.com/dagster/job_success",
+        value={"bool_value": value},
+        metric_labels=_labels.labels,
+    )
+
+
 class GcpMetricJobSuccessHookFactory(DagsterObjectFactory):
     def __init__(
         self,
@@ -28,25 +72,6 @@ class GcpMetricJobSuccessHookFactory(DagsterObjectFactory):
         self.gcp_resource_name = gcp_resource_name
 
     def __call__(self) -> typing.Callable:
-        def post_metric(context: HookContext, value: int):
-            run = context.instance.get_run_by_id(context.run_id)
-            labels = {
-                "job_name": context.job_name,
-                "run_id": context.run_id,
-                "location": run.external_job_origin.location_name,
-            }
-            tag_list = ["dagster/backfill", "dagster/partition", "dagster/schedule_name"]
-            context.log.debug(run.tags)
-            for tag in tag_list:
-                tag_name = tag.replace("/", "_")
-                if run.tags.get(tag) is not None:
-                    labels[tag_name] = run.tags.get(tag)
-            context.resources.gcp_metrics.post_time_series(
-                series_type="custom.googleapis.com/dagster/job_success",
-                value={"bool_value": value},
-                metric_labels=labels,
-            )
-
         if self.on_success:
 
             @success_hook(
@@ -54,7 +79,14 @@ class GcpMetricJobSuccessHookFactory(DagsterObjectFactory):
                 required_resource_keys={self.gcp_resource_name},
             )
             def _function(context: HookContext):
-                post_metric(context, 1)
+                post_metric(
+                    context,
+                    1,
+                    {
+                        "job_name": context.job_name,
+                        "run_id": context.run_id,
+                    },
+                )
 
         else:
 
@@ -63,6 +95,13 @@ class GcpMetricJobSuccessHookFactory(DagsterObjectFactory):
                 required_resource_keys={self.gcp_resource_name},
             )
             def _function(context: HookContext):
-                post_metric(context, 0)
+                post_metric(
+                    context,
+                    0,
+                    {
+                        "job_name": context.job_name,
+                        "run_id": context.run_id,
+                    },
+                )
 
         return _function

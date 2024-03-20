@@ -51,7 +51,7 @@ def air_quality_data(
         df = pd.DataFrame(
             luchtmeetnet_api.request("measurements", context=context, request_params=rp)
         )
-    # We don't want to keep retrying for a station that is rasing code 500
+    # We don't want to keep retrying for a station that is raising code 500
     except HTTPError as e:
         if e.response.status_code == 500:
             raise Failure(
