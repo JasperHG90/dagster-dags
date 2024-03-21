@@ -2,13 +2,25 @@
 
 ## What this DAG does
 
-On development:
+This DAG ingests data from the [Luchtmeetnet](https://www.luchtmeetnet.nl/) open [API](https://api-docs.luchtmeetnet.nl/).
+
+The development workflow looks as follows:
 
 ![](./architecture/luchtmeetnet_ingestion_dev.png)
 
-On production:
+The production workflow looks as follows:
 
 ![](./architecture/luchtmeetnet_ingestion_prod.png)
+
+## Stations
+
+[Station](https://api-docs.luchtmeetnet.nl/#7a6126f0-95c9-45f6-9552-6d97c9a418bf) data is ingested on the first day of each month on a CRON schedule. The asset that ingests the station data is partitioned by station number. A second asset copies the data to the data lake.
+
+## Station measurements
+
+[Station measurements](https://api-docs.luchtmeetnet.nl/#6ac38ef4-5d43-4d9b-b0b9-69b2d00e6f4c) are ingested daily via a scheduled asset job. The data is partitioned by station number and date. A second asset job copies the data to the data lake.
+
+> **Why not a single job?** Assets that grouped in the same asset job must share the same partition set.
 
 ## Peculiarities
 
