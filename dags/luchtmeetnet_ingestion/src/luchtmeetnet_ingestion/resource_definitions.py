@@ -12,9 +12,6 @@ from luchtmeetnet_ingestion.IO.resources import (
 
 environment = os.getenv("ENVIRONMENT", "dev")
 
-if environment == "dev":
-    os.environ["DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN"] = "dummy"
-
 shared_resources = {
     "luchtmeetnet_api": LuchtMeetNetResource(
         rate_limiter=RateLimiterResource(  # See https://api-docs.luchtmeetnet.nl/ for rate limits
