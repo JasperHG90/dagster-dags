@@ -24,6 +24,11 @@ dagster-slack = "<0.22.8"
 dagster-gcp = "<0.22.8"
 redis = "^5.0.3"
 
+[tool.poetry.group.dev.dependencies]
+gitpython = "^3.1.42"
+invoke = "^2.2.0"
+docker = "^7.0.0"
+
 [tool.dagster]
 module_name = "luchtmeetnet_ingestion"
 
