@@ -22,6 +22,7 @@ coolname = "^2.2.0"
 dagster-postgres = "<0.22.8"
 dagster-slack = "<0.22.8"
 dagster-gcp = "<0.22.8"
+redis = "^5.0.3"
 
 [tool.dagster]
 module_name = "luchtmeetnet_ingestion"
