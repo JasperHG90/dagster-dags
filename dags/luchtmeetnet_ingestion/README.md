@@ -10,6 +10,26 @@ On production:
 
 ![](./architecture/luchtmeetnet_ingestion_prod.png)
 
+## Peculiarities
+
+### Custom sensor to trigger downstream job
+
+- AQD is partitioned by station and date
+- We still want downstream jobs to run, even if some stations fail
+- This is not supported out of the box
+- Custom sensor checks if a backfill or a scheduled run is complete (failures and successes) and triggers downstream job
+
+### Rate limiter
+
+- LMN has rate limit
+- Because dagster runs each job in their own process, we cannot use an in-memory rate limiter
+- Rate limiter uses Redis backend to keep track of rate limits
+
+### I/O manager
+
+- Duckdb I/O manager reads partitioned data even if upstream is not entirely completed (e.g. failed partitions)
+- Support both partitioned and non-partitioned assets
+
 ## Developing locally
 
 ### Installing
