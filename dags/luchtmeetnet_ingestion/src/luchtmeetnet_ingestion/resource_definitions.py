@@ -4,7 +4,11 @@ from dagster import EnvVar
 from dagster_slack import SlackResource
 from dagster_utils.IO.duckdb_io_manager import duckdb_parquet_io_manager
 from dagster_utils.IO.gcp_metrics import GcpMetricsResource
-from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
+from luchtmeetnet_ingestion.IO.resources import (
+    LuchtMeetNetResource,
+    RateLimiterResource,
+    RedisResource,
+)
 
 environment = os.getenv("ENVIRONMENT", "dev")
 
@@ -13,7 +17,17 @@ if environment == "dev":
 
 shared_resources = {
     "luchtmeetnet_api": LuchtMeetNetResource(
-        rate_calls=100, rate_minutes=5  # See https://api-docs.luchtmeetnet.nl/ for rate limits
+        rate_limiter=RateLimiterResource(  # See https://api-docs.luchtmeetnet.nl/ for rate limits
+            rate_calls=100,
+            rate_minutes=5,
+            bucket_key=f"luchtmeetnet_api_{environment}",
+            redis=RedisResource(
+                host=EnvVar("DAGSTER_SECRET_REDIS_HOST"),
+                port=16564,
+                password=EnvVar("DAGSTER_SECRET_REDIS_PASSWORD"),
+                username=EnvVar("DAGSTER_SECRET_REDIS_USERNAME"),
+            ),
+        )
     ),
     # NB: on dev, this hook is not used. See 'sensors.py' for implementation
     #  since the hooks depend on a SlackResource, we need to define it here
