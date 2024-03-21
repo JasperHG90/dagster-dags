@@ -2048,13 +2048,13 @@
           "artifacts": [
             {
               "algorithm": "sha256",
-              "hash": "a5953e60394b77b98bcc7ff7c4971ed784b3b693e9a569c176eaccb1549330f2",
-              "url": "https://files.pythonhosted.org/packages/90/82/eeffa2e210482ac66ecfca2f08e89184111a29ea5865970b22ff7e0f0113/google_api_python_client-2.122.0-py2.py3-none-any.whl"
+              "hash": "1c2bcaa846acf5bac4d6f244d8373d4de9de73d64eb6e77b56767ab4cf681419",
+              "url": "https://files.pythonhosted.org/packages/82/b7/da94eb1338dcc5e6ab08ca22cf7d2395b0d8d957c211a04ff0d74acf23ef/google_api_python_client-2.123.0-py2.py3-none-any.whl"
             },
             {
               "algorithm": "sha256",
-              "hash": "77447bf2d6b6ea9e686fd66fc2f12ee7a63e3889b7427676429ebf09fcb5dcf9",
-              "url": "https://files.pythonhosted.org/packages/b7/c1/2418c084eac8126fa3b5f52eb70de04564023040dea23a9e9cb856327785/google-api-python-client-2.122.0.tar.gz"
+              "hash": "a17226b02f71de581afe045437b441844110a9cd91580b73549d41108cf1b9f0",
+              "url": "https://files.pythonhosted.org/packages/b0/56/57a9ba463f24c8b6955e85c3b1163997e33bf26ab17216502f74c9f03c73/google-api-python-client-2.123.0.tar.gz"
             }
           ],
           "project_name": "google-api-python-client",
@@ -2066,7 +2066,7 @@
             "uritemplate<5,>=3.0.1"
           ],
           "requires_python": ">=3.7",
-          "version": "2.122.0"
+          "version": "2.123.0"
         },
         {
           "artifacts": [

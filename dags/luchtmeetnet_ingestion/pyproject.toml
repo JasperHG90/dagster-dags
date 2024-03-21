@@ -23,6 +23,7 @@ dagster-postgres = "<0.22.8"
 dagster-slack = "<0.22.8"
 dagster-gcp = "<0.22.8"
 redis = "^5.0.3"
+google-cloud-monitoring = "^2.19.3"
 
 [tool.poetry.group.dev.dependencies]
 gitpython = "^3.1.42"
