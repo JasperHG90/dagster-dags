@@ -27,3 +27,5 @@ __pycache__
 .DS_Store
 
 job_spec.yml
+
+*.rdb
