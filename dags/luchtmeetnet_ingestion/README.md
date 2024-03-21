@@ -12,6 +12,10 @@ The production workflow looks as follows:
 
 ![](./architecture/luchtmeetnet_ingestion_prod.png)
 
+Where:
+
+![](./architecture/legend.png)
+
 ## Stations
 
 [Station](https://api-docs.luchtmeetnet.nl/#7a6126f0-95c9-45f6-9552-6d97c9a418bf) data is ingested on the first day of each month on a CRON schedule. The asset that ingests the station data is partitioned by station number. A second asset copies the data to the data lake.
