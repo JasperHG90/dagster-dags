@@ -12,7 +12,7 @@ from dagster import (
 from luchtmeetnet_ingestion.luchtmeetnet.api import get_results_luchtmeetnet_endpoint
 from pydantic import PrivateAttr
 from pyrate_limiter import BucketFullException, Duration, Limiter, Rate, RedisBucket
-from redis import Redis
+from redis import ConnectionError, Redis
 
 
 class RedisResource(ConfigurableResource):
@@ -32,6 +32,9 @@ class RedisResource(ConfigurableResource):
                 username=self.username,
             )
             yield conn
+        except ConnectionError as e:
+            context.log.error(f"Failed to connect to Redis backend: {e}")
+            raise e
         finally:
             conn.close()
 

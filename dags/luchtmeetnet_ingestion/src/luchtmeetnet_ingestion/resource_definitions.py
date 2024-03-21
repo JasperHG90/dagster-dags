@@ -22,10 +22,10 @@ shared_resources = {
             rate_minutes=5,
             bucket_key=f"luchtmeetnet_api_{environment}",
             redis=RedisResource(
-                host=EnvVar("DAGSTER_SECRET_REDIS_HOST"),
-                port=16564,
-                password=EnvVar("DAGSTER_SECRET_REDIS_PASSWORD"),
-                username=EnvVar("DAGSTER_SECRET_REDIS_USERNAME"),
+                host="localhost" if environment == "dev" else EnvVar("DAGSTER_SECRET_REDIS_HOST"),
+                port=6379 if environment == "dev" else 16564,
+                password=None if environment == "dev" else EnvVar("DAGSTER_SECRET_REDIS_PASSWORD"),
+                username=None if environment == "dev" else EnvVar("DAGSTER_SECRET_REDIS_USERNAME"),
             ),
         )
     ),

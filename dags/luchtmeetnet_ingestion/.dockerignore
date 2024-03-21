@@ -2,3 +2,4 @@
 .justfile
 Dockerfile
 tests
+*.rdb
