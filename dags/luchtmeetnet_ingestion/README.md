@@ -1,39 +1,44 @@
 # 🌬️ Luchtmeetnet ingestion
 
-## ☄️ Setting up for local development
+## Developing locally
 
-Boot up the devcontainer. This takes a while because we are compiling DuckDB from source (required since the extensions are not compiled for ARM-based architecture).
+### Installing
 
-Then:
+Execute `just install`/`just i` to install the required dependencies.
 
-- If you are on an ARM-based architecture and want to develop your DAG locally, install the DAG/package using:
+### Environment variables
 
-```shell
-just install 1
+You need to create a .env file in the root directory (dags/luchtmeetnet_ingestion) with the following keys/values:
+
+```
+DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN="xoxb-xxxxxx-xxxxxxxx-xxxxxxx-xxxxxxxxxxxxxxxxx"
+DAGSTER_SECRET_REDIS_HOST=localhost
+DAGSTER_SECRET_REDIS_USERNAME=default
+DAGSTER_SECRET_REDIS_PASSWORD=dagster
 ```
 
-- Else, install using:
+NB: the `DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN` is **not** used when developing. It's value could be anything.
 
-```shell
-just install
-```
+### Starting the dagster server
 
-On ARM-based infrastructures, we use the optional dependency group 'devcontainer' that will install duckdb from the wheel stored in '/home/vscode/.dist'. For more information about why this is necessary you can check out [this link](https://github.com/duckdb/duckdb/issues/8035).
+You should boot dagster using the `just dev`/`just d` command.
 
-## ⛏️ Running dagster locally
+**You need to start docker before running `just dev`**
 
-To run Dagster locally, execute
+Before starting `dagster dev`, this command:
 
-```shell
-just dev
-```
+1. Creates a '.dagster' folder
+2. Copies the `dagster.yaml` file to this folder
+3. Sets the `DAGSTER_HOME` environment variable to the '.dagster' folder
+4. Boots up a redis server using Docker as long as the Dagster server is running. See below for more info.
 
-This will:
+The dagster web UI is hosted on http://localhost:3000
 
-1. Create a '.dagster' folder
-2. Copy the 'dagster.yaml' configuration to the '.dagster' folder
-3. Set the DAGSTER_HOME environment variable to the '.dagster' folder
-4. Host the dagster web UI on http://localhost:3000
+To remove the '.dagster' folder, you can execute `just clean`/`just c`
+
+### Use of Redis server
+
+This Dagster project requires a Redis server so that we can limit requests to the Luchtmeetnet API. We use [pyrate-limiter](https://pypi.org/project/pyrate-limiter/) to configure rate limit requests with Redis as a backend, since Dagster spawns resources for each separate run and we need to track state.
 
 ### ⁉️ FAQ
 
@@ -66,3 +71,12 @@ pants package dags/luchtmeetnet_ingestion
 This deployment requires:
 
 - `DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN`: OAuth2 token to authenticate with slack. For dev, this isn't used so you can fill out anything you like.
+- `DAGSTER_SECRET_REDIS_HOST`: Host of a redis database, e.g. hosted on Redis cloud.
+- `DAGSTER_SECRET_REDIS_USERNAME`: Username of the Redis database.
+- `DAGSTER_SECRET_REDIS_PASSWORD`: Password of the user that is used to connect to the Redis database.
+
+You can set these variables in 'values.yaml.j2'. They need to be provisioned using the 'add_secrets' workflow in the [dagster-infra](https://github.com/JasperHG90/dagster-infra) repository.
+
+To do this, navigate to the [dagster-infra repository settings](https://github.com/JasperHG90/dagster-infra/settings/secrets/actions) and add the secrets there using the prefix 'DAGSTER_SECRET_'.
+
+Then, run the [Add secrets](https://github.com/JasperHG90/dagster-infra/actions/workflows/add_secrets.yml) workflow.
