@@ -33,6 +33,7 @@ gcp_metric_on_success = metric_job_success_hook_factory(
 gcp_metric_on_failure = metric_job_success_hook_factory(
     name="gcp_metric_on_failure",
     description="GCP metric hook for failure",
+    on_success=False,
     callable_fn=post_metric,
     required_resource_keys={"gcp_metrics"},
 )
