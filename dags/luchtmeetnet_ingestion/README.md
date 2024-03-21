@@ -1,5 +1,15 @@
 # 🌬️ Luchtmeetnet ingestion
 
+## What this DAG does
+
+On development:
+
+![](./architecture/luchtmeetnet_ingestion_dev.png)
+
+On production:
+
+![](./architecture/luchtmeetnet_ingestion_prod.png)
+
 ## Developing locally
 
 ### Installing
