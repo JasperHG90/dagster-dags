@@ -16,6 +16,7 @@ from dagster import (
     RetryPolicy,
     asset,
 )
+from luchtmeetnet_ingestion.assets import const
 from luchtmeetnet_ingestion.assets.utils import get_air_quality_data_for_partition_key
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
 from luchtmeetnet_ingestion.partitions import (
@@ -49,6 +50,7 @@ from pandas.util import hash_pandas_object
         AutoMaterializeRule.materialize_on_parent_updated(),
         AutoMaterializeRule.materialize_on_missing(),
     ),
+    op_tags=const.K8S_TAGS,
     code_version="v1",
     group_name="measurements",
 )
@@ -86,6 +88,7 @@ def air_quality_data(
         AutoMaterializeRule.skip_on_parent_outdated(),
         AutoMaterializeRule.skip_on_parent_missing(),
     ),
+    op_tags=const.K8S_TAGS,
     code_version="v1",
     group_name="measurements",
 )
@@ -105,6 +108,7 @@ def daily_air_quality_data(ingested_data: pd.DataFrame) -> pd.DataFrame:
         AutoMaterializeRule.materialize_on_missing(),
         AutoMaterializeRule.materialize_on_cron("0 0 1 * *", all_partitions=True),
     ),
+    op_tags=const.K8S_TAGS,
     group_name="stations",
 )
 def station_names(
@@ -130,6 +134,7 @@ def station_names(
         maximum_lag_minutes=10,
         cron_schedule="0 0 1 * *",
     ),
+    op_tags=const.K8S_TAGS,
     group_name="stations",
 )
 def air_quality_station_names(station_names: pd.DataFrame) -> pd.DataFrame:
