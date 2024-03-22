@@ -27,6 +27,23 @@ from luchtmeetnet_ingestion.partitions import (
 from pandas.util import hash_pandas_object
 
 
+def post_job_success(context: AssetExecutionContext, value: int):
+    context.log.info("Posting metrics to GCP")
+    labels = {
+        "job_name": context.op.name,
+        "partition": context.partition_key,
+        "run_id": context.run_id,
+        "trigger_type": "asset_check",
+        "trigger_name": "test",
+    }
+    # Post metrics to GCP
+    context.resources.gcp_metrics.post_time_series(
+        series_type="custom.googleapis.com/dagster/job_success",
+        value={"bool_value": value},
+        metric_labels=labels,
+    )
+
+
 @asset(
     description="Air quality data from the Luchtmeetnet API",
     compute_kind="duckdb",
