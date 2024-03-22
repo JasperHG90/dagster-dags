@@ -7,10 +7,7 @@ from luchtmeetnet_ingestion.assets import (
     daily_air_quality_data,
     station_names,
 )
-from luchtmeetnet_ingestion.jobs import copy_to_data_lake_job, ingestion_job
 from luchtmeetnet_ingestion.resource_definitions import env_resources, environment
-from luchtmeetnet_ingestion.schedules import daily_schedule
-from luchtmeetnet_ingestion.sensors import run_copy_to_data_lake_after_ingestion
 
 try:
     __version__ = metadata.version("luchtmeetnet_ingestion")
@@ -21,9 +18,4 @@ except metadata.PackageNotFoundError:
 definition = Definitions(
     assets=[air_quality_data, daily_air_quality_data, station_names, air_quality_station_names],
     resources=env_resources[environment],
-    jobs=[ingestion_job, copy_to_data_lake_job],
-    sensors=[
-        run_copy_to_data_lake_after_ingestion,
-    ],
-    schedules=[daily_schedule],
 )

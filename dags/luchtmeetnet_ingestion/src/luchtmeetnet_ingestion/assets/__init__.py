@@ -7,12 +7,12 @@ from dagster import (
     AssetIn,
     AutoMaterializePolicy,
     AutoMaterializeRule,
-    BackfillPolicy,
     Backoff,
     DataVersion,
     Failure,
     FreshnessPolicy,
     Jitter,
+    MultiToSingleDimensionPartitionMapping,
     Output,
     RetryPolicy,
     asset,
@@ -27,22 +27,10 @@ from pandas.util import hash_pandas_object
 from requests import HTTPError
 
 
-@asset(
-    description="Air quality data from the Luchtmeetnet API",
-    compute_kind="duckdb",
-    io_manager_key="landing_zone",
-    partitions_def=daily_station_partition,
-    retry_policy=RetryPolicy(
-        max_retries=3, delay=30, backoff=Backoff.EXPONENTIAL, jitter=Jitter.PLUS_MINUS
-    ),
-    backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=10),
-    code_version="v1",
-    group_name="measurements",
-)
-def air_quality_data(
-    context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
-) -> Output[pd.DataFrame]:
-    date, station = context.partition_key.split("|")
+def get_air_quality_data_for_partition_key(
+    partition_key: str, context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
+) -> pd.DataFrame:
+    date, station = partition_key.split("|")
     context.log.debug(date)
     context.log.debug(f"Fetching data for {date}")
     start, end = f"{date}T00:00:00", f"{date}T23:59:59"
@@ -63,6 +51,39 @@ def air_quality_data(
     df["station_number"] = station
     df["start"] = start
     df["end"] = end
+    return df
+
+
+@asset(
+    description="Air quality data from the Luchtmeetnet API",
+    compute_kind="duckdb",
+    io_manager_key="landing_zone",
+    partitions_def=daily_station_partition,
+    retry_policy=RetryPolicy(
+        max_retries=3, delay=30, backoff=Backoff.EXPONENTIAL, jitter=Jitter.PLUS_MINUS
+    ),
+    # NB: setting this to a higher value will disallow use of context.partition_key because
+    #  will be supplied a range. See https://docs.dagster.io/_apidocs/libraries/dagster-duckdb
+    # Higher values currently not supported because reading in ranges is not supported in the
+    # I/O manager
+    # backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=1),
+    auto_materialize_policy=AutoMaterializePolicy.eager(max_materializations_per_minute=None)
+    .with_rules(
+        AutoMaterializeRule.materialize_on_cron("0 3 * * *", all_partitions=False),
+    )
+    .without_rules(
+        AutoMaterializeRule.skip_on_parent_outdated(),
+        AutoMaterializeRule.skip_on_parent_missing(),
+        AutoMaterializeRule.materialize_on_parent_updated(),
+        AutoMaterializeRule.materialize_on_missing(),
+    ),
+    code_version="v1",
+    group_name="measurements",
+)
+def air_quality_data(
+    context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
+) -> Output[pd.DataFrame]:
+    df = get_air_quality_data_for_partition_key(context.partition_key, context, luchtmeetnet_api)
     df_hash = hashlib.sha256(hash_pandas_object(df, index=True).values).hexdigest()
     return Output(df, data_version=DataVersion(df_hash))
 
@@ -75,9 +96,24 @@ def air_quality_data(
     ins={
         "ingested_data": AssetIn(
             "air_quality_data",
+            # NB: need this to control which downstream asset partitions are materialized
+            partition_mapping=MultiToSingleDimensionPartitionMapping(
+                partition_dimension_name="daily"
+            ),
             input_manager_key="landing_zone",
         )
     },
+    auto_materialize_policy=AutoMaterializePolicy.eager(max_materializations_per_minute=None)
+    .with_rules(
+        AutoMaterializeRule.skip_on_not_all_parents_updated(
+            require_update_for_all_parent_partitions=False
+        ),
+        AutoMaterializeRule.materialize_on_required_for_freshness(),
+    )
+    .without_rules(
+        AutoMaterializeRule.skip_on_parent_outdated(),
+        AutoMaterializeRule.skip_on_parent_missing(),
+    ),
     code_version="v1",
     group_name="measurements",
 )
