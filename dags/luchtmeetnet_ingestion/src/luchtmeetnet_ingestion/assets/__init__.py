@@ -16,6 +16,7 @@ from dagster import (
     RetryPolicy,
     asset,
 )
+from dagster_utils.IO.gcp_metrics import GcpMetricsResource
 from luchtmeetnet_ingestion.assets import const
 from luchtmeetnet_ingestion.assets.utils import get_air_quality_data_for_partition_key
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
@@ -27,8 +28,9 @@ from luchtmeetnet_ingestion.partitions import (
 from pandas.util import hash_pandas_object
 
 
-def post_job_success(context: AssetExecutionContext, value: int):
+def post_job_success(context: AssetExecutionContext, gcp_metrics: GcpMetricsResource, value: int):
     context.log.info("Posting metrics to GCP")
+    context.log.debug(context.run.tags)
     labels = {
         "job_name": context.asset_key,
         "partition": context.partition_key,
@@ -37,7 +39,7 @@ def post_job_success(context: AssetExecutionContext, value: int):
         "trigger_name": "test",
     }
     # Post metrics to GCP
-    context.resources.gcp_metrics.post_time_series(
+    gcp_metrics.post_time_series(
         series_type="custom.googleapis.com/dagster/job_success",
         value={"bool_value": value},
         metric_labels=labels,
@@ -72,7 +74,9 @@ def post_job_success(context: AssetExecutionContext, value: int):
     group_name="measurements",
 )
 def air_quality_data(
-    context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
+    context: AssetExecutionContext,
+    luchtmeetnet_api: LuchtMeetNetResource,
+    gcp_metrics: GcpMetricsResource,
 ) -> Output[pd.DataFrame]:
     try:
         df = get_air_quality_data_for_partition_key(
@@ -85,7 +89,7 @@ def air_quality_data(
         success = 0
         raise e
     finally:
-        post_job_success(context, success)
+        post_job_success(context, gcp_metrics, success)
 
 
 @asset(
@@ -119,7 +123,7 @@ def air_quality_data(
     group_name="measurements",
 )
 def daily_air_quality_data(
-    context: AssetExecutionContext, ingested_data: pd.DataFrame
+    context: AssetExecutionContext, ingested_data: pd.DataFrame, gcp_metrics: GcpMetricsResource
 ) -> pd.DataFrame:
     try:
         success = 1
@@ -128,7 +132,7 @@ def daily_air_quality_data(
         success = 0
         raise e
     finally:
-        post_job_success(context, success)
+        post_job_success(context, gcp_metrics, success)
 
 
 @asset(
@@ -147,7 +151,9 @@ def daily_air_quality_data(
     group_name="stations",
 )
 def station_names(
-    context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
+    context: AssetExecutionContext,
+    luchtmeetnet_api: LuchtMeetNetResource,
+    gcp_metrics: GcpMetricsResource,
 ) -> pd.DataFrame:
     try:
         success = 1
@@ -160,7 +166,7 @@ def station_names(
         success = 0
         raise e
     finally:
-        post_job_success(context, success)
+        post_job_success(context, gcp_metrics, success)
 
 
 @asset(
@@ -180,7 +186,7 @@ def station_names(
     group_name="stations",
 )
 def air_quality_station_names(
-    context: AssetExecutionContext, station_names: pd.DataFrame
+    context: AssetExecutionContext, station_names: pd.DataFrame, gcp_metrics: GcpMetricsResource
 ) -> pd.DataFrame:
     try:
         success = 1
@@ -189,4 +195,4 @@ def air_quality_station_names(
         success = 0
         raise e
     finally:
-        post_job_success(context, success)
+        post_job_success(context, gcp_metrics, success)
