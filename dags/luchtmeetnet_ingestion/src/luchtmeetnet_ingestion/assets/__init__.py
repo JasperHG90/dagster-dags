@@ -30,10 +30,10 @@ from pandas.util import hash_pandas_object
 def post_job_success(context: AssetExecutionContext, value: int):
     context.log.info("Posting metrics to GCP")
     labels = {
-        "job_name": context.op.name,
+        "job_name": context.asset_key,
         "partition": context.partition_key,
         "run_id": context.run_id,
-        "trigger_type": "asset_check",
+        "trigger_type": "asset",
         "trigger_name": "test",
     }
     # Post metrics to GCP
@@ -74,9 +74,18 @@ def post_job_success(context: AssetExecutionContext, value: int):
 def air_quality_data(
     context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
 ) -> Output[pd.DataFrame]:
-    df = get_air_quality_data_for_partition_key(context.partition_key, context, luchtmeetnet_api)
-    df_hash = hashlib.sha256(hash_pandas_object(df, index=True).values).hexdigest()
-    return Output(df, data_version=DataVersion(df_hash))
+    try:
+        df = get_air_quality_data_for_partition_key(
+            context.partition_key, context, luchtmeetnet_api
+        )
+        df_hash = hashlib.sha256(hash_pandas_object(df, index=True).values).hexdigest()
+        success = 1
+        return Output(df, data_version=DataVersion(df_hash))
+    except Exception as e:
+        success = 0
+        raise e
+    finally:
+        post_job_success(context, success)
 
 
 @asset(
@@ -109,8 +118,17 @@ def air_quality_data(
     code_version="v1",
     group_name="measurements",
 )
-def daily_air_quality_data(ingested_data: pd.DataFrame) -> pd.DataFrame:
-    return ingested_data
+def daily_air_quality_data(
+    context: AssetExecutionContext, ingested_data: pd.DataFrame
+) -> pd.DataFrame:
+    try:
+        success = 1
+        return ingested_data
+    except Exception as e:
+        success = 0
+        raise e
+    finally:
+        post_job_success(context, success)
 
 
 @asset(
@@ -131,11 +149,18 @@ def daily_air_quality_data(ingested_data: pd.DataFrame) -> pd.DataFrame:
 def station_names(
     context: AssetExecutionContext, luchtmeetnet_api: LuchtMeetNetResource
 ) -> pd.DataFrame:
-    return pd.DataFrame(
-        luchtmeetnet_api.request(
-            os.path.join("stations", context.partition_key), context=context, paginate=False
+    try:
+        success = 1
+        return pd.DataFrame(
+            luchtmeetnet_api.request(
+                os.path.join("stations", context.partition_key), context=context, paginate=False
+            )
         )
-    )
+    except Exception as e:
+        success = 0
+        raise e
+    finally:
+        post_job_success(context, success)
 
 
 @asset(
@@ -154,5 +179,14 @@ def station_names(
     op_tags=const.K8S_TAGS,
     group_name="stations",
 )
-def air_quality_station_names(station_names: pd.DataFrame) -> pd.DataFrame:
-    return station_names
+def air_quality_station_names(
+    context: AssetExecutionContext, station_names: pd.DataFrame
+) -> pd.DataFrame:
+    try:
+        success = 1
+        return station_names
+    except Exception as e:
+        success = 0
+        raise e
+    finally:
+        post_job_success(context, success)
