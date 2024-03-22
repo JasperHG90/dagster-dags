@@ -92,7 +92,7 @@ def daily_air_quality_data(
     compute_kind="duckdb",
     description="Luchtmeetnet API stations",
     partitions_def=stations_partition,
-    # Setting max_materializations_per_minute disables the rate limiter
+    # Setting max_materializations_per_minute disables the dagster rate limiter
     auto_materialize_policy=AutoMaterializePolicy.eager(
         max_materializations_per_minute=None
     ).with_rules(
