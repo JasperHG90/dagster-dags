@@ -1,7 +1,6 @@
 import os
 
 from dagster import EnvVar
-from dagster_slack import SlackResource
 from dagster_utils.IO.duckdb_io_manager import duckdb_parquet_io_manager
 from dagster_utils.IO.gcp_metrics import GcpMetricsResource
 from luchtmeetnet_ingestion.IO.resources import (
@@ -26,9 +25,6 @@ shared_resources = {
             ),
         )
     ),
-    # NB: on dev, this hook is not used. See 'sensors.py' for implementation
-    #  since the hooks depend on a SlackResource, we need to define it here
-    "slack": SlackResource(token=EnvVar("DAGSTER_SECRET_SLACK_BOT_OAUTH_TOKEN")),
     "gcp_metrics": GcpMetricsResource(environment=environment, project_id="jasper-ginn-dagster"),
 }
 
