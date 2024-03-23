@@ -46,7 +46,7 @@ warnings.filterwarnings("ignore", category=ExperimentalWarning)
     # backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=1),
     auto_materialize_policy=AutoMaterializePolicy.eager(max_materializations_per_minute=None)
     .with_rules(
-        AutoMaterializeRule.materialize_on_cron("32 21 * * *", all_partitions=False),
+        AutoMaterializeRule.materialize_on_cron("0 3 * * *", all_partitions=False),
     )
     .without_rules(
         AutoMaterializeRule.skip_on_parent_outdated(),
