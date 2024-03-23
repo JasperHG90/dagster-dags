@@ -13,12 +13,13 @@ class GcpMetricsResource(ConfigurableResource):
     environment: str
     project_id: str
 
-    @retry(attempts=3, seconds=5)
+    @retry(attempts=3, seconds=1)
     def post_time_series(
         self,
         series_type: str,
         value: typing.Union[int, float, bool],
         metric_labels: typing.Dict[str, str],
+        timestamp: typing.Optional[float] = None,
     ):
         client = monitoring_v3.MetricServiceClient()
         project_name = f"projects/{self.project_id}"
@@ -28,9 +29,12 @@ class GcpMetricsResource(ConfigurableResource):
         for k, v in metric_labels.items():
             series.metric.labels[k] = v
         series.metric.labels["environment"] = self.environment
-        now = time.time()
-        seconds = int(now)
-        nanos = int((now - seconds) * 10**9)
+        if timestamp is None:
+            ts = time.time()
+        else:
+            ts = timestamp
+        seconds = int(ts)
+        nanos = int((ts - seconds) * 10**9)
         interval = monitoring_v3.TimeInterval({"end_time": {"seconds": seconds, "nanos": nanos}})
         point = monitoring_v3.Point({"interval": interval, "value": value})
         series.points = [point]

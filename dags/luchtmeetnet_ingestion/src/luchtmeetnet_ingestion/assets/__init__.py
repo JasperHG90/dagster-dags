@@ -1,5 +1,6 @@
 import hashlib
 import os
+import warnings
 
 import pandas as pd
 from dagster import (
@@ -9,6 +10,7 @@ from dagster import (
     AutoMaterializeRule,
     Backoff,
     DataVersion,
+    ExperimentalWarning,
     FreshnessPolicy,
     Jitter,
     MultiToSingleDimensionPartitionMapping,
@@ -16,7 +18,6 @@ from dagster import (
     RetryPolicy,
     asset,
 )
-from dagster_utils.IO.gcp_metrics import GcpMetricsResource
 from luchtmeetnet_ingestion.assets import const
 from luchtmeetnet_ingestion.assets.utils import get_air_quality_data_for_partition_key
 from luchtmeetnet_ingestion.IO.resources import LuchtMeetNetResource
@@ -27,23 +28,7 @@ from luchtmeetnet_ingestion.partitions import (
 )
 from pandas.util import hash_pandas_object
 
-
-def post_job_success(context: AssetExecutionContext, gcp_metrics: GcpMetricsResource, value: int):
-    context.log.info("Posting metrics to GCP")
-    context.log.debug(context.run.tags)
-    labels = {
-        "job_name": context.asset_key,
-        "partition": context.partition_key,
-        "run_id": context.run_id,
-        "trigger_type": "asset",
-        "trigger_name": "test",
-    }
-    # Post metrics to GCP
-    gcp_metrics.post_time_series(
-        series_type="custom.googleapis.com/dagster/job_success",
-        value={"bool_value": value},
-        metric_labels=labels,
-    )
+warnings.filterwarnings("ignore", category=ExperimentalWarning)
 
 
 @asset(
@@ -61,7 +46,7 @@ def post_job_success(context: AssetExecutionContext, gcp_metrics: GcpMetricsReso
     # backfill_policy=BackfillPolicy.multi_run(max_partitions_per_run=1),
     auto_materialize_policy=AutoMaterializePolicy.eager(max_materializations_per_minute=None)
     .with_rules(
-        AutoMaterializeRule.materialize_on_cron("0 3 * * *", all_partitions=False),
+        AutoMaterializeRule.materialize_on_cron("32 21 * * *", all_partitions=False),
     )
     .without_rules(
         AutoMaterializeRule.skip_on_parent_outdated(),

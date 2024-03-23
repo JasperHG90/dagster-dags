@@ -8,6 +8,7 @@ from luchtmeetnet_ingestion.assets import (
     station_names,
 )
 from luchtmeetnet_ingestion.resource_definitions import env_resources, environment
+from luchtmeetnet_ingestion.sensors import post_gcp_metrics
 
 try:
     __version__ = metadata.version("luchtmeetnet_ingestion")
@@ -18,4 +19,5 @@ except metadata.PackageNotFoundError:
 definition = Definitions(
     assets=[air_quality_data, daily_air_quality_data, station_names, air_quality_station_names],
     resources=env_resources[environment],
+    sensors=[post_gcp_metrics],
 )
