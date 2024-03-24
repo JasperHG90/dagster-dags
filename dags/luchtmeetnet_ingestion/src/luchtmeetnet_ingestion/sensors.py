@@ -54,6 +54,7 @@ def post_gcp_metrics(context: SensorEvaluationContext, gcp_metrics: GcpMetricsRe
             "run_id": run_record.dagster_run.run_id,
             "partition_key": run_record.dagster_run.tags.get("dagster/partition", "N/A"),
             "environment": environment,
+            "location": run_record.dagster_run.external_job_origin.location_name,
             **parse_run_trigger(run_record.dagster_run.tags),
         }
         gcp_metrics.post_time_series(
