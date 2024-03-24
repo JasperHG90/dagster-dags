@@ -14,24 +14,6 @@ from dagster_utils.IO.gcp_metrics import GcpMetricsResource
 environment = os.getenv("ENVIRONMENT", "dev")
 
 
-def post_job_success(context: SensorEvaluationContext, gcp_metrics: GcpMetricsResource, value: int):
-    context.log.info("Posting metrics to GCP")
-    context.log.debug(context.run.tags)
-    labels = {
-        "job_name": context.asset_key,
-        "partition": context.partition_key,
-        "run_id": context.run_id,
-        "trigger_type": "asset",
-        "trigger_name": "test",
-    }
-    # Post metrics to GCP
-    gcp_metrics.post_time_series(
-        series_type="custom.googleapis.com/dagster/job_success",
-        value={"bool_value": value},
-        metric_labels=labels,
-    )
-
-
 def parse_run_trigger(tags: typing.Dict[str, str]) -> typing.Dict[str, str]:
     if tags.get("dagster/backfill") is not None:
         trigger_type = "backfill"
