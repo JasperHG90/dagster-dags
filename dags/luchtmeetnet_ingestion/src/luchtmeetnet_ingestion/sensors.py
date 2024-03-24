@@ -58,7 +58,7 @@ def post_gcp_metrics(context: SensorEvaluationContext, gcp_metrics: GcpMetricsRe
             **parse_run_trigger(run_record.dagster_run.tags),
         }
         gcp_metrics.post_time_series(
-            series_type="custom.googleapis.com/dagster/job_success",
+            series_type="custom.googleapis.com/dagster/asset_success",
             value={"bool_value": 1 if run_record.dagster_run.is_success else 0},
             metric_labels=labels,
             timestamp=run_record.end_time,
