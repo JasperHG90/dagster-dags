@@ -1,3 +1,9 @@
+# 🚧 WARNING
+
+This repository is under construction and contains untested, experimental and unfinished code. This code is not production-ready, and while it could be useful for others, should **not** be copied over without appropriate scrutiny.
+
+Use at your own risk.
+
 # Dagster-dags
 
 Monorepo containing dagster DAGs.
